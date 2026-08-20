@@ -1,0 +1,179 @@
+openapi: 3.0.3
+info:
+  title: Shared Components
+  version: 1.0.0
+  description: |
+    Schemas y componentes compartidos entre todos los contratos API del proyecto.
+    Referencia estos componentes en tus contratos con: $ref: './_shared.yaml#/components/...'
+
+components:
+  schemas:
+    # ─── Paginación ───────────────────────────────────────────────────────────
+    PaginatedMeta:
+      type: object
+      description: Metadatos de paginación incluidos en respuestas de listas
+      required: [page, limit, total, totalPages]
+      properties:
+        page:
+          type: integer
+          minimum: 1
+          example: 1
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          example: 20
+        total:
+          type: integer
+          description: Total de registros que coinciden con el filtro
+          example: 142
+        totalPages:
+          type: integer
+          example: 8
+
+    # ─── Errores ──────────────────────────────────────────────────────────────
+    ErrorResponse:
+      type: object
+      description: Formato estándar de error para todos los endpoints
+      required: [error, message]
+      properties:
+        error:
+          type: string
+          description: Código de error en SCREAMING_SNAKE_CASE
+          example: VALIDATION_ERROR
+        message:
+          type: string
+          description: Mensaje legible por humanos
+          example: El campo email es requerido
+        details:
+          type: array
+          description: Lista de errores específicos (para errores de validación)
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: email
+              message:
+                type: string
+                example: El campo email es requerido
+        traceId:
+          type: string
+          description: ID de traza para correlacionar con logs
+          example: 550e8400-e29b-41d4-a716-446655440000
+
+    # ─── Tipos comunes ────────────────────────────────────────────────────────
+    UUID:
+      type: string
+      format: uuid
+      example: 550e8400-e29b-41d4-a716-446655440000
+
+    Timestamp:
+      type: string
+      format: date-time
+      example: '2024-01-15T10:30:00Z'
+
+    AuditFields:
+      type: object
+      description: Campos de auditoría incluidos en todas las entidades
+      properties:
+        createdAt:
+          $ref: '#/components/schemas/Timestamp'
+        updatedAt:
+          $ref: '#/components/schemas/Timestamp'
+        createdBy:
+          $ref: '#/components/schemas/UUID'
+
+  # ─── Parámetros reutilizables ────────────────────────────────────────────
+  parameters:
+    PageParam:
+      name: page
+      in: query
+      description: Número de página (empezando en 1)
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+
+    LimitParam:
+      name: limit
+      in: query
+      description: Cantidad de resultados por página
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+
+    IdParam:
+      name: id
+      in: path
+      required: true
+      description: ID único del recurso (UUID)
+      schema:
+        $ref: '#/components/schemas/UUID'
+
+  # ─── Respuestas reutilizables ────────────────────────────────────────────
+  responses:
+    BadRequest:
+      description: Error de validación en los datos enviados
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: VALIDATION_ERROR
+            message: Datos de entrada inválidos
+            details:
+              - field: email
+                message: Formato de email inválido
+
+    Unauthorized:
+      description: Token de autenticación ausente o inválido
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: UNAUTHORIZED
+            message: Token de autenticación requerido
+
+    Forbidden:
+      description: El usuario no tiene permisos para esta operación
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: FORBIDDEN
+            message: No tienes permisos para realizar esta acción
+
+    NotFound:
+      description: El recurso solicitado no existe
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: NOT_FOUND
+            message: El recurso solicitado no existe
+
+    InternalError:
+      description: Error interno del servidor
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: INTERNAL_ERROR
+            message: Error interno del servidor
+
+  # ─── Seguridad ───────────────────────────────────────────────────────────
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        Token JWT obtenido del endpoint POST /auth/login del servicio IAM.
+        Incluir en el header: Authorization: Bearer <token>

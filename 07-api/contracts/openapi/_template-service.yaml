@@ -1,0 +1,299 @@
+openapi: 3.0.3
+info:
+  title: "[NombreServicio] API"
+  version: 1.0.0
+  description: |
+    API del servicio [nombre-servicio].
+
+    ## Autenticación
+    Todos los endpoints requieren un JWT válido en el header:
+    ```
+    Authorization: Bearer <token>
+    ```
+
+    ## Manejo de errores
+    Todos los errores siguen el esquema `ErrorResponse` definido en `_shared.yaml`.
+
+    ## Paginación
+    Los endpoints de lista soportan paginación via `?page=1&limit=20`.
+
+servers:
+  - url: http://localhost:{port}
+    description: Local development
+    variables:
+      port:
+        default: '3001'
+  - url: https://api.dev.{domain}/v1/{service}
+    description: Development environment
+    variables:
+      domain:
+        default: example.com
+      service:
+        default: nombre-servicio
+  - url: https://api.{domain}/v1/{service}
+    description: Production
+    variables:
+      domain:
+        default: example.com
+      service:
+        default: nombre-servicio
+
+# Seguridad por defecto para todos los endpoints
+security:
+  - bearerAuth: []
+
+tags:
+  - name: [Recurso A]
+    description: Operaciones sobre [Recurso A]
+  - name: Health
+    description: Health check del servicio
+
+paths:
+  /health:
+    get:
+      summary: Health check
+      description: Verifica que el servicio esté funcionando y sus dependencias estén disponibles.
+      tags:
+        - Health
+      security: []  # Endpoint público
+      responses:
+        '200':
+          description: Servicio saludable
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                properties:
+                  status:
+                    type: string
+                    enum: [ok]
+                  timestamp:
+                    type: string
+                    format: date-time
+                  dependencies:
+                    type: object
+                    description: Estado de las dependencias
+                    properties:
+                      database:
+                        type: string
+                        enum: [ok, degraded, down]
+                      redis:
+                        type: string
+                        enum: [ok, degraded, down]
+              example:
+                status: ok
+                timestamp: '2024-01-15T10:30:00Z'
+                dependencies:
+                  database: ok
+                  redis: ok
+        '503':
+          description: Servicio no disponible (en arranque o con dependencia caída)
+
+  /[recursos]:
+    get:
+      summary: Listar [recursos]
+      description: Retorna una lista paginada de [recursos].
+      operationId: list[Recursos]
+      tags:
+        - [Recurso A]
+      parameters:
+        - $ref: './_shared.yaml#/components/parameters/PageParam'
+        - $ref: './_shared.yaml#/components/parameters/LimitParam'
+        - name: [filtro]
+          in: query
+          description: Filtrar por [criterio]
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de [recursos]
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/[Recurso]Response'
+                  meta:
+                    $ref: './_shared.yaml#/components/schemas/PaginatedMeta'
+        '401':
+          $ref: './_shared.yaml#/components/responses/Unauthorized'
+        '500':
+          $ref: './_shared.yaml#/components/responses/InternalError'
+
+    post:
+      summary: Crear [recurso]
+      description: Crea un nuevo [recurso] con los datos proporcionados.
+      operationId: create[Recurso]
+      tags:
+        - [Recurso A]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Create[Recurso]Request'
+            example:
+              [campo1]: "valor de ejemplo"
+              [campo2]: "valor de ejemplo"
+      responses:
+        '201':
+          description: [Recurso] creado exitosamente
+          headers:
+            Location:
+              description: URL del recurso creado
+              schema:
+                type: string
+                example: /[recursos]/550e8400-e29b-41d4-a716-446655440000
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/[Recurso]Response'
+        '400':
+          $ref: './_shared.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: './_shared.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: './_shared.yaml#/components/responses/Forbidden'
+        '500':
+          $ref: './_shared.yaml#/components/responses/InternalError'
+
+  /[recursos]/{id}:
+    parameters:
+      - $ref: './_shared.yaml#/components/parameters/IdParam'
+
+    get:
+      summary: Obtener [recurso] por ID
+      operationId: get[Recurso]ById
+      tags:
+        - [Recurso A]
+      responses:
+        '200':
+          description: [Recurso] encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/[Recurso]Response'
+        '401':
+          $ref: './_shared.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: './_shared.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: './_shared.yaml#/components/responses/NotFound'
+        '500':
+          $ref: './_shared.yaml#/components/responses/InternalError'
+
+    patch:
+      summary: Actualizar [recurso]
+      description: Actualización parcial (solo los campos enviados se modifican).
+      operationId: update[Recurso]
+      tags:
+        - [Recurso A]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Update[Recurso]Request'
+      responses:
+        '200':
+          description: [Recurso] actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/[Recurso]Response'
+        '400':
+          $ref: './_shared.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: './_shared.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: './_shared.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: './_shared.yaml#/components/responses/NotFound'
+
+    delete:
+      summary: Eliminar [recurso]
+      description: Soft delete — el recurso no se borra físicamente.
+      operationId: delete[Recurso]
+      tags:
+        - [Recurso A]
+      responses:
+        '204':
+          description: Eliminado exitosamente (sin cuerpo de respuesta)
+        '401':
+          $ref: './_shared.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: './_shared.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: './_shared.yaml#/components/responses/NotFound'
+
+components:
+  schemas:
+    # ─── Request schemas ────────────────────────────────────────────────
+    Create[Recurso]Request:
+      type: object
+      description: Datos para crear un nuevo [recurso]
+      required:
+        - [campoObligatorio1]
+        - [campoObligatorio2]
+      properties:
+        [campoObligatorio1]:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: [Descripción del campo]
+          example: "[valor de ejemplo]"
+        [campoObligatorio2]:
+          type: string
+          description: [Descripción]
+          example: "[ejemplo]"
+        [campoOpcional]:
+          type: string
+          nullable: true
+          description: [Descripción]
+          example: null
+
+    Update[Recurso]Request:
+      type: object
+      description: Campos actualizables de [recurso] (todos opcionales)
+      properties:
+        [campo1]:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: [Descripción]
+        [campo2]:
+          type: string
+          description: [Descripción]
+
+    # ─── Response schemas ───────────────────────────────────────────────
+    [Recurso]Response:
+      description: Representación completa de un [recurso]
+      # allOf permite componer este schema con los campos de auditoría compartidos.
+      # AuditFields define createdAt, updatedAt y createdBy — no los repitas aquí.
+      allOf:
+        - $ref: './_shared.yaml#/components/schemas/AuditFields'
+        - type: object
+          required:
+            - id
+            - [campoObligatorio1]
+            - estado
+          properties:
+            id:
+              $ref: './_shared.yaml#/components/schemas/UUID'
+            [campoObligatorio1]:
+              type: string
+              example: "[valor]"
+            estado:
+              type: string
+              enum: [ACTIVO, INACTIVO, CANCELADO]
+              example: ACTIVO
+
+  # ─── Seguridad ────────────────────────────────────────────────────────
+  securitySchemes:
+    bearerAuth:
+      $ref: './_shared.yaml#/components/securitySchemes/bearerAuth'
