@@ -1,81 +1,81 @@
 # API Gateway
 
-> **Punto único de entrada** al sistema. Recibe todas las peticiones del frontend y las enruta
-> al microservicio correspondiente. Es el dueño autoritativo de las reglas de enrutamiento.
+> **Single entry point** to the system. Receives all frontend requests and routes them
+> to the corresponding microservice. It is the authoritative owner of the routing rules.
 
 ---
 
-## Ubicación en la arquitectura
+## Location in the architecture
 
-| Campo | Valor |
+| Field | Value |
 |-------|-------|
-| Número en catálogo | 01 |
-| Puerto local | 8080 |
-| Repositorio | [URL del repo del servicio] |
-| Motor de BD | — (stateless, sin BD propia) |
-| Comunica con | auth-service, [otros servicios] |
-| Es consumido por | Frontend web, app móvil, herramientas de terceros |
+| Number in catalog | 01 |
+| Local port | 8080 |
+| Repository | [Service repo URL] |
+| DB engine | — (stateless, no own DB) |
+| Communicates with | auth-service, [other services] |
+| Consumed by | Web frontend, mobile app, third-party tools |
 
 ---
 
-## Responsabilidades (qué SÍ hace este servicio)
+## Responsibilities (what this service DOES)
 
-- Enrutar peticiones HTTP al microservicio correcto según el path (`/api/v1/auth/*`, `/api/v1/[recurso]/*`)
-- Verificar que el token JWT sea válido antes de reenviar la petición (delegando al auth-service)
-- Adjuntar el contexto del usuario (`X-User-Id`, `X-User-Role`) como headers internos
-- Rate limiting global: máximo [100] peticiones por IP por minuto
-- Logs de acceso unificados con correlationId
+- Route HTTP requests to the correct microservice based on the path (`/api/v1/auth/*`, `/api/v1/[resource]/*`)
+- Verify that the JWT token is valid before forwarding the request (delegating to auth-service)
+- Attach user context (`X-User-Id`, `X-User-Role`) as internal headers
+- Global rate limiting: maximum [100] requests per IP per minute
+- Unified access logs with correlationId
 
-## Fuera de su alcance (qué NO hace)
+## Out of scope (what it does NOT do)
 
-- **No maneja lógica de negocio** — solo enruta
-- **No verifica permisos de recurso** — solo verifica que el JWT sea válido (autorización la hace cada servicio)
-- **No almacena datos** — stateless
+- **Does not handle business logic** — only routes
+- **Does not verify resource permissions** — only verifies the JWT is valid (authorization is done by each service)
+- **Does not store data** — stateless
 
 ---
 
-## Cómo correrlo localmente
+## How to run it locally
 
 ```bash
-# Desde la raíz del proyecto (levanta todos los servicios)
+# From the project root (starts all services)
 docker compose up -d api-gateway
 
-# Verificar que está funcionando
+# Verify it is working
 curl http://localhost:8080/health
 ```
 
-**Respuesta esperada:**
+**Expected response:**
 ```json
 { "status": "ok", "timestamp": "2024-01-15T10:30:00Z" }
 ```
 
 ---
 
-## Documentos relacionados
+## Related documents
 
-- [data-model.md](./data-model.md) — No aplica (sin BD propia)
-- [events.md](./events.md) — No aplica (no emite eventos de dominio)
-- [decisions.md](./decisions.md) — Decisiones de diseño del gateway
-- [runbook.md](./runbook.md) — Operación en producción
-- [Contrato API](../../../07-api/contracts/openapi/api-gateway.yaml)
-
----
-
-## Decisiones de diseño
-
-Ver: `09-microservices/services/01-api-gateway/decisions.md`
-
-Las decisiones relevantes incluyen:
-- **ADR-002** — Por qué se eligió [Kong / Nginx / custom Express] como base del gateway
-- **ADR-003** — Estrategia de autenticación en el gateway vs. en cada servicio
+- [data-model.md](./data-model.md) — Not applicable (no own DB)
+- [events.md](./events.md) — Not applicable (does not emit domain events)
+- [decisions.md](./decisions.md) — Gateway design decisions
+- [runbook.md](./runbook.md) — Operation in production
+- [API Contract](../../../07-api/contracts/openapi/api-gateway.yaml)
 
 ---
 
-## Patrón de enrutamiento
+## Design decisions
+
+See: `09-microservices/services/01-api-gateway/decisions.md`
+
+Relevant decisions include:
+- **ADR-002** — Why [Kong / Nginx / custom Express] was chosen as the gateway base
+- **ADR-003** — Authentication strategy at the gateway vs. in each service
+
+---
+
+## Routing pattern
 
 ```
-Cliente → :8080/api/v1/auth/*        → auth-service :8081
-Cliente → :8080/api/v1/[recurso]/*  → [nombre]-service :808N
+Client → :8080/api/v1/auth/*        → auth-service :8081
+Client → :8080/api/v1/[resource]/*  → [name]-service :808N
 ```
 
-Configuración del enrutamiento: `[ruta al archivo de configuración del gateway]`
+Routing configuration: `[path to gateway configuration file]`

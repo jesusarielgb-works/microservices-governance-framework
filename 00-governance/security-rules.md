@@ -1,152 +1,152 @@
-# Reglas Técnicas de Seguridad
+# Technical Security Rules
 
-> Controles técnicos obligatorios que aplican a todo el código del proyecto.
-> Estas reglas complementan la política de seguridad (`security-policy.md`) con
-> prácticas concretas de implementación.
+> Mandatory technical controls that apply to all project code.
+> These rules complement the security policy (`security-policy.md`) with
+> concrete implementation practices.
 
 ---
 
-## OWASP Top 10 — Controles por categoría
+## OWASP Top 10 — Controls per category
 
-### A01 — Control de Acceso Roto (Broken Access Control)
+### A01 — Broken Access Control
 
 ```typescript
-// ❌ MAL — confiar en datos del frontend
+// ❌ BAD — trusting frontend data
 const userId = req.body.userId;
 
-// ✅ BIEN — extraer del token JWT verificado
-const userId = req.user.sub; // req.user viene del middleware de autenticación
+// ✅ GOOD — extract from verified JWT token
+const userId = req.user.sub; // req.user comes from the authentication middleware
 ```
 
-**Reglas:**
-- Todo endpoint protegido DEBE tener el middleware de autenticación aplicado
-- Los permisos se verifican en el Use Case, no en el Controller
-- Un recurso solo se devuelve si el usuario tiene permiso de `[recurso]:read`
-- Las acciones de escritura requieren permiso de `[recurso]:write` o `[recurso]:delete`
+**Rules:**
+- Every protected endpoint MUST have the authentication middleware applied
+- Permissions are verified in the Use Case, not in the Controller
+- A resource is only returned if the user has `[resource]:read` permission
+- Write actions require `[resource]:write` or `[resource]:delete` permission
 
-### A02 — Fallas Criptográficas
+### A02 — Cryptographic Failures
 
-**Reglas:**
-- Contraseñas: usar **bcrypt** con cost factor ≥ 12. Nunca MD5 o SHA-1 para contraseñas
-- JWTs: firmar con RS256 (asimétrico). Nunca HS256 en producción con secreto débil
-- Datos sensibles en tránsito: HTTPS obligatorio en todos los ambientes excepto local
-- Datos sensibles en reposo: cifrar con AES-256-GCM los campos marcados como PII
-- Nunca loguear contraseñas, tokens ni datos de tarjetas de crédito
+**Rules:**
+- Passwords: use **bcrypt** with cost factor ≥ 12. Never MD5 or SHA-1 for passwords
+- JWTs: sign with RS256 (asymmetric). Never HS256 in production with a weak secret
+- Sensitive data in transit: HTTPS mandatory in all environments except local
+- Sensitive data at rest: encrypt with AES-256-GCM the fields marked as PII
+- Never log passwords, tokens, or credit card data
 
-### A03 — Inyección (Injection)
+### A03 — Injection
 
 **SQL:**
 ```typescript
-// ❌ MAL — concatenación directa
+// ❌ BAD — direct concatenation
 const user = await db.query(`SELECT * FROM users WHERE id = ${userId}`);
 
-// ✅ BIEN — query parametrizada
+// ✅ GOOD — parameterized query
 const user = await db.query('SELECT * FROM users WHERE id = $1', [userId]);
 
-// ✅ BIEN — ORM con parámetros tipados
+// ✅ GOOD — ORM with typed parameters
 const user = await userRepository.findOne({ where: { id: userId } });
 ```
 
-**Reglas:**
-- Queries parametrizadas SIEMPRE. Cero strings concatenados en SQL
-- Validar y sanitizar todos los inputs con una librería de validación (Zod, Joi, class-validator)
-- En GraphQL: limitar profundidad de queries con `graphql-depth-limit`
+**Rules:**
+- Parameterized queries ALWAYS. Zero concatenated strings in SQL
+- Validate and sanitize all inputs with a validation library (Zod, Joi, class-validator)
+- In GraphQL: limit query depth with `graphql-depth-limit`
 
-### A04 — Diseño Inseguro
+### A04 — Insecure Design
 
-- Toda HU que exponga datos del usuario debe pasar por revisión de privacidad
-- Los endpoints de consulta masiva tienen paginación obligatoria (máximo [100] registros por página)
-- No exponer IDs internos secuenciales; usar UUIDs
+- Every HU that exposes user data must undergo privacy review
+- Bulk query endpoints have mandatory pagination (maximum [100] records per page)
+- Do not expose sequential internal IDs; use UUIDs
 
-### A05 — Configuración de Seguridad Incorrecta
+### A05 — Security Misconfiguration
 
 ```
-# Lista de verificación por ambiente
-□ Stack traces NO visibles en producción
-□ Headers de seguridad configurados (Helmet.js o equivalente):
+# Verification checklist per environment
+□ Stack traces NOT visible in production
+□ Security headers configured (Helmet.js or equivalent):
   - X-Content-Type-Options: nosniff
   - X-Frame-Options: DENY
-  - Content-Security-Policy definida
-  - Strict-Transport-Security en producción
-□ Puertos innecesarios cerrados
-□ Credenciales de desarrollo NO en producción
+  - Content-Security-Policy defined
+  - Strict-Transport-Security in production
+□ Unnecessary ports closed
+□ Development credentials NOT in production
 ```
 
-### A06 — Componentes Vulnerables
+### A06 — Vulnerable Components
 
-**Reglas:**
-- Ejecutar `npm audit` (o equivalente) antes de cada release
-- Vulnerabilidades **Critical/High** bloquean el deploy
-- Renovar dependencias en cada sprint (al menos una vez)
-- No usar versiones `latest` sin fijar en `package.json`; usar versiones exactas o rangos conservadores
+**Rules:**
+- Run `npm audit` (or equivalent) before each release
+- **Critical/High** vulnerabilities block the deploy
+- Renew dependencies each sprint (at least once)
+- Do not use `latest` versions without pinning in `package.json`; use exact versions or conservative ranges
 
-### A07 — Fallas de Identificación y Autenticación
+### A07 — Identification and Authentication Failures
 
-- JWT con expiración máxima de **1 hora** para access tokens
-- Refresh tokens con expiración de **[7 días / 30 días]** y rotación en cada uso
-- Rate limiting en `/auth/login`: máximo [10] intentos por IP en 5 minutos
-- Bloqueo de cuenta después de [5] intentos fallidos consecutivos
+- JWT with maximum expiration of **1 hour** for access tokens
+- Refresh tokens with expiration of **[7 days / 30 days]** and rotation on each use
+- Rate limiting on `/auth/login`: maximum [10] attempts per IP in 5 minutes
+- Account lockout after [5] consecutive failed attempts
 
-### A08 — Fallas de Integridad de Software y Datos
+### A08 — Software and Data Integrity Failures
 
-- Verificar checksum de imágenes Docker antes de usar en producción
-- Los webhooks de terceros deben verificar firma criptográfica
-- Validar que los mensajes del broker (Kafka/RabbitMQ) tienen el schema esperado
+- Verify Docker image checksum before using in production
+- Third-party webhooks must verify cryptographic signature
+- Validate that messages from the broker (Kafka/RabbitMQ) have the expected schema
 
-### A09 — Fallas de Registro y Monitoreo
+### A09 — Security Logging and Monitoring Failures
 
-- Toda autenticación fallida debe loguearse con IP, timestamp y user-agent
-- Loguear operaciones de borrado con quién, cuándo y qué se borró
-- Los logs de seguridad se retienen mínimo **90 días**
-- Alertas automáticas configuradas para:
-  - Más de [50] errores 401/403 en 5 minutos
-  - Acceso a un recurso desde un país inesperado (si aplica)
+- Every failed authentication must be logged with IP, timestamp, and user-agent
+- Log delete operations with who, when, and what was deleted
+- Security logs are retained for a minimum of **90 days**
+- Automatic alerts configured for:
+  - More than [50] 401/403 errors in 5 minutes
+  - Access to a resource from an unexpected country (if applicable)
 
 ### A10 — Server-Side Request Forgery (SSRF)
 
-- Las URLs que se construyen con input del usuario DEBEN validarse contra una lista de dominios permitidos
-- No hacer fetch a IPs privadas (192.168.x.x, 10.x.x.x, 127.x.x.x) desde el servidor
+- URLs constructed from user input MUST be validated against an allowlist of permitted domains
+- Do not fetch from private IPs (192.168.x.x, 10.x.x.x, 127.x.x.x) from the server
 
 ---
 
-## Manejo de inputs del usuario
+## User input handling
 
 ```typescript
-// Ejemplo con Zod — siempre validar en la capa de Controller/Adapter
+// Example with Zod — always validate in the Controller/Adapter layer
 const CreateUserSchema = z.object({
   email: z.string().email().max(255),
   name: z.string().min(1).max(100).trim(),
   role: z.enum(['ADMIN', 'USER', 'VIEWER']),
 });
 
-// El resultado es tipado y sanitizado
+// The result is typed and sanitized
 const parsed = CreateUserSchema.parse(req.body);
 ```
 
-**Regla:** Todos los inputs externos (HTTP body, query params, path params, mensajes del broker)
-pasan por un schema de validación antes de llegar al dominio.
+**Rule:** All external inputs (HTTP body, query params, path params, broker messages)
+pass through a validation schema before reaching the domain.
 
 ---
 
-## Manejo de errores seguro
+## Secure error handling
 
 ```typescript
-// ❌ MAL — expone detalles internos
+// ❌ BAD — exposes internal details
 res.status(500).json({ error: error.message, stack: error.stack });
 
-// ✅ BIEN — mensaje genérico + traceId para correlación interna
+// ✅ GOOD — generic message + traceId for internal correlation
 res.status(500).json({
   error: 'INTERNAL_SERVER_ERROR',
-  message: 'Error interno del servidor',
+  message: 'Internal server error',
   traceId: req.headers['x-trace-id'],
 });
 ```
 
 ---
 
-## Correlaciones
+## Correlations
 
-- Política de seguridad (gestión, acceso, vault) → `00-governance/security-policy.md`
-- Threat model del sistema → `05-architecture/security-threat-model.md`
-- Autenticación y JWT → `07-api/authentication.md`
-- Observabilidad y logs de seguridad → `13-operations/observability.md`
+- Security policy (management, access, vault) → `00-governance/security-policy.md`
+- System threat model → `05-architecture/security-threat-model.md`
+- Authentication and JWT → `07-api/authentication.md`
+- Observability and security logs → `13-operations/observability.md`

@@ -1,105 +1,105 @@
-# 01 — Contexto del Proyecto
+# 01 — Project Context
 
-> **¿Qué es esto?** El "por qué" del sistema. Cualquier persona nueva debe poder leer esta
-> carpeta y entender qué problema resuelve el proyecto, qué incluye y qué NO incluye.
+> **What is this?** The "why" of the system. Anyone new must be able to read this
+> folder and understand what problem the project solves, what it includes, and what it does NOT include.
 
-## Por qué existe esta sección
+## Why this section exists
 
-Antes de diseñar cualquier cosa, el equipo necesita acordar:
-- ¿Qué problema estamos resolviendo?
-- ¿Para quién?
-- ¿Qué está dentro y qué está fuera del alcance?
-- ¿Qué significa cada término que usamos?
+Before designing anything, the team needs to agree on:
+- What problem are we solving?
+- For whom?
+- What is in scope and what is out of scope?
+- What does each term we use mean?
 
-Sin esto, cada miembro trabaja con supuestos distintos y el proyecto se fragmenta.
+Without this, each team member works with different assumptions and the project fragments.
 
 ---
 
-## Qué hay aquí y cómo llenarlo
+## What is here and how to fill it in
 
 ### `overview.md` ⭐
-Descripción ejecutiva del sistema en máximo 1 página.
-**Llena:** nombre del sistema, problema que resuelve, usuarios principales, tecnologías clave, 
-estado actual (en construcción / en producción / legacy).
+Executive description of the system in maximum 1 page.
+**Fill in:** system name, problem it solves, main users, key technologies,
+current status (under construction / in production / legacy).
 
-**Formato sugerido:**
+**Suggested format:**
 ```markdown
-## ¿Qué es [Nombre del Sistema]?
-[2-3 oraciones: qué es y para qué sirve]
+## What is [System Name]?
+[2-3 sentences: what it is and what it's for]
 
-## Problema que resuelve
-[El dolor del usuario antes de este sistema]
+## Problem it solves
+[The user's pain before this system]
 
-## Usuarios principales
-- [Rol 1]: [qué hace en el sistema]
-- [Rol 2]: [qué hace en el sistema]
+## Main users
+- [Role 1]: [what they do in the system]
+- [Role 2]: [what they do in the system]
 
-## Stack tecnológico
-- Backend: [lenguaje/framework]
-- Base de datos: [motor]
-- Infraestructura: [Docker/K8s/Cloud]
+## Technology stack
+- Backend: [language/framework]
+- Database: [engine]
+- Infrastructure: [Docker/K8s/Cloud]
 ```
 
 ### `scope.md` ⭐
-Límites del sistema: qué hace y qué NO hace.
-**Llena:** lista explícita de lo que está DENTRO y FUERA del alcance del MVP y de versiones futuras.
-Esto previene el "scope creep" (el sistema que crece sin control).
+System boundaries: what it does and what it does NOT do.
+**Fill in:** explicit list of what is INSIDE and OUTSIDE the MVP scope and future versions.
+This prevents scope creep (the system that grows without control).
 
-**Formato:**
+**Format:**
 ```markdown
-## En alcance (MVP)
-- [Funcionalidad 1]
-- [Funcionalidad 2]
+## In scope (MVP)
+- [Feature 1]
+- [Feature 2]
 
-## Fuera de alcance (MVP)
-- [Lo que deliberadamente NO hacemos]
+## Out of scope (MVP)
+- [What we deliberately do NOT do]
 
-## Candidatos para versiones futuras
-- [Lo que podría venir después]
+## Candidates for future versions
+- [What might come later]
 ```
 
 ### `glossary.md` ⭐
-Diccionario del dominio del proyecto.
-**Llena:** todos los términos técnicos y de negocio que se usan en el proyecto, con su definición exacta.
-Si dos personas definen "cliente" de forma diferente, el sistema tendrá bugs.
+Dictionary of the project domain.
+**Fill in:** all technical and business terms used in the project, with their exact definition.
+If two people define "client" differently, the system will have bugs.
 
-**Formato:**
+**Format:**
 ```markdown
-| Término | Definición | Sinónimos | Notas |
-|---------|-----------|-----------|-------|
-| [Término] | [Definición precisa en contexto de este sistema] | [si existen] | [si aplica] |
+| Term | Definition | Synonyms | Notes |
+|------|-----------|----------|-------|
+| [Term] | [Precise definition in the context of this system] | [if any] | [if applicable] |
 ```
 
 ### `_template-project-profile.md`
-Ficha técnica del proyecto para registros internos.
-**Llena:** cuando el proyecto se formaliza (nombre oficial, líder técnico, fechas, stakeholders).
+Project technical sheet for internal records.
+**Fill in:** when the project is formalized (official name, tech lead, dates, stakeholders).
 
 ### `_template-scope-declaration.md`
-Template formal de declaración de alcance para presentaciones o entregas.
+Formal scope declaration template for presentations or deliverables.
 
 ---
 
-## Correlaciones con otras secciones
+## Correlations with other sections
 
-| Si cambias esto... | Revisar también... |
-|--------------------|--------------------|
-| El problema descrito en `overview.md` | La visión de producto en `03-product/vision.md` |
-| El alcance en `scope.md` | Los requisitos en `04-requirements/`, el PRD en `03-product/` |
-| Un término del `glossary.md` | Todo documento donde ese término aparezca |
-
----
-
-## Orden de llenado recomendado
-
-1. `overview.md` — 30 minutos con el equipo completo
-2. `scope.md` — 1 hora de discusión (lo más valioso que pueden hacer al inicio)
-3. `glossary.md` — crece durante todo el proyecto, empieza con 10 términos clave
+| If you change this... | Also review... |
+|-----------------------|----------------|
+| The problem described in `overview.md` | Product vision in `03-product/vision.md` |
+| The scope in `scope.md` | Requirements in `04-requirements/`, PRD in `03-product/` |
+| A term in `glossary.md` | Every document where that term appears |
 
 ---
 
-## Preguntas que esta sección debe responder
+## Recommended fill order
 
-- ¿Para qué existe este sistema?
-- ¿Quiénes son los usuarios?
-- ¿Qué NO hace el sistema?
-- ¿Qué significa [término X] en este proyecto?
+1. `overview.md` — 30 minutes with the full team
+2. `scope.md` — 1 hour of discussion (the most valuable thing you can do at the start)
+3. `glossary.md` — grows throughout the project, start with 10 key terms
+
+---
+
+## Questions this section must answer
+
+- What does this system exist for?
+- Who are the users?
+- What does the system NOT do?
+- What does [term X] mean in this project?

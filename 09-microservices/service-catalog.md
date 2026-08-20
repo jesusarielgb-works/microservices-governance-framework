@@ -1,23 +1,23 @@
-# Catálogo de Microservicios
+# Microservices Catalog
 
-> **Qué llenar aquí:** El inventario completo de servicios del sistema.
-> Para el detalle de cada servicio, ve a `09-microservices/services/NN-nombre-servicio/`.
-> Este catálogo es la vista ejecutiva — una fila por servicio.
+> **What to fill in here:** The complete inventory of system services.
+> For the detail of each service, go to `09-microservices/services/NN-service-name/`.
+> This catalog is the executive view — one row per service.
 
 ---
 
-## Mapa de servicios
+## Services map
 
 ```
                           ┌─────────────────┐
-  Clientes externos       │   API Gateway   │
-  (Web, Móvil, API)  ──▶ │   :8080         │
+  External clients        │   API Gateway   │
+  (Web, Mobile, API)  ──▶ │   :8080         │
                           └────────┬────────┘
-                                   │ enruta según path
+                                   │ routes by path
           ┌───────────────┬────────┴───────────┬──────────────────┐
           ▼               ▼                    ▼                  ▼
   ┌──────────────┐ ┌──────────────┐  ┌──────────────────┐ ┌──────────────┐
-  │ auth-service │ │[servicio-A]  │  │ [servicio-B]     │ │[servicio-N]  │
+  │ auth-service │ │[service-A]   │  │ [service-B]      │ │[service-N]   │
   │    :3001     │ │    :3002     │  │    :3003         │ │    :300N     │
   └──────────────┘ └──────┬───────┘  └────────┬─────────┘ └──────────────┘
                            │                   │
@@ -31,129 +31,129 @@
 
 ---
 
-## Registro de servicios
+## Service registry
 
-| # | Servicio | Responsabilidad principal | Puerto | BD | Tipo BD | Estado |
-|---|---------|--------------------------|--------|-----|---------|--------|
-| 01 | `api-gateway` | Enrutamiento, autenticación, rate limiting | 8080 | Redis | Caché | 🟢 Activo |
-| 02 | `auth-service` | Registro, login, tokens JWT, RBAC | 3001 | PostgreSQL | Relacional | 🟢 Activo |
-| 03 | `[nombre-servicio]` | [responsabilidad] | 3002 | [BD] | [tipo] | 🟡 En desarrollo |
-| 04 | `[nombre-servicio]` | [responsabilidad] | 3003 | [BD] | [tipo] | 🔴 Planificado |
+| # | Service | Main responsibility | Port | DB | DB type | Status |
+|---|---------|-------------------|------|-----|---------|--------|
+| 01 | `api-gateway` | Routing, authentication, rate limiting | 8080 | Redis | Cache | 🟢 Active |
+| 02 | `auth-service` | Registration, login, JWT tokens, RBAC | 3001 | PostgreSQL | Relational | 🟢 Active |
+| 03 | `[service-name]` | [responsibility] | 3002 | [DB] | [type] | 🟡 In development |
+| 04 | `[service-name]` | [responsibility] | 3003 | [DB] | [type] | 🔴 Planned |
 
-**Estados:** 🟢 Activo en prod | 🟡 En desarrollo | 🔴 Planificado | ⏸ Deprecado
+**Statuses:** 🟢 Active in prod | 🟡 In development | 🔴 Planned | ⏸ Deprecated
 
 ---
 
-## Detalle por servicio
+## Detail per service
 
 ### 01 — `api-gateway`
 
-| Campo | Valor |
+| Field | Value |
 |-------|-------|
-| **Carpeta** | `09-microservices/services/01-api-gateway/` |
-| **Responsabilidad** | Punto único de entrada. Enruta, autentica y aplica rate limiting |
-| **Tipo** | Infrastructure service (no de dominio) |
-| **Puerto** | 8080 (HTTPS 8443) |
-| **Tecnología** | [Kong / NGINX + custom / Spring Cloud Gateway] |
-| **BD** | Redis (caché de tokens, rate limiting) |
-| **Comunica con** | Todos los servicios internos |
-| **Expuesto externamente** | Sí — es el único punto de entrada |
+| **Folder** | `09-microservices/services/01-api-gateway/` |
+| **Responsibility** | Single entry point. Routes, authenticates, and applies rate limiting |
+| **Type** | Infrastructure service (not domain) |
+| **Port** | 8080 (HTTPS 8443) |
+| **Technology** | [Kong / NGINX + custom / Spring Cloud Gateway] |
+| **DB** | Redis (token cache, rate limiting) |
+| **Communicates with** | All internal services |
+| **Externally exposed** | Yes — it is the only entry point |
 
-**Endpoints clave:**
-- `/*` — Proxy a servicios internos según el path
+**Key endpoints:**
+- `/*` — Proxy to internal services based on path
 
 ---
 
 ### 02 — `auth-service`
 
-| Campo | Valor |
+| Field | Value |
 |-------|-------|
-| **Carpeta** | `09-microservices/services/02-auth-service/` |
-| **Responsabilidad** | Identidad y acceso: registro, login, refresh token, RBAC |
-| **Tipo** | Supporting service |
-| **Puerto** | 3001 |
-| **Tecnología** | [Node.js + Express / Spring Boot / etc.] |
-| **BD** | PostgreSQL |
-| **Bounded Context** | `02-domain/domain-map.md` → Contexto IAM |
-| **Expuesto externamente** | Solo a través del API Gateway |
+| **Folder** | `09-microservices/services/02-auth-service/` |
+| **Responsibility** | Identity and access: registration, login, refresh token, RBAC |
+| **Type** | Supporting service |
+| **Port** | 3001 |
+| **Technology** | [Node.js + Express / Spring Boot / etc.] |
+| **DB** | PostgreSQL |
+| **Bounded Context** | `02-domain/domain-map.md` → IAM Context |
+| **Externally exposed** | Only through the API Gateway |
 
-**Endpoints clave:**
-- `POST /auth/register` — Registro de usuario
-- `POST /auth/login` — Autenticación, devuelve JWT
-- `POST /auth/refresh` — Renovar token
-- `DELETE /auth/logout` — Invalidar refresh token
+**Key endpoints:**
+- `POST /auth/register` — User registration
+- `POST /auth/login` — Authentication, returns JWT
+- `POST /auth/refresh` — Renew token
+- `DELETE /auth/logout` — Invalidate refresh token
 
-**Eventos que publica:**
-- `UsuarioRegistrado` → Topic: `iam.usuario.registrado`
-- `SesionIniciada` → Topic: `iam.sesion.iniciada`
+**Events published:**
+- `UserRegistered` → Topic: `iam.user.registered`
+- `SessionStarted` → Topic: `iam.session.started`
 
 ---
 
-### 03 — `[nombre-servicio]`
+### 03 — `[service-name]`
 
-| Campo | Valor |
+| Field | Value |
 |-------|-------|
-| **Carpeta** | `09-microservices/services/03-[nombre]/` |
-| **Responsabilidad** | [Describe en una oración] |
-| **Tipo** | [Core / Supporting / Generic] |
-| **Puerto** | 300X |
-| **Tecnología** | [Stack] |
-| **BD** | [Motor y nombre] |
-| **Bounded Context** | [Referencia en domain-map] |
-| **Expuesto externamente** | [Sí / Solo interno] |
+| **Folder** | `09-microservices/services/03-[name]/` |
+| **Responsibility** | [Describe in one sentence] |
+| **Type** | [Core / Supporting / Generic] |
+| **Port** | 300X |
+| **Technology** | [Stack] |
+| **DB** | [Engine and name] |
+| **Bounded Context** | [Reference in domain-map] |
+| **Externally exposed** | [Yes / Internal only] |
 
-**Endpoints clave:**
-- `[MÉTODO] /[path]` — [descripción]
+**Key endpoints:**
+- `[METHOD] /[path]` — [description]
 
-**Eventos que publica:**
-- `[NombreEvento]` → Topic: `[topic.name]`
+**Events published:**
+- `[EventName]` → Topic: `[topic.name]`
 
-**Eventos que consume:**
-- `[NombreEvento]` de `[servicio origen]`
-
----
-
-## Matriz de comunicación entre servicios
-
-> Quién llama a quién y por qué canal.
-
-| Servicio origen | Servicio destino | Canal | Tipo | Descripción |
-|----------------|-----------------|-------|------|-------------|
-| api-gateway | auth-service | HTTP/REST | Síncrono | Validar JWT en cada request |
-| [svc-a] | [svc-b] | Evento | Asíncrono | Notificar de [evento] |
-| [svc-b] | [svc-c] | HTTP/REST | Síncrono | Consultar [dato] |
+**Events consumed:**
+- `[EventName]` from `[source service]`
 
 ---
 
-## Matriz de propiedad de datos
+## Service communication matrix
 
-Cada entidad de negocio tiene un solo servicio propietario.
-Los demás acceden vía API o eventos, nunca directamente a la BD.
+> Who calls whom and through which channel.
 
-| Entidad / Dato | Servicio propietario (Source of Truth) | Cómo acceden otros servicios |
-|---------------|---------------------------------------|------------------------------|
-| Usuario / Identidad | auth-service | API REST (`GET /users/:id`) |
-| [Entidad A] | [servicio-A] | Evento `[EntidadACreada]` |
-| [Entidad B] | [servicio-B] | API REST (`GET /b/:id`) |
-
----
-
-## Cómo agregar un nuevo servicio
-
-1. Asigna el número siguiente disponible en este catálogo
-2. Crea la carpeta: `cp -r 09-microservices/_template/service 09-microservices/services/NN-nuevo-servicio`
-3. Llena el README, data-model, events y decisions del nuevo servicio
-4. Crea el contrato OpenAPI en `07-api/contracts/openapi/NN-nuevo-servicio.yaml`
-5. Agrega el servicio a este catálogo
-6. Agrega el ADR de la decisión de crear el servicio en `05-architecture/decisions/`
-7. Actualiza el diagrama en `05-architecture/overview.md`
+| Source service | Destination service | Channel | Type | Description |
+|----------------|--------------------|---------|----- |-------------|
+| api-gateway | auth-service | HTTP/REST | Synchronous | Validate JWT on each request |
+| [svc-a] | [svc-b] | Event | Asynchronous | Notify of [event] |
+| [svc-b] | [svc-c] | HTTP/REST | Synchronous | Query [data] |
 
 ---
 
-## Correlaciones
+## Data ownership matrix
 
-- Arquitectura y patrones → `05-architecture/`
-- Contratos API por servicio → `07-api/contracts/openapi/`
-- Eventos del sistema → `02-domain/domain-events.md`
-- Template para crear servicios → `09-microservices/_template/service/`
-- Detalle completo por servicio → `09-microservices/services/NN-[nombre]/`
+Each business entity has a single owner service.
+Others access via API or events, never directly to the DB.
+
+| Entity / Data | Owner service (Source of Truth) | How other services access |
+|---------------|--------------------------------|--------------------------|
+| User / Identity | auth-service | REST API (`GET /users/:id`) |
+| [Entity A] | [service-A] | `[EntityACreated]` event |
+| [Entity B] | [service-B] | REST API (`GET /b/:id`) |
+
+---
+
+## How to add a new service
+
+1. Assign the next available number in this catalog
+2. Create the folder: `cp -r 09-microservices/_template/service 09-microservices/services/NN-new-service`
+3. Fill in the README, data-model, events, and decisions of the new service
+4. Create the OpenAPI contract in `07-api/contracts/openapi/NN-new-service.yaml`
+5. Add the service to this catalog
+6. Add the ADR for the decision to create the service in `05-architecture/decisions/`
+7. Update the diagram in `05-architecture/overview.md`
+
+---
+
+## Correlations
+
+- Architecture and patterns → `05-architecture/`
+- API contracts per service → `07-api/contracts/openapi/`
+- System events → `02-domain/domain-events.md`
+- Template for creating services → `09-microservices/_template/service/`
+- Full detail per service → `09-microservices/services/NN-[name]/`

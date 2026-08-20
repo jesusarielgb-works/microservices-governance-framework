@@ -1,128 +1,145 @@
-# Guía SDD — Software Design Documentation
+# SDD Guide — Software Design Documentation
 
-> Este documento explica el **enfoque y la metodología** que rige todo este repositorio.
-> Léelo primero si eres nuevo en el proyecto o en la metodología.
-
----
-
-## ¿Qué es SDD?
-
-**Software Design Documentation** es un enfoque de desarrollo donde la documentación de diseño
-**precede y guía** la implementación. No es documentar lo que ya se construyó — es diseñar en
-papel antes de escribir código.
-
-```
-Tradicional:   Código  →  Documentación (si se hace)
-SDD:           Documentación  →  Código  →  Documentación actualizada
-```
-
-### Los 3 principios de SDD
-
-1. **Design before code:** Un documento de diseño revisado y aprobado es el prerequisito para
-   empezar a implementar. Si no está documentado, no existe aún.
-
-2. **Living documentation:** La documentación se actualiza con cada cambio. Un documento
-   desactualizado es técnicamente incorrecto — es código con bugs, pero en prosa.
-
-3. **Traceability:** Cada línea de código tiene un requisito que la justifica. Cada requisito
-   tiene un caso de prueba. Cada caso de prueba tiene un resultado.
+> This document explains the **approach and methodology** that governs this entire repository.
+> Read it first if you are new to the project or to the methodology.
 
 ---
 
-## Flujo de trabajo SDD
+## What is SDD?
+
+**Software Design Documentation** is a development approach where design documentation
+**precedes and guides** implementation. It is not about documenting what was already built —
+it is about designing on paper before writing code.
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│  FASE 1: DESCUBRIMIENTO                                             │
-│  01-context → 02-domain → 03-product                               │
-│  Entiende el problema antes de proponer soluciones.                 │
-│  Entregables: overview, problem-framing, domain-map, vision         │
-└─────────────────────┬───────────────────────────────────────────────┘
-                      │ ← Validación con stakeholders
-┌─────────────────────▼───────────────────────────────────────────────┐
-│  FASE 2: DEFINICIÓN                                                 │
-│  04-requirements → 05-architecture → 06-data → 07-api              │
-│  Define QUÉ y CÓMO antes de implementar.                           │
-│  Entregables: HUs con ACs, ADRs, data models, contratos OpenAPI    │
-└─────────────────────┬───────────────────────────────────────────────┘
-                      │ ← Revisión de arquitectura (Architecture Review Board)
-┌─────────────────────▼───────────────────────────────────────────────┐
-│  FASE 3: DISEÑO DETALLADO                                           │
-│  08-uml → 09-microservices → 12-ux-ui                              │
-│  Diseña en detalle cada componente del sistema.                     │
-│  Entregables: diagramas, runbooks, wireframes, design system        │
-└─────────────────────┬───────────────────────────────────────────────┘
-                      │ ← Kickoff de sprint (Sprint Planning)
-┌─────────────────────▼───────────────────────────────────────────────┐
-│  FASE 4: IMPLEMENTACIÓN (TDD)                                       │
-│  Código guiado por los documentos de diseño y pruebas primero.     │
-│  Entregables: código + pruebas + documentación actualizada         │
-└─────────────────────┬───────────────────────────────────────────────┘
-                      │ ← Code review + QA
-┌─────────────────────▼───────────────────────────────────────────────┐
-│  FASE 5: OPERACIÓN                                                  │
-│  10-devops → 11-quality → 13-operations → 14-training              │
-│  Despliega, monitorea y capacita.                                   │
-│  Entregables: CI/CD, runbooks operativos, manuales                 │
-└─────────────────────────────────────────────────────────────────────┘
+Traditional:   Code  →  Documentation (if it ever happens)
+SDD:           Documentation  →  Code  →  Updated documentation
 ```
+
+### The 3 SDD principles
+
+1. **Design before code:** A reviewed and approved design document is the prerequisite
+   for starting implementation. If it is not documented, it does not exist yet.
+
+2. **Living documentation:** Documentation is updated with every change. An outdated
+   document is technically incorrect — it is code with bugs, written in prose.
+
+3. **Traceability:** Every line of code has a requirement that justifies it. Every
+   requirement has a test case. Every test case has a result.
 
 ---
 
-## Orden de llenado recomendado para un proyecto nuevo
+## SDD workflow phases
 
-### Semana 1 — Contexto y Dominio
-1. `01-context/overview.md` — ¿Qué construimos?
-2. `01-context/scope.md` — ¿Qué NO construimos?
-3. `02-domain/domain-map.md` — ¿Cuáles son los bounded contexts?
-4. `02-domain/entities-and-rules.md` — ¿Cuáles son las entidades y reglas?
-5. `02-domain/domain-events.md` — ¿Qué eventos ocurren?
-6. `01-context/glossary.md` — Primer borrador con 15-20 términos
+<svg viewBox="0 0 700 500" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;font-family:monospace">
+  <rect width="700" height="500" fill="#0d1117" rx="10"/>
 
-### Semana 2 — Producto y Requisitos
-7. `03-product/problem-framing.md` — Valida el problema
-8. `03-product/vision.md` — Define la estrella del norte
-9. `04-requirements/user-stories.md` — Primeras 10-15 HUs del MVP
-10. `04-requirements/non-functional.md` — RNFs con métricas
+  <!-- Phase 1 -->
+  <rect x="30" y="20" width="640" height="80" rx="8" fill="#1c2029" stroke="#388bfd" stroke-width="1.5"/>
+  <text x="50" y="44" fill="#388bfd" font-weight="bold" font-size="13">PHASE 1 — DISCOVERY</text>
+  <text x="50" y="62" fill="#8b949e" font-size="12">01-context → 02-domain → 03-product</text>
+  <text x="50" y="80" fill="#6e7681" font-size="11">Understand the problem before proposing solutions.</text>
+  <text x="50" y="93" fill="#6e7681" font-size="10">Deliverables: overview, problem-framing, domain-map, vision</text>
 
-### Semana 2-3 — Arquitectura
-11. `05-architecture/overview.md` — Diagrama C4 y lista de servicios
-12. `05-architecture/decisions/records/ADR-001-*.md` — Primera decisión arquitectónica
-13. `06-data/models.md` — Esquema inicial de datos por servicio
-14. `07-api/contracts/openapi/` — Contratos API (contract-first)
+  <!-- Arrow + gate -->
+  <line x1="350" y1="100" x2="350" y2="125" stroke="#484f58" stroke-width="2" marker-end="url(#a)"/>
+  <rect x="220" y="120" width="260" height="22" rx="4" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+  <text x="350" y="135" fill="#8b949e" text-anchor="middle" font-size="10">← Stakeholder validation</text>
 
-### Semana 3-4 — Diseño detallado
-15. `09-microservices/service-catalog.md` — Catálogo completo de servicios
-16. `09-microservices/services/01-[servicio]/` — README + data-model + events de cada servicio
-17. `08-uml/diagrams/source/` — Diagrama de secuencia para flujos críticos
-18. `12-ux-ui/navigation-map.md` + wireframes de pantallas principales
+  <!-- Phase 2 -->
+  <rect x="30" y="145" width="640" height="80" rx="8" fill="#1c2029" stroke="#3fb950" stroke-width="1.5"/>
+  <text x="50" y="169" fill="#3fb950" font-weight="bold" font-size="13">PHASE 2 — DEFINITION</text>
+  <text x="50" y="187" fill="#8b949e" font-size="12">04-requirements → 05-architecture → 06-data → 07-api</text>
+  <text x="50" y="205" fill="#6e7681" font-size="11">Define WHAT and HOW before implementing.</text>
+  <text x="50" y="218" fill="#6e7681" font-size="10">Deliverables: user stories with ACs, ADRs, data models, OpenAPI contracts</text>
 
-### Sprint 1 en adelante — Implementación con TDD
-19. `10-devops/local-setup.md` — Primero antes de codificar
-20. `11-quality/testing-strategy.md` — Antes del primer sprint
-21. Implementación siguiendo el flujo TDD (ver `11-quality/tdd-guide.md`)
-22. `13-operations/observability.md` — Antes del primer deploy
+  <!-- Arrow + gate -->
+  <line x1="350" y1="225" x2="350" y2="250" stroke="#484f58" stroke-width="2" marker-end="url(#a)"/>
+  <rect x="180" y="245" width="340" height="22" rx="4" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+  <text x="350" y="260" fill="#8b949e" text-anchor="middle" font-size="10">← Architecture Review Board</text>
+
+  <!-- Phase 3 -->
+  <rect x="30" y="270" width="640" height="80" rx="8" fill="#1c2029" stroke="#d2a8ff" stroke-width="1.5"/>
+  <text x="50" y="294" fill="#d2a8ff" font-weight="bold" font-size="13">PHASE 3 — DETAILED DESIGN</text>
+  <text x="50" y="312" fill="#8b949e" font-size="12">08-uml → 09-microservices → 12-ux-ui</text>
+  <text x="50" y="330" fill="#6e7681" font-size="11">Design each system component in detail.</text>
+  <text x="50" y="343" fill="#6e7681" font-size="10">Deliverables: diagrams, runbooks, wireframes, design system</text>
+
+  <!-- Arrow + gate -->
+  <line x1="350" y1="350" x2="350" y2="375" stroke="#484f58" stroke-width="2" marker-end="url(#a)"/>
+  <rect x="200" y="370" width="300" height="22" rx="4" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+  <text x="350" y="385" fill="#8b949e" text-anchor="middle" font-size="10">← Sprint kickoff (Sprint Planning)</text>
+
+  <!-- Phase 4 -->
+  <rect x="30" y="395" width="640" height="85" rx="8" fill="#1c2029" stroke="#ffa657" stroke-width="1.5"/>
+  <text x="50" y="419" fill="#ffa657" font-weight="bold" font-size="13">PHASE 4 — IMPLEMENTATION (TDD) + OPERATIONS</text>
+  <text x="50" y="437" fill="#8b949e" font-size="12">Code guided by design documents · tests first · 10-devops · 13-operations · 14-training</text>
+  <text x="50" y="455" fill="#6e7681" font-size="11">Code + tests + updated documentation</text>
+  <text x="50" y="472" fill="#6e7681" font-size="10">Gate: Code review + QA + Go/No-Go before production</text>
+
+  <defs>
+    <marker id="a" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#484f58"/>
+    </marker>
+  </defs>
+</svg>
 
 ---
 
-## Artefactos de revisión (gates)
+## Recommended fill-in order for a new project
 
-| Gate | Cuándo | Qué se revisa | Quién aprueba |
-|------|--------|---------------|---------------|
-| **Domain Review** | Después de `02-domain/` | ¿Capturamos bien el dominio? | Domain Expert + Tech Lead |
-| **Architecture Review** | Después de ADRs y `05-architecture/` | ¿La arquitectura cumple los RNFs? | Tech Lead + Equipo |
-| **API Review** | Antes de implementar cada servicio | ¿El contrato es correcto y consistente? | Consumidores de la API |
-| **Sprint Demo** | Al final de cada sprint | ¿El software cumple los ACs? | Product Owner |
-| **Go/No-Go** | Antes de producción | ¿Cumple el DoD, DoR, RNFs? | Tech Lead + PO |
+### Week 1 — Context and Domain
+1. `01-context/overview.md` — What are we building?
+2. `01-context/scope.md` — What are we NOT building?
+3. `02-domain/domain-map.md` — What are the bounded contexts?
+4. `02-domain/entities-and-rules.md` — What are the entities and rules?
+5. `02-domain/domain-events.md` — What events occur?
+6. `01-context/glossary.md` — First draft with 15–20 terms
+
+### Week 2 — Product and Requirements
+7. `03-product/problem-framing.md` — Validate the problem
+8. `03-product/vision.md` — Define the north star
+9. `04-requirements/user-stories.md` — First 10–15 MVP user stories
+10. `04-requirements/non-functional.md` — NFRs with measurable metrics
+
+### Week 2–3 — Architecture
+11. `05-architecture/overview.md` — C4 diagram and service list
+12. `05-architecture/decisions/records/ADR-001-*.md` — First architecture decision
+13. `06-data/models.md` — Initial data schema per service
+14. `07-api/contracts/openapi/` — API contracts (contract-first)
+
+### Week 3–4 — Detailed design
+15. `09-microservices/service-catalog.md` — Full service catalog
+16. `09-microservices/services/01-[service]/` — README + data-model + events per service
+17. `08-uml/diagrams/source/` — Sequence diagram for critical flows
+18. `12-ux-ui/navigation-map.md` + wireframes for main screens
+
+### Sprint 1 onwards — TDD Implementation
+19. `10-devops/local-setup.md` — Do this before writing any code
+20. `11-quality/testing-strategy.md` — Do this before the first sprint
+21. Implementation following TDD flow (see `11-quality/tdd-guide.md`)
+22. `13-operations/observability.md` — Before the first deploy
 
 ---
 
-## La regla de los documentos vivos
+## Review gates
+
+| Gate | When | What is reviewed | Who approves |
+|------|------|-----------------|--------------|
+| **Domain Review** | After `02-domain/` | Did we capture the domain correctly? | Domain Expert + Tech Lead |
+| **Architecture Review** | After ADRs and `05-architecture/` | Does the architecture satisfy NFRs? | Tech Lead + Team |
+| **API Review** | Before implementing each service | Is the contract correct and consistent? | API consumers |
+| **Sprint Demo** | At the end of each sprint | Does the software meet the ACs? | Product Owner |
+| **Go/No-Go** | Before production | DoD, DoR, NFRs all satisfied? | Tech Lead + PO |
+
+---
+
+## The living documents rule
 
 ```
-Si el código cambió pero el documento no → El documento está ROTO
-Si el documento dice X pero el código hace Y → El documento es MENTIRA
+If the code changed but the document did not → The document is BROKEN
+If the document says X but the code does Y  → The document is a LIE
 ```
 
-**Responsabilidad:** quien hace el PR que cambia el comportamiento del sistema
-es responsable de actualizar la documentación correspondiente.
+**Responsibility:** whoever opens the PR that changes system behavior
+is responsible for updating the corresponding documentation.

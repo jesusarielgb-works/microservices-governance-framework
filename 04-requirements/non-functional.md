@@ -1,161 +1,161 @@
-# Requisitos No Funcionales (RNF)
+# Non-Functional Requirements (NFR)
 
-> Los RNFs definen las **cualidades del sistema**, no lo que hace sino cómo lo hace.
-> La regla de oro: todo RNF debe tener una métrica. "El sistema debe ser rápido" no es un RNF.
-> "El P99 de latencia del endpoint /pedidos debe ser < 200ms bajo carga de 500 RPS" sí lo es.
-
----
-
-## ¿Cómo escribir un RNF medible?
-
-| Malo | Bueno |
-|------|-------|
-| "El sistema debe ser rápido" | "El P95 de latencia debe ser < 300ms bajo 1000 RPS concurrentes" |
-| "El sistema debe ser seguro" | "Todos los endpoints requieren JWT válido; tokens expiran en 1 hora" |
-| "El sistema debe escalar" | "El sistema debe soportar hasta 5000 usuarios concurrentes sin degradación" |
-| "El sistema debe estar disponible" | "SLO de disponibilidad: 99.9% mensual (máximo 44 min de inactividad/mes)" |
+> NFRs define the **qualities of the system** — not what it does but how well it does it.
+> The golden rule: every NFR must have a metric. "The system must be fast" is not an NFR.
+> "The P99 latency of the /orders endpoint must be < 200ms under 500 RPS load" is.
 
 ---
 
-## RNF-001: Rendimiento (Performance)
+## How to write a measurable NFR?
 
-| Atributo | Métrica | Condición de prueba |
-|---------|---------|---------------------|
-| Latencia P95 — endpoints críticos | < 300ms | Bajo carga de [N] RPS |
-| Latencia P99 — endpoints críticos | < 500ms | Bajo carga de [N] RPS |
-| Latencia P95 — endpoints no críticos | < 1000ms | Carga normal |
-| Throughput mínimo | [N] RPS | Sin degradación |
-| Tiempo de inicio del servicio | < 30 segundos | Cold start |
+| Bad | Good |
+|-----|------|
+| "The system must be fast" | "P95 latency must be < 300ms under 1000 concurrent RPS" |
+| "The system must be secure" | "All endpoints require a valid JWT; tokens expire in 1 hour" |
+| "The system must scale" | "The system must support up to 5000 concurrent users without degradation" |
+| "The system must be available" | "Availability SLO: 99.9% monthly (maximum 44 min downtime/month)" |
 
-**Endpoints críticos definidos:**
-- `POST /[recurso]` — [justificación por qué es crítico]
-- `GET /[recurso]/:id` — [justificación]
+---
 
-**Herramientas de prueba de carga:**
+## NFR-001: Performance
+
+| Attribute | Metric | Test condition |
+|-----------|--------|---------------|
+| P95 latency — critical endpoints | < 300ms | Under [N] RPS load |
+| P99 latency — critical endpoints | < 500ms | Under [N] RPS load |
+| P95 latency — non-critical endpoints | < 1000ms | Normal load |
+| Minimum throughput | [N] RPS | Without degradation |
+| Service startup time | < 30 seconds | Cold start |
+
+**Defined critical endpoints:**
+- `POST /[resource]` — [justification for why it is critical]
+- `GET /[resource]/:id` — [justification]
+
+**Load testing tools:**
 - k6, Apache JMeter, Locust, Gatling
 
-**¿Dónde se valida?** CI/CD en el pipeline de staging antes de producción.
+**Where is it validated?** CI/CD in the staging pipeline before production.
 
 ---
 
-## RNF-002: Disponibilidad (Availability)
+## NFR-002: Availability
 
-| Ambiente | SLO | Ventana de mantenimiento | Tiempo máx. inactividad/mes |
-|---------|-----|--------------------------|---------------------------|
-| Producción | 99.9% | Domingos 2am-4am | 44 minutos |
-| Staging | 95% | Sin restricción | 36 horas |
+| Environment | SLO | Maintenance window | Max downtime/month |
+|------------|-----|-------------------|-------------------|
+| Production | 99.9% | Sundays 2am-4am | 44 minutes |
+| Staging | 95% | No restriction | 36 hours |
 
-**Error Budget mensual en producción:** 44 minutos
-**Política de Error Budget:** Si se consume > 50% del error budget en la primera mitad del mes, 
-se congela el despliegue de features hasta el siguiente mes y se prioriza estabilidad.
+**Monthly error budget in production:** 44 minutes
+**Error Budget policy:** If > 50% of the error budget is consumed in the first half of the month,
+feature deploys are frozen until the next month and stability is prioritized.
 
 **Health checks:**
-- `GET /health` — Liveness: responde 200 si el proceso está vivo
-- `GET /health/ready` — Readiness: responde 200 solo si puede procesar tráfico (BD conectada, dependencias OK)
+- `GET /health` — Liveness: responds 200 if the process is alive
+- `GET /health/ready` — Readiness: responds 200 only if it can process traffic (DB connected, dependencies OK)
 
 ---
 
-## RNF-003: Escalabilidad (Scalability)
+## NFR-003: Scalability
 
-| Escenario | Comportamiento esperado |
-|-----------|------------------------|
-| Crecimiento gradual de carga | Auto-scaling horizontal activado cuando CPU > 70% |
-| Pico repentino (Black Friday, etc.) | El sistema escala en < 2 minutos |
-| Reducción de carga | Scale-down sin interrupciones al tráfico activo |
-| Límite de escalado horizontal | Hasta [N] instancias por servicio |
+| Scenario | Expected behavior |
+|---------|------------------|
+| Gradual load growth | Horizontal auto-scaling activated when CPU > 70% |
+| Sudden spike (Black Friday, etc.) | System scales in < 2 minutes |
+| Load reduction | Scale-down without interrupting active traffic |
+| Horizontal scaling limit | Up to [N] instances per service |
 
-**Estrategia:** Escalado horizontal stateless — cada instancia no guarda estado en memoria.
-El estado va en Redis (sesiones, caché) o PostgreSQL (datos persistentes).
+**Strategy:** Stateless horizontal scaling — each instance does not store state in memory.
+State goes in Redis (sessions, cache) or PostgreSQL (persistent data).
 
 ---
 
-## RNF-004: Seguridad (Security)
+## NFR-004: Security
 
-### Autenticación y Autorización
-- Todos los endpoints privados requieren JWT válido en el header `Authorization: Bearer <token>`
-- Los tokens JWT expiran en **1 hora**
-- Refresh tokens con validez de **7 días**
-- RBAC (Role-Based Access Control): roles definidos en `00-governance/security-policy.md`
+### Authentication and Authorization
+- All private endpoints require a valid JWT in the `Authorization: Bearer <token>` header
+- JWT tokens expire in **1 hour**
+- Refresh tokens valid for **7 days**
+- RBAC (Role-Based Access Control): roles defined in `00-governance/security-policy.md`
 
-### Transmisión de datos
-- HTTPS obligatorio en producción (TLS 1.2+)
-- HTTP solo en desarrollo local
+### Data transmission
+- HTTPS mandatory in production (TLS 1.2+)
+- HTTP only in local development
 
-### Datos sensibles
-- Contraseñas: hashing con bcrypt (cost factor ≥ 12) o Argon2id
-- PII (datos personales): encriptados en reposo
-- Secretos/keys: solo en variables de ambiente o vault, **nunca en el código**
+### Sensitive data
+- Passwords: hashing with bcrypt (cost factor ≥ 12) or Argon2id
+- PII (personal data): encrypted at rest
+- Secrets/keys: only in environment variables or vault, **never in code**
 
 ### OWASP Top 10
-El código debe revisarse contra el OWASP Top 10 en cada release.
-Herramientas: SAST (SonarQube/Snyk), dependency scanning, DAST en staging.
+Code must be reviewed against the OWASP Top 10 on each release.
+Tools: SAST (SonarQube/Snyk), dependency scanning, DAST in staging.
 
-### Cumplimiento regulatorio
-- [GDPR / Habeas Data / PCI-DSS / etc.] — según aplique al proyecto
-
----
-
-## RNF-005: Observabilidad (Observability)
-
-| Pilar | Requisito | Herramienta |
-|-------|-----------|-------------|
-| Logs | Formato JSON estructurado + Correlation ID | Winston / Logback |
-| Métricas | RED (Rate, Errors, Duration) por endpoint | Prometheus + Grafana |
-| Trazas | Trazas distribuidas end-to-end | OpenTelemetry + Jaeger |
-| Alertas | Alerta en < 5 min cuando SLI viola SLO | Alertmanager / PagerDuty |
-
-**Correlation ID:** Cada request externo genera un UUID correlationId propagado en todos los logs y spans de esa transacción.
+### Regulatory compliance
+- [GDPR / Habeas Data / PCI-DSS / etc.] — as applicable to the project
 
 ---
 
-## RNF-006: Mantenibilidad (Maintainability)
+## NFR-005: Observability
 
-| Métrica | Objetivo |
-|---------|---------|
-| Cobertura de pruebas | ≥ 80% de líneas (≥ 90% en el dominio) |
-| Complejidad ciclomática | ≤ 10 por función |
-| Deuda técnica | Tiempo de resolución < 1 sprint desde su registro |
-| Tiempo de onboarding | Un nuevo dev puede desplegar localmente en < 1 hora siguiendo `10-devops/local-setup.md` |
-| Tiempo promedio de build | < 5 minutos en CI |
+| Pillar | Requirement | Tool |
+|--------|------------|------|
+| Logs | Structured JSON format + Correlation ID | Winston / Logback |
+| Metrics | RED (Rate, Errors, Duration) per endpoint | Prometheus + Grafana |
+| Traces | End-to-end distributed traces | OpenTelemetry + Jaeger |
+| Alerts | Alert in < 5 min when SLI violates SLO | Alertmanager / PagerDuty |
 
----
-
-## RNF-007: Portabilidad (Portability)
-
-- Todos los servicios se despliegan como imágenes Docker
-- Las imágenes funcionan en cualquier ambiente con Kubernetes 1.28+
-- Ningún servicio depende del sistema operativo del host
-- Las variables de ambiente son la única fuente de configuración específica del ambiente
+**Correlation ID:** Each external request generates a UUID correlationId propagated in all logs and spans of that transaction.
 
 ---
 
-## RNF-008: Recuperación ante desastres (DR / Recovery)
+## NFR-006: Maintainability
 
-| Escenario | RTO (Recovery Time Objective) | RPO (Recovery Point Objective) |
-|-----------|------------------------------|-------------------------------|
-| Fallo de un servicio individual | < 2 minutos (K8s restart) | 0 (stateless) |
-| Fallo de base de datos primaria | < 5 minutos (failover a réplica) | < 1 segundo (replicación síncrona) |
-| Pérdida de una zona de disponibilidad | < 15 minutos | < 5 minutos |
-| Desastre completo de región | < 4 horas (DR en región secundaria) | < 1 hora |
-
----
-
-## Matriz de prioridad de RNFs
-
-| RNF | Prioridad (P1/P2/P3) | ¿Validado en CI? | Responsable |
-|-----|---------------------|-----------------|-------------|
-| Rendimiento | P1 | Sí (k6 en staging) | [Tech Lead] |
-| Disponibilidad | P1 | Sí (health checks) | [DevOps] |
-| Seguridad | P1 | Sí (SAST + OWASP) | [Security] |
-| Escalabilidad | P2 | Manual (trimestral) | [DevOps] |
-| Observabilidad | P1 | Sí (smoke test en CI) | [Tech Lead] |
-| Mantenibilidad | P2 | Sí (cobertura en CI) | [Equipo] |
+| Metric | Target |
+|--------|--------|
+| Test coverage | ≥ 80% of lines (≥ 90% in the domain) |
+| Cyclomatic complexity | ≤ 10 per function |
+| Technical debt | Resolution time < 1 sprint from registration |
+| Onboarding time | A new dev can deploy locally in < 1 hour following `10-devops/local-setup.md` |
+| Average build time | < 5 minutes in CI |
 
 ---
 
-## Correlaciones
+## NFR-007: Portability
 
-- SLOs y SLAs detallados → `13-operations/README.md`
-- Pipeline que valida RNFs → `10-devops/README.md`
-- Incidentes relacionados con violación de RNFs → `13-operations/incident-management.md`
-- Checklist de seguridad → `00-governance/security-policy.md`
+- All services are deployed as Docker images
+- Images work in any environment with Kubernetes 1.28+
+- No service depends on the host operating system
+- Environment variables are the only source of environment-specific configuration
+
+---
+
+## NFR-008: Disaster Recovery (DR / Recovery)
+
+| Scenario | RTO (Recovery Time Objective) | RPO (Recovery Point Objective) |
+|---------|------------------------------|-------------------------------|
+| Single service failure | < 2 minutes (K8s restart) | 0 (stateless) |
+| Primary database failure | < 5 minutes (failover to replica) | < 1 second (synchronous replication) |
+| Availability zone loss | < 15 minutes | < 5 minutes |
+| Full region disaster | < 4 hours (DR in secondary region) | < 1 hour |
+
+---
+
+## NFR priority matrix
+
+| NFR | Priority (P1/P2/P3) | Validated in CI? | Owner |
+|-----|---------------------|-----------------|-------|
+| Performance | P1 | Yes (k6 in staging) | [Tech Lead] |
+| Availability | P1 | Yes (health checks) | [DevOps] |
+| Security | P1 | Yes (SAST + OWASP) | [Security] |
+| Scalability | P2 | Manual (quarterly) | [DevOps] |
+| Observability | P1 | Yes (smoke test in CI) | [Tech Lead] |
+| Maintainability | P2 | Yes (coverage in CI) | [Team] |
+
+---
+
+## Correlations
+
+- Detailed SLOs and SLAs → `13-operations/README.md`
+- Pipeline that validates NFRs → `10-devops/README.md`
+- Incidents related to NFR violations → `13-operations/incident-management.md`
+- Security checklist → `00-governance/security-policy.md`

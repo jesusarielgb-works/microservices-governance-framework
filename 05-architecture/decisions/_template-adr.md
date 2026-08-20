@@ -1,73 +1,73 @@
-# ADR-NNN — [Título de la Decisión]
+# ADR-NNN — [Decision Title]
 
-> **Copia este archivo** a `records/ADR-NNN-titulo-corto.md`
-> Reemplaza NNN con el número secuencial (001, 002, 003...)
+> **Copy this file** to `records/ADR-NNN-short-title.md`
+> Replace NNN with the sequential number (001, 002, 003...)
 
 - **ID:** ADR-NNN
-- **Fecha:** YYYY-MM-DD
-- **Estado:** Propuesto | Aceptado | Rechazado | Reemplazado por ADR-NNN
-- **Autores:** [nombres]
+- **Date:** YYYY-MM-DD
+- **Status:** Proposed | Accepted | Rejected | Superseded by ADR-NNN
+- **Authors:** [names]
 
 ---
 
-## Contexto
+## Context
 
-> Describe el problema o situación que requiere una decisión.
-> ¿Por qué es importante decidir esto ahora? ¿Qué pasa si no se decide?
+> Describe the problem or situation that requires a decision.
+> Why is it important to decide this now? What happens if it is not decided?
 
-[Descripción del contexto...]
+[Context description...]
 
-**Restricciones conocidas:**
-- [Restricción técnica, de tiempo, de presupuesto, etc.]
-
----
-
-## Decisión
-
-> Una oración que describe claramente qué se decide.
-
-**Decidimos:** [descripción de la decisión]
-
-**Justificación:**
-[Por qué esta opción es la correcta en este contexto. Cuál fue el criterio de desempate.]
+**Known constraints:**
+- [Technical, time, budget constraint, etc.]
 
 ---
 
-## Alternativas evaluadas
+## Decision
 
-| Alternativa | Pros | Contras | Razón de descarte |
-|-------------|------|---------|-------------------|
-| [Opción A — la elegida] | [ventajas] | [desventajas] | — (elegida) |
-| [Opción B] | [ventajas] | [desventajas] | [por qué no] |
-| [Opción C] | [ventajas] | [desventajas] | [por qué no] |
+> One sentence that clearly describes what is being decided.
 
----
+**We decided:** [description of the decision]
 
-## Consecuencias
-
-**Positivas:**
-- [Beneficio 1]
-- [Beneficio 2]
-
-**Negativas / Trade-offs:**
-- [Costo o limitación 1]
-- [Costo o limitación 2]
-
-**Impacto en el sistema:**
-- Servicios afectados: [lista]
-- Documentos que deben actualizarse: [lista]
+**Justification:**
+[Why this option is the right one in this context. What was the tiebreaker criterion.]
 
 ---
 
-## Riesgos
+## Evaluated alternatives
 
-| Riesgo | Probabilidad | Impacto | Mitigación |
-|--------|-------------|---------|------------|
-| [Riesgo] | Alta/Media/Baja | Alto/Medio/Bajo | [Cómo mitigarlo] |
+| Alternative | Pros | Cons | Reason for discarding |
+|------------|------|------|-----------------------|
+| [Option A — chosen] | [advantages] | [disadvantages] | — (chosen) |
+| [Option B] | [advantages] | [disadvantages] | [why not] |
+| [Option C] | [advantages] | [disadvantages] | [why not] |
 
 ---
 
-## Referencias
+## Consequences
 
-- [Links a documentación, RFCs, artículos que fundamentan la decisión]
-- Relacionado con: [otros ADRs]
+**Positive:**
+- [Benefit 1]
+- [Benefit 2]
+
+**Negative / Trade-offs:**
+- [Cost or limitation 1]
+- [Cost or limitation 2]
+
+**Impact on the system:**
+- Affected services: [list]
+- Documents that must be updated: [list]
+
+---
+
+## Risks
+
+| Risk | Probability | Impact | Mitigation |
+|------|------------|--------|-----------|
+| [Risk] | High/Medium/Low | High/Medium/Low | [How to mitigate it] |
+
+---
+
+## References
+
+- [Links to documentation, RFCs, articles that support the decision]
+- Related to: [other ADRs]

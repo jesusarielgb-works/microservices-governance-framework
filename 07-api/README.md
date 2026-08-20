@@ -1,86 +1,86 @@
-# 07 — Contratos de API
+# 07 — API Contracts
 
-> **¿Qué es esto?** La especificación formal de cómo se comunican los microservicios entre sí
-> y con el exterior. El contrato es la promesa que un servicio hace a sus consumidores.
+> **What is this?** The formal specification of how microservices communicate with each other
+> and with the outside world. The contract is the promise a service makes to its consumers.
 
-## Por qué los contratos son críticos en microservicios
+## Why contracts are critical in microservices
 
-En un monolito, cambiar una función es fácil: el compilador te dice qué rompes.
-En microservicios, un cambio en una API puede romper silenciosamente otros servicios en producción.
+In a monolith, changing a function is easy: the compiler tells you what you break.
+In microservices, a change to an API can silently break other services in production.
 
-**Contract-first development:** diseña la API antes de implementarla. Así el equipo
-puede trabajar en paralelo (frontend, backend, otros servicios) con un contrato acordado.
+**Contract-first development:** design the API before implementing it. This way the team
+can work in parallel (frontend, backend, other services) with an agreed contract.
 
 ---
 
-## Qué hay aquí y cómo llenarlo
+## What is here and how to fill it in
 
 ### `guidelines.md` ⭐
-Estándares REST del proyecto. **Todo el equipo debe seguir esto antes de diseñar un endpoint.**
+The project's REST standards. **The entire team must follow this before designing an endpoint.**
 
-**Temas clave a definir:**
+**Key topics to define:**
 ```markdown
-## Versionado
-- URL: /api/v1/recursos (versión en la URL)
+## Versioning
+- URL: /api/v1/resources (version in the URL)
 - Header: Accept: application/vnd.api+json;version=1
 
-## Naming de endpoints
-- Plural para colecciones: GET /usuarios
-- Sustantivos, no verbos: GET /usuarios/{id}/pedidos (no: GET /obtenerPedidosDeUsuario)
-- snake_case o kebab-case para URLs
+## Endpoint naming
+- Plural for collections: GET /users
+- Nouns, not verbs: GET /users/{id}/orders (not: GET /getUserOrders)
+- snake_case or kebab-case for URLs
 
-## Paginación
+## Pagination
 - ?page=1&limit=20 (offset-based)
-- ?cursor=xyz (cursor-based para grandes volúmenes)
+- ?cursor=xyz (cursor-based for large volumes)
 
-## Respuestas estándar
-| Código | Cuándo usarlo |
-|--------|---------------|
-| 200 | Éxito con body |
-| 201 | Creación exitosa |
-| 204 | Éxito sin body |
-| 400 | Error del cliente (validación) |
-| 401 | No autenticado |
-| 403 | No autorizado |
-| 404 | Recurso no encontrado |
-| 422 | Entidad no procesable |
-| 500 | Error del servidor |
+## Standard responses
+| Code | When to use it |
+|------|----------------|
+| 200 | Success with body |
+| 201 | Successful creation |
+| 204 | Success without body |
+| 400 | Client error (validation) |
+| 401 | Not authenticated |
+| 403 | Not authorized |
+| 404 | Resource not found |
+| 422 | Unprocessable entity |
+| 500 | Server error |
 
-## Formato de errores
+## Error format
 {
   "error": "VALIDATION_ERROR",
-  "message": "El campo email es requerido",
-  "details": [{"field": "email", "message": "requerido"}]
+  "message": "The email field is required",
+  "details": [{"field": "email", "message": "required"}]
 }
 ```
 
 ### `authentication.md` ⭐
-Estrategia de autenticación y autorización del sistema.
-**Llena:** qué mecanismo (JWT, OAuth2, API Key), flujo de autenticación, políticas de expiración,
-manejo de refresh tokens, RBAC (roles y permisos).
+The system's authentication and authorization strategy.
+**Fill in:** what mechanism (JWT, OAuth2, API Key), authentication flow, expiration policies,
+refresh token handling, RBAC (roles and permissions).
 
 ### `contracts/openapi/` ⭐⭐
-Un archivo `.yaml` por microservicio con el contrato OpenAPI 3.0.
+One `.yaml` file per microservice with the OpenAPI 3.0 contract.
 
-**Nombre del archivo:** `nombre-del-servicio.yaml`
+**File name:** `service-name.yaml`
 
-**Estructura mínima de cada contrato:**
+**Minimum structure for each contract:**
 ```yaml
 openapi: 3.0.3
 info:
-  title: [Nombre Servicio] API
+  title: [Service Name] API
   version: 1.0.0
-  description: [Qué hace este servicio]
+  description: [What this service does]
 
 servers:
   - url: http://localhost:8080/api/v1
     description: Local
 
 paths:
-  /recursos:
+  /resources:
     get:
-      summary: Listar recursos
-      tags: [Recursos]
+      summary: List resources
+      tags: [Resources]
       parameters:
         - name: page
           in: query
@@ -88,7 +88,7 @@ paths:
             type: integer
       responses:
         '200':
-          description: Lista de recursos
+          description: List of resources
           content:
             application/json:
               schema:
@@ -98,12 +98,12 @@ components:
   schemas:
     Resource:
       type: object
-      required: [id, nombre]
+      required: [id, name]
       properties:
         id:
           type: string
           format: uuid
-        nombre:
+        name:
           type: string
   
   securitySchemes:
@@ -117,35 +117,35 @@ security:
 ```
 
 ### `_shared.yaml`
-Schemas y componentes reutilizables entre todos los contratos (paginación, errores, etc.)
+Reusable schemas and components across all contracts (pagination, errors, etc.)
 
 ---
 
-## Herramientas recomendadas
+## Recommended tools
 
-- **Swagger Editor** — Editor online para OpenAPI
-- **Redocly** — Genera documentación HTML desde el YAML (ya configurado en `redocly.yaml`)
-- **Postman / Insomnia** — Para probar los contratos
-- **OpenAPI Generator** — Genera código cliente/servidor desde el YAML
-
----
-
-## Correlaciones con otras secciones
-
-| Esta sección se alimenta de... | Y alimenta a... |
-|-------------------------------|-----------------|
-| `04-requirements/functional.md` → qué debe hacer | Endpoints que implementan cada RF |
-| `06-data/models.md` → qué datos existen | Schemas en los contratos |
-| `02-domain/domain-events.md` | Endpoints de publicación de eventos |
-| Contratos aquí | `09-microservices/[servicio]/` que los implementa |
-| Contratos aquí | `11-quality/testing-strategy.md` → pruebas de contrato |
+- **Swagger Editor** — Online editor for OpenAPI
+- **Redocly** — Generates HTML documentation from the YAML (already configured in `redocly.yaml`)
+- **Postman / Insomnia** — For testing the contracts
+- **OpenAPI Generator** — Generates client/server code from the YAML
 
 ---
 
-## Preguntas que esta sección debe responder
+## Correlations with other sections
 
-- ¿Cómo se llama cada endpoint y qué hace?
-- ¿Qué datos recibe y qué devuelve?
-- ¿Cómo se autentica el cliente?
-- ¿Qué errores puede devolver el servicio?
-- ¿Cómo versiono la API sin romper a los consumidores?
+| This section is fed by... | And feeds into... |
+|---------------------------|-------------------|
+| `04-requirements/functional.md` → what it must do | Endpoints implementing each FR |
+| `06-data/models.md` → what data exists | Schemas in the contracts |
+| `02-domain/domain-events.md` | Event publishing endpoints |
+| Contracts here | `09-microservices/[service]/` that implements them |
+| Contracts here | `11-quality/testing-strategy.md` → contract tests |
+
+---
+
+## Questions this section must answer
+
+- What is each endpoint called and what does it do?
+- What data does it receive and what does it return?
+- How does the client authenticate?
+- What errors can the service return?
+- How do I version the API without breaking consumers?

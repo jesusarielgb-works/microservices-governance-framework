@@ -1,11 +1,11 @@
-# Guía TDD — Test-Driven Development
+# TDD Guide — Test-Driven Development
 
-> El TDD no es sobre testing — es sobre **diseño**. Escribir el test primero te fuerza a pensar
-> en la interfaz antes que en la implementación. El resultado: código más simple, más desacoplado
-> y con una suite de pruebas que documenta el comportamiento del sistema.
+> TDD is not about testing — it is about **design**. Writing the test first forces you to think
+> about the interface before the implementation. The result: simpler, more decoupled code
+> with a test suite that documents system behavior.
 
-> **Nota de stack:** Los principios y ciclos de TDD descritos aquí aplican a cualquier lenguaje.
-> Los ejemplos de código concretos (test runner, librerías de mocks, comandos) están en:
+> **Stack note:** The TDD principles and cycles described here apply to any language.
+> Concrete code examples (test runner, mock libraries, commands) are in:
 > - Node.js + TypeScript → [`_stacks/node-typescript.md`](../_stacks/node-typescript.md)
 > - Java + Spring Boot → [`_stacks/java-spring.md`](../_stacks/java-spring.md)
 > - Python + FastAPI → [`_stacks/python-fastapi.md`](../_stacks/python-fastapi.md)
@@ -13,243 +13,243 @@
 
 ---
 
-## El ciclo Red-Green-Refactor
+## The Red-Green-Refactor cycle
 
 ```
         ┌──────────────────────────────────────────────────────────┐
         │                                                          │
         ▼                                                          │
    ┌─────────┐                                                     │
-   │   RED   │  Escribe el test más pequeño que puede fallar.      │
-   │  🔴     │  NO implementes nada todavía.                       │
-   └────┬────┘  El test debe fallar por la razón correcta.         │
+   │   RED   │  Write the smallest test that can fail.             │
+   │  🔴     │  Do NOT implement anything yet.                     │
+   └────┬────┘  The test must fail for the right reason.           │
         │                                                          │
         ▼                                                          │
    ┌─────────┐                                                     │
-   │  GREEN  │  Escribe el código MÍNIMO para que el test pase.    │
-   │  🟢     │  No busques elegancia aquí. Solo haz que pase.      │
+   │  GREEN  │  Write the MINIMUM code to make the test pass.      │
+   │  🟢     │  Do not aim for elegance here. Just make it pass.   │
    └────┬────┘                                                     │
         │                                                          │
         ▼                                                          │
    ┌──────────────┐                                                │
-   │   REFACTOR   │  Mejora el código sin cambiar el comportamiento│
-   │  ♻️          │  Los tests deben seguir en verde.              │
+   │   REFACTOR   │  Improve code without changing behavior.       │
+   │  ♻️          │  Tests must remain green.                      │
    └──────────────┘                                                │
         │                                                          │
         └──────────────────────────────────────────────────────────┘
 ```
 
-**La regla de los 3 momentos:**
-1. `RED`: El test falla — confirma que el test puede detectar el bug
-2. `GREEN`: El test pasa — el código hace lo mínimo necesario
-3. `REFACTOR`: El código es limpio — sin duplicación, bien nombrado
+**The rule of 3 moments:**
+1. `RED`: The test fails — confirms the test can detect the bug
+2. `GREEN`: The test passes — the code does the bare minimum needed
+3. `REFACTOR`: The code is clean — no duplication, well named
 
 ---
 
-## Los 3 tipos de testeo (FIRST)
+## The 3 testing principles (FIRST)
 
-Los buenos tests son:
+Good tests are:
 
-| Letra | Principio | Descripción |
-|-------|-----------|-------------|
-| **F** | Fast | Se ejecutan en milisegundos, no segundos |
-| **I** | Isolated | No dependen de otros tests ni de orden de ejecución |
-| **R** | Repeatable | El mismo resultado siempre, independiente del ambiente |
-| **S** | Self-validating | Pass / Fail sin interpretación manual |
-| **T** | Timely | Escritos ANTES del código, no después |
+| Letter | Principle | Description |
+|--------|-----------|-------------|
+| **F** | Fast | Run in milliseconds, not seconds |
+| **I** | Isolated | Do not depend on other tests or execution order |
+| **R** | Repeatable | Same result every time, regardless of environment |
+| **S** | Self-validating | Pass / Fail without manual interpretation |
+| **T** | Timely | Written BEFORE the code, not after |
 
 ---
 
-## Test Doubles: la taxonomía completa
+## Test Doubles: the complete taxonomy
 
-Cuando el dominio necesita colaboradores externos (repositorios, APIs), los reemplazamos
-en los tests con doubles. No todos los doubles son iguales:
+When the domain needs external collaborators (repositories, APIs), we replace them
+in tests with doubles. Not all doubles are the same:
 
 ### 1. Dummy
-No hace nada. Se pasa para satisfacer una firma pero nunca se llama.
+Does nothing. Passed to satisfy a signature but never called.
 
 ```typescript
-const dummyLogger = {} as Logger; // Nunca se llama, solo llena el constructor
-const useCase = new CrearPedidoUseCase(repo, eventPublisher, dummyLogger);
+const dummyLogger = {} as Logger; // Never called, just fills the constructor
+const useCase = new CreateOrderUseCase(repo, eventPublisher, dummyLogger);
 ```
 
 ### 2. Stub
-Devuelve respuestas hardcodeadas. Sin verificación de llamadas.
+Returns hardcoded responses. No call verification.
 
 ```typescript
-class StubInventarioRepository implements InventarioRepositoryPort {
-  async verificarDisponibilidad(productoId: ProductoId): Promise<boolean> {
-    return true; // Siempre disponible — control del escenario de test
+class StubInventoryRepository implements InventoryRepositoryPort {
+  async checkAvailability(productId: ProductId): Promise<boolean> {
+    return true; // Always available — controls the test scenario
   }
 }
 ```
 
 ### 3. Fake
-Implementación real pero simplificada. Tiene estado, funciona correctamente pero de forma ligera.
+Real but simplified implementation. Has state, works correctly but lightweight.
 
 ```typescript
-class InMemoryPedidoRepository implements PedidoRepositoryPort {
-  private readonly store = new Map<string, Pedido>();
+class InMemoryOrderRepository implements OrderRepositoryPort {
+  private readonly store = new Map<string, Order>();
 
-  async guardar(pedido: Pedido): Promise<void> {
-    this.store.set(pedido.id.value, pedido);
+  async save(order: Order): Promise<void> {
+    this.store.set(order.id.value, order);
   }
 
-  async buscarPorId(id: PedidoId): Promise<Pedido | null> {
+  async findById(id: OrderId): Promise<Order | null> {
     return this.store.get(id.value) ?? null;
   }
 
-  // Útil para aserciones en tests
-  get todos(): Pedido[] {
+  // Useful for assertions in tests
+  get all(): Order[] {
     return Array.from(this.store.values());
   }
 }
 ```
 
 ### 4. Spy
-Registra las llamadas que recibe. Puedes verificar si fue llamado y con qué argumentos.
+Records the calls it receives. You can verify if it was called and with what arguments.
 
 ```typescript
 class SpyEventPublisher implements EventPublisherPort {
-  readonly eventosPublicados: DomainEvent[] = [];
+  readonly publishedEvents: DomainEvent[] = [];
 
-  async publicar(evento: DomainEvent): Promise<void> {
-    this.eventosPublicados.push(evento);
+  async publish(event: DomainEvent): Promise<void> {
+    this.publishedEvents.push(event);
   }
 }
 
-// En el test:
-expect(spyPublisher.eventosPublicados).toHaveLength(1);
-expect(spyPublisher.eventosPublicados[0]).toBeInstanceOf(PedidoCreado);
+// In the test:
+expect(spyPublisher.publishedEvents).toHaveLength(1);
+expect(spyPublisher.publishedEvents[0]).toBeInstanceOf(OrderCreated);
 ```
 
 ### 5. Mock
-Tiene expectativas pre-programadas. Falla si no se llama como se espera.
+Has pre-programmed expectations. Fails if not called as expected.
 
 ```typescript
 // Jest mock
 const mockRepo = {
-  guardar: jest.fn().mockResolvedValue(undefined),
-  buscarPorId: jest.fn().mockResolvedValue(null),
+  save: jest.fn().mockResolvedValue(undefined),
+  findById: jest.fn().mockResolvedValue(null),
 };
 
-// Después del test:
-expect(mockRepo.guardar).toHaveBeenCalledTimes(1);
-expect(mockRepo.guardar).toHaveBeenCalledWith(expect.objectContaining({
-  clienteId: clienteIdEsperado,
+// After the test:
+expect(mockRepo.save).toHaveBeenCalledTimes(1);
+expect(mockRepo.save).toHaveBeenCalledWith(expect.objectContaining({
+  customerId: expectedCustomerId,
 }));
 ```
 
-### ¿Cuándo usar cada uno?
+### When to use each one?
 
-| Double | Cuándo usarlo |
-|--------|--------------|
-| Dummy | El colaborador no importa en este test |
-| Stub | Controlas el escenario de entrada (qué devuelve un colaborador) |
-| Fake | Tests de integración ligeros — el comportamiento importa |
-| Spy | Verificas que algo fue llamado (efecto de salida) |
-| Mock | Verificas tanto el comportamiento de entrada como de salida |
+| Double | When to use it |
+|--------|---------------|
+| Dummy | The collaborator does not matter in this test |
+| Stub | You control the input scenario (what a collaborator returns) |
+| Fake | Lightweight integration tests — behavior matters |
+| Spy | You verify that something was called (output effect) |
+| Mock | You verify both input and output behavior |
 
-**Preferencia:** Fake > Stub/Spy > Mock. Los mocks son frágiles — se rompen si refactorizas la implementación interna.
+**Preference:** Fake > Stub/Spy > Mock. Mocks are fragile — they break if you refactor the internal implementation.
 
 ---
 
-## TDD por capa (con Arquitectura Hexagonal)
+## TDD by layer (with Hexagonal Architecture)
 
-### Capa 1: Dominio — Pruebas unitarias de aggregates
+### Layer 1: Domain — Unit tests for aggregates
 
-Son las pruebas más valiosas. Testean la lógica de negocio pura.
-**Sin mocks de infraestructura.** No hay base de datos. No hay HTTP.
+These are the most valuable tests. They test pure business logic.
+**No infrastructure mocks.** No database. No HTTP.
 
 ```typescript
-// tests/unit/domain/Pedido.spec.ts
-describe('Pedido — invariantes', () => {
-  describe('crear()', () => {
-    it('falla si no hay ítems (INV-001)', () => {
-      expect(() => Pedido.crear(clienteId, [])).toThrow('INV-001');
+// tests/unit/domain/Order.spec.ts
+describe('Order — invariants', () => {
+  describe('create()', () => {
+    it('fails if there are no items (INV-001)', () => {
+      expect(() => Order.create(customerId, [])).toThrow('INV-001');
     });
 
-    it('falla si un ítem tiene cantidad cero', () => {
-      const itemInvalido = new ItemPedido(productoId, 0, precio);
-      expect(() => Pedido.crear(clienteId, [itemInvalido])).toThrow();
+    it('fails if an item has zero quantity', () => {
+      const invalidItem = new OrderItem(productId, 0, price);
+      expect(() => Order.create(customerId, [invalidItem])).toThrow();
     });
 
-    it('calcula el total correctamente', () => {
+    it('calculates total correctly', () => {
       const items = [
-        new ItemPedido(producto1, 2, new Dinero(100, 'COP')), // 200
-        new ItemPedido(producto2, 1, new Dinero(50, 'COP')),  // 50
+        new OrderItem(product1, 2, new Money(100, 'USD')), // 200
+        new OrderItem(product2, 1, new Money(50, 'USD')),  // 50
       ];
-      const pedido = Pedido.crear(clienteId, items);
-      expect(pedido.total).toEqual(new Dinero(250, 'COP'));
+      const order = Order.create(customerId, items);
+      expect(order.total).toEqual(new Money(250, 'USD'));
     });
 
-    it('emite el evento PedidoCreado al crearse', () => {
-      const pedido = Pedido.crear(clienteId, [itemValido]);
-      expect(pedido.domainEvents).toHaveLength(1);
-      expect(pedido.domainEvents[0]).toBeInstanceOf(PedidoCreado);
+    it('emits the OrderCreated event on creation', () => {
+      const order = Order.create(customerId, [validItem]);
+      expect(order.domainEvents).toHaveLength(1);
+      expect(order.domainEvents[0]).toBeInstanceOf(OrderCreated);
     });
   });
 
-  describe('confirmar()', () => {
-    it('solo puede confirmarse si está en estado PENDIENTE (INV-002)', () => {
-      const pedido = Pedido.crear(clienteId, [itemValido]);
-      pedido.confirmar();
-      expect(() => pedido.confirmar()).toThrow('INV-002');
+  describe('confirm()', () => {
+    it('can only be confirmed if in PENDING state (INV-002)', () => {
+      const order = Order.create(customerId, [validItem]);
+      order.confirm();
+      expect(() => order.confirm()).toThrow('INV-002');
     });
 
-    it('cambia estado a CONFIRMADO', () => {
-      const pedido = Pedido.crear(clienteId, [itemValido]);
-      pedido.confirmar();
-      expect(pedido.estado).toBe(EstadoPedido.CONFIRMADO);
+    it('changes status to CONFIRMED', () => {
+      const order = Order.create(customerId, [validItem]);
+      order.confirm();
+      expect(order.status).toBe(OrderStatus.CONFIRMED);
     });
   });
 });
 ```
 
-**Paso TDD:**
-1. 🔴 Escribe `it('falla si no hay ítems', ...)` — falla porque `Pedido.crear` no existe
-2. 🟢 Implementa `Pedido.crear` con la validación mínima
-3. ♻️ Refactoriza el mensaje de error para ser más descriptivo
+**TDD step:**
+1. 🔴 Write `it('fails if there are no items', ...)` — fails because `Order.create` does not exist
+2. 🟢 Implement `Order.create` with the minimum validation
+3. ♻️ Refactor the error message to be more descriptive
 
 ---
 
-### Capa 2: Aplicación — Pruebas de casos de uso
+### Layer 2: Application — Use case tests
 
-Testean la orquestación. Usan Fakes para repositorios y Spies para publishers.
+Test orchestration. Use Fakes for repositories and Spies for publishers.
 
 ```typescript
-// tests/unit/application/CrearPedidoUseCase.spec.ts
-describe('CrearPedidoUseCase', () => {
-  let pedidoRepo: InMemoryPedidoRepository;
+// tests/unit/application/CreateOrderUseCase.spec.ts
+describe('CreateOrderUseCase', () => {
+  let orderRepo: InMemoryOrderRepository;
   let eventPublisher: SpyEventPublisher;
-  let useCase: CrearPedidoUseCase;
+  let useCase: CreateOrderUseCase;
 
   beforeEach(() => {
-    pedidoRepo = new InMemoryPedidoRepository();
+    orderRepo = new InMemoryOrderRepository();
     eventPublisher = new SpyEventPublisher();
-    useCase = new CrearPedidoUseCase(pedidoRepo, eventPublisher);
+    useCase = new CreateOrderUseCase(orderRepo, eventPublisher);
   });
 
-  it('guarda el pedido en el repositorio', async () => {
-    const request = new CrearPedidoRequest(clienteId, [itemValido]);
-    await useCase.ejecutar(request);
-    expect(pedidoRepo.todos).toHaveLength(1);
+  it('saves the order in the repository', async () => {
+    const request = new CreateOrderRequest(customerId, [validItem]);
+    await useCase.execute(request);
+    expect(orderRepo.all).toHaveLength(1);
   });
 
-  it('publica el evento PedidoCreado', async () => {
-    await useCase.ejecutar(new CrearPedidoRequest(clienteId, [itemValido]));
-    expect(eventPublisher.eventosPublicados[0]).toBeInstanceOf(PedidoCreado);
+  it('publishes the OrderCreated event', async () => {
+    await useCase.execute(new CreateOrderRequest(customerId, [validItem]));
+    expect(eventPublisher.publishedEvents[0]).toBeInstanceOf(OrderCreated);
   });
 
-  it('retorna el ID del pedido creado', async () => {
-    const response = await useCase.ejecutar(new CrearPedidoRequest(clienteId, [itemValido]));
-    expect(response.pedidoId).toBeDefined();
-    expect(typeof response.pedidoId).toBe('string');
+  it('returns the ID of the created order', async () => {
+    const response = await useCase.execute(new CreateOrderRequest(customerId, [validItem]));
+    expect(response.orderId).toBeDefined();
+    expect(typeof response.orderId).toBe('string');
   });
 
-  it('propaga el error del dominio si los ítems están vacíos', async () => {
+  it('propagates the domain error if items are empty', async () => {
     await expect(
-      useCase.ejecutar(new CrearPedidoRequest(clienteId, []))
+      useCase.execute(new CreateOrderRequest(customerId, []))
     ).rejects.toThrow('INV-001');
   });
 });
@@ -257,20 +257,20 @@ describe('CrearPedidoUseCase', () => {
 
 ---
 
-### Capa 3: Infraestructura — Pruebas de integración
+### Layer 3: Infrastructure — Integration tests
 
-Testean que los adaptadores interactúan correctamente con sistemas externos.
-**Usan la base de datos real** (en un contenedor Docker local).
+Test that adapters interact correctly with external systems.
+**Use the real database** (in a local Docker container).
 
 ```typescript
-// tests/integration/PedidoRepositoryImpl.spec.ts
-describe('PedidoRepositoryImpl (integración con PostgreSQL)', () => {
+// tests/integration/OrderRepositoryImpl.spec.ts
+describe('OrderRepositoryImpl (integration with PostgreSQL)', () => {
   let db: DatabaseConnection;
-  let repo: PedidoRepositoryImpl;
+  let repo: OrderRepositoryImpl;
 
   beforeAll(async () => {
-    db = await createTestDatabaseConnection(); // Base de datos de test en Docker
-    await db.migrate(); // Aplica migraciones
+    db = await createTestDatabaseConnection(); // Test database in Docker
+    await db.migrate(); // Apply migrations
   });
 
   afterAll(async () => {
@@ -278,50 +278,50 @@ describe('PedidoRepositoryImpl (integración con PostgreSQL)', () => {
   });
 
   beforeEach(async () => {
-    await db.query('TRUNCATE TABLE pedidos CASCADE');
-    repo = new PedidoRepositoryImpl(db);
+    await db.query('TRUNCATE TABLE orders CASCADE');
+    repo = new OrderRepositoryImpl(db);
   });
 
-  it('guarda y recupera un pedido correctamente', async () => {
-    const pedidoOriginal = Pedido.crear(clienteId, [itemValido]);
-    await repo.guardar(pedidoOriginal);
+  it('saves and retrieves an order correctly', async () => {
+    const originalOrder = Order.create(customerId, [validItem]);
+    await repo.save(originalOrder);
 
-    const recuperado = await repo.buscarPorId(pedidoOriginal.id);
+    const retrieved = await repo.findById(originalOrder.id);
 
-    expect(recuperado).not.toBeNull();
-    expect(recuperado!.id.value).toBe(pedidoOriginal.id.value);
-    expect(recuperado!.total).toEqual(pedidoOriginal.total);
+    expect(retrieved).not.toBeNull();
+    expect(retrieved!.id.value).toBe(originalOrder.id.value);
+    expect(retrieved!.total).toEqual(originalOrder.total);
   });
 });
 ```
 
 ---
 
-### Capa 4: API — Pruebas de contrato (Consumer-Driven Contract Testing)
+### Layer 4: API — Contract tests (Consumer-Driven Contract Testing)
 
-Verifican que el contrato OpenAPI se cumple en la implementación real.
+Verify that the OpenAPI contract is fulfilled in the real implementation.
 
 ```typescript
-// Con Pact o supertest + OpenAPI
-describe('POST /pedidos — contrato', () => {
-  it('responde 201 con el id del pedido', async () => {
+// With Pact or supertest + OpenAPI
+describe('POST /orders — contract', () => {
+  it('responds 201 with the order id', async () => {
     const response = await request(app)
-      .post('/pedidos')
+      .post('/orders')
       .set('Authorization', `Bearer ${testToken}`)
       .send({
-        clienteId: 'cliente-uuid',
-        items: [{ productoId: 'prod-uuid', cantidad: 1, precio: { amount: 100, currency: 'COP' } }],
+        customerId: 'customer-uuid',
+        items: [{ productId: 'prod-uuid', quantity: 1, price: { amount: 100, currency: 'USD' } }],
       });
 
     expect(response.status).toBe(201);
-    expect(response.body.pedidoId).toMatch(UUID_REGEX);
+    expect(response.body.orderId).toMatch(UUID_REGEX);
   });
 
-  it('responde 400 si el body está malformado', async () => {
+  it('responds 400 if the body is malformed', async () => {
     const response = await request(app)
-      .post('/pedidos')
+      .post('/orders')
       .set('Authorization', `Bearer ${testToken}`)
-      .send({ clienteId: 'no-es-uuid' }); // items faltante
+      .send({ customerId: 'not-a-uuid' }); // items missing
 
     expect(response.status).toBe(400);
     expect(response.body.error).toBe('VALIDATION_ERROR');
@@ -331,58 +331,58 @@ describe('POST /pedidos — contrato', () => {
 
 ---
 
-## Cobertura de código
+## Code coverage
 
-La cobertura es una señal, no un objetivo en sí mismo.
+Coverage is a signal, not an end in itself.
 
-| Métrica | Objetivo mínimo | Notas |
-|---------|----------------|-------|
-| Líneas — dominio | 90%+ | El core del negocio debe estar muy cubierto |
-| Líneas — aplicación | 80%+ | Casos de uso deben estar cubiertos |
-| Líneas — infraestructura | 60%+ | Tests de integración cubren los paths principales |
-| Ramas (branches) | 75%+ | Los if/else deben tener tests para ambos caminos |
+| Metric | Minimum target | Notes |
+|--------|---------------|-------|
+| Lines — domain | 90%+ | The business core must be well covered |
+| Lines — application | 80%+ | Use cases must be covered |
+| Lines — infrastructure | 60%+ | Integration tests cover the main paths |
+| Branches | 75%+ | if/else must have tests for both paths |
 
-**Lo que la cobertura NO dice:**
-- No dice si los tests son significativos
-- No dice si cubres los edge cases correctos
-- Un test que solo ejecuta líneas sin aserciones puede dar 100% pero no prueba nada
+**What coverage does NOT tell you:**
+- It does not say whether tests are meaningful
+- It does not say whether you cover the right edge cases
+- A test that only executes lines without assertions can give 100% but tests nothing
 
 ---
 
-## TDD con Value Objects
+## TDD with Value Objects
 
-Los VOs son los objetos más fáciles de probar con TDD. Empieza por ellos.
+VOs are the easiest objects to test with TDD. Start with them.
 
 ```typescript
-// 🔴 Primero el test
+// 🔴 Test first
 describe('Email', () => {
-  it('crea un email válido', () => {
-    expect(() => new Email('usuario@ejemplo.com')).not.toThrow();
+  it('creates a valid email', () => {
+    expect(() => new Email('user@example.com')).not.toThrow();
   });
 
-  it('rechaza email sin @', () => {
-    expect(() => new Email('noesvalido')).toThrow();
+  it('rejects email without @', () => {
+    expect(() => new Email('notvalid')).toThrow();
   });
 
-  it('normaliza a minúsculas', () => {
-    const email = new Email('USUARIO@EJEMPLO.COM');
-    expect(email.toString()).toBe('usuario@ejemplo.com');
+  it('normalizes to lowercase', () => {
+    const email = new Email('USER@EXAMPLE.COM');
+    expect(email.toString()).toBe('user@example.com');
   });
 
-  it('dos emails con el mismo valor son iguales', () => {
+  it('two emails with the same value are equal', () => {
     const e1 = new Email('test@test.com');
     const e2 = new Email('test@test.com');
     expect(e1.equals(e2)).toBe(true);
   });
 });
 
-// 🟢 Implementación mínima para pasar los tests
+// 🟢 Minimum implementation to pass the tests
 class Email {
   private readonly value: string;
 
   constructor(email: string) {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      throw new DomainException(`Email inválido: ${email}`);
+      throw new DomainException(`Invalid email: ${email}`);
     }
     this.value = email.toLowerCase();
   }
@@ -394,20 +394,20 @@ class Email {
 
 ---
 
-## Orden de implementación TDD en un sprint
+## TDD implementation order in a sprint
 
-1. **Escribir los tests de dominio primero** (Aggregates, VOs, reglas de negocio)
-2. **Implementar el dominio** hasta que los tests pasen
-3. **Escribir los tests del caso de uso** con Fakes de los puertos
-4. **Implementar el caso de uso**
-5. **Escribir los tests de integración** para los adaptadores
-6. **Implementar los adaptadores** (repositorio, publisher, controlador HTTP)
-7. **Escribir el test de contrato** del endpoint HTTP
-8. **Refactorizar** en cualquier momento mientras los tests están en verde
+1. **Write domain tests first** (Aggregates, VOs, business rules)
+2. **Implement the domain** until the tests pass
+3. **Write use case tests** with Fakes for the ports
+4. **Implement the use case**
+5. **Write integration tests** for the adapters
+6. **Implement the adapters** (repository, publisher, HTTP controller)
+7. **Write the contract test** for the HTTP endpoint
+8. **Refactor** at any point while the tests are green
 
 ---
 
-## Configuración del stack de testing
+## Testing stack configuration
 
 ```json
 // package.json
@@ -436,9 +436,9 @@ class Email {
 
 ---
 
-## Correlaciones
+## Correlations
 
-- Arquitectura Hexagonal (facilita el TDD) → `05-architecture/hexagonal-architecture.md`
-- Pirámide de testing → `11-quality/README.md`
-- Estrategia de testing por tipo → `11-quality/testing-strategy.md`
-- Definition of Done (cobertura requerida) → `00-governance/definition-of-done.md`
+- Hexagonal Architecture (facilitates TDD) → `05-architecture/hexagonal-architecture.md`
+- Testing pyramid → `11-quality/README.md`
+- Testing strategy by type → `11-quality/testing-strategy.md`
+- Definition of Done (required coverage) → `00-governance/definition-of-done.md`

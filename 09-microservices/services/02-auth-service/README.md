@@ -1,49 +1,49 @@
 # Auth Service
 
-> **Autoridad de identidad** del sistema. Gestiona autenticación, emisión de JWT y permisos RBAC.
-> Es el dueño autoritativo de las entidades `User` y `Role`.
+> **Identity authority** of the system. Manages authentication, JWT issuance, and RBAC permissions.
+> It is the authoritative owner of the `User` and `Role` entities.
 
 ---
 
-## Ubicación en la arquitectura
+## Location in the architecture
 
-| Campo | Valor |
+| Field | Value |
 |-------|-------|
-| Número en catálogo | 02 |
-| Puerto local | 8081 |
-| Repositorio | [URL del repo del servicio] |
-| Motor de BD | PostgreSQL (usuarios y roles) + Redis (sesiones y token blacklist) |
-| Comunica con | — (no llama a otros microservicios) |
-| Es consumido por | api-gateway (verificación de tokens), todos los demás servicios |
+| Number in catalog | 02 |
+| Local port | 8081 |
+| Repository | [Service repo URL] |
+| DB engine | PostgreSQL (users and roles) + Redis (sessions and token blacklist) |
+| Communicates with | — (does not call other microservices) |
+| Consumed by | api-gateway (token verification), all other services |
 
 ---
 
-## Responsabilidades (qué SÍ hace este servicio)
+## Responsibilities (what this service DOES)
 
-- Registrar nuevos usuarios y hashear contraseñas con bcrypt (cost 12)
-- Autenticar usuarios y emitir access tokens (JWT, RS256, 1h) y refresh tokens
-- Verificar tokens: validar firma, expiración y que no estén en la blacklist
-- Gestionar roles y permisos (RBAC): asignar, revocar, consultar
-- Invalidar tokens (logout): agregar a blacklist en Redis hasta expiración
+- Register new users and hash passwords with bcrypt (cost 12)
+- Authenticate users and issue access tokens (JWT, RS256, 1h) and refresh tokens
+- Verify tokens: validate signature, expiration, and that they are not on the blacklist
+- Manage roles and permissions (RBAC): assign, revoke, query
+- Invalidate tokens (logout): add to blacklist in Redis until expiration
 
-## Fuera de su alcance (qué NO hace)
+## Out of scope (what it does NOT do)
 
-- **No maneja información del perfil de negocio** (nombre de empresa, preferencias de app) — ese dato pertenece al servicio que lo necesita
-- **No envía emails** — publica el evento `user.registered` y el notification-service lo escucha
-- **No autoriza acceso a recursos específicos** — solo informa los permisos; cada servicio hace la verificación final
+- **Does not handle business profile information** (company name, app preferences) — that data belongs to the service that needs it
+- **Does not send emails** — publishes the `user.registered` event and notification-service listens to it
+- **Does not authorize access to specific resources** — only informs permissions; each service performs the final verification
 
 ---
 
-## Cómo correrlo localmente
+## How to run it locally
 
 ```bash
-# Levantar con sus dependencias (PostgreSQL + Redis)
+# Start with its dependencies (PostgreSQL + Redis)
 docker compose up -d auth-service
 
-# Verificar
+# Verify
 curl http://localhost:8081/health
 
-# Crear usuario de prueba
+# Create a test user
 curl -X POST http://localhost:8081/api/v1/auth/register \
   -H 'Content-Type: application/json' \
   -d '{"email": "dev@example.com", "password": "DevPass123!", "name": "Dev User"}'
@@ -51,22 +51,22 @@ curl -X POST http://localhost:8081/api/v1/auth/register \
 
 ---
 
-## Documentos relacionados
+## Related documents
 
-- [data-model.md](./data-model.md) — Tablas `users`, `roles`, `user_roles`
+- [data-model.md](./data-model.md) — Tables `users`, `roles`, `user_roles`
 - [events.md](./events.md) — `user.registered`, `user.login_failed`, `user.password_changed`
-- [decisions.md](./decisions.md) — Decisiones de diseño del servicio de autenticación
-- [runbook.md](./runbook.md) — Operación: rotación de claves, reseteo de contraseña, token blacklist
-- [Contrato API](../../../07-api/contracts/openapi/auth-service.yaml)
+- [decisions.md](./decisions.md) — Design decisions for the authentication service
+- [runbook.md](./runbook.md) — Operation: key rotation, password reset, token blacklist
+- [API Contract](../../../07-api/contracts/openapi/auth-service.yaml)
 
 ---
 
-## Estructura del JWT emitido
+## Emitted JWT structure
 
 ```json
 {
   "sub": "550e8400-e29b-41d4-a716-446655440000",
-  "email": "usuario@example.com",
+  "email": "user@example.com",
   "roles": ["USER"],
   "permissions": ["appointment:read", "appointment:write"],
   "iat": 1705316400,
@@ -74,19 +74,19 @@ curl -X POST http://localhost:8081/api/v1/auth/register \
 }
 ```
 
-**Algoritmo:** RS256 (clave pública disponible en `GET /api/v1/auth/jwks`)
+**Algorithm:** RS256 (public key available at `GET /api/v1/auth/jwks`)
 
 ---
 
-## Variables de ambiente requeridas
+## Required environment variables
 
-Ver `.env.example` en la raíz para los nombres de las variables.
-Los valores reales están en el vault del ambiente correspondiente.
+See `.env.example` at the root for the variable names.
+Real values are in the vault of the corresponding environment.
 
-| Variable | Propósito |
-|----------|-----------|
-| `APP_AUTH_DATABASE_URL` | Conexión a PostgreSQL |
-| `APP_AUTH_REDIS_URL` | Conexión a Redis (token blacklist) |
-| `APP_AUTH_JWT_PRIVATE_KEY` | Clave privada RS256 para firmar tokens |
-| `APP_AUTH_JWT_PUBLIC_KEY` | Clave pública RS256 para verificar tokens |
-| `APP_AUTH_BCRYPT_ROUNDS` | Cost factor de bcrypt (default: 12) |
+| Variable | Purpose |
+|----------|---------|
+| `APP_AUTH_DATABASE_URL` | PostgreSQL connection |
+| `APP_AUTH_REDIS_URL` | Redis connection (token blacklist) |
+| `APP_AUTH_JWT_PRIVATE_KEY` | RS256 private key for signing tokens |
+| `APP_AUTH_JWT_PUBLIC_KEY` | RS256 public key for verifying tokens |
+| `APP_AUTH_BCRYPT_ROUNDS` | bcrypt cost factor (default: 12) |

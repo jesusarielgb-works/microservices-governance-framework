@@ -1,51 +1,51 @@
-# Estrategia de Testing
+# Testing Strategy
 
-> Define qué, cuánto y con qué herramientas probar en cada capa.
-> Complementa la guía TDD (`tdd-guide.md`) que explica el proceso.
-> Este documento es el contrato de calidad del proyecto.
+> Defines what, how much, and with which tools to test at each layer.
+> Complements the TDD guide (`tdd-guide.md`) that explains the process.
+> This document is the project's quality contract.
 
 ---
 
-## Pirámide de testing del proyecto
+## Project testing pyramid
 
 ```
                  /\
                 /  \
                /    \
-              /  E2E  \     ← Pocos, lentos, costosos pero de alto valor
+              /  E2E  \     ← Few, slow, expensive but high-value
              /  [5%]   \
             /────────────\
            /  Integration  \
-          /    [25%]        \  ← Prueban la integración real (BD, broker, APIs externas)
+          /    [25%]        \  ← Test real integration (DB, broker, external APIs)
          /──────────────────\
         /   Contract Tests    \
-       /      [20%]            \  ← Verifican que el contrato OpenAPI se cumple
+       /      [20%]            \  ← Verify the OpenAPI contract is fulfilled
       /────────────────────────\
      /       Unit Tests         \
-    /          [50%]             \  ← Muchos, rápidos, prueban la lógica de negocio
+    /          [50%]             \  ← Many, fast, test business logic
    /────────────────────────────\
 ```
 
-**Regla:** Más tests abajo = sistema más mantenible y de menor costo.
-Invertir la pirámide (más E2E que unitarios) hace el CI lento y frágil.
+**Rule:** More tests at the bottom = more maintainable system at lower cost.
+Inverting the pyramid (more E2E than unit tests) makes CI slow and fragile.
 
 ---
 
-## Tier 1: Tests Unitarios
+## Tier 1: Unit Tests
 
-**Objetivo:** Probar la lógica de negocio en completo aislamiento.
+**Objective:** Test business logic in complete isolation.
 
-| Aspecto | Valor |
-|---------|-------|
-| **Qué prueban** | Aggregates, Value Objects, Domain Services, casos de uso |
-| **Aislamiento** | Completo — ninguna llamada real a BD o servicios externos |
-| **Velocidad** | < 5ms por test |
-| **Cobertura objetivo** | ≥ 80% de líneas (≥ 90% en `src/domain/`) |
-| **Herramientas** | Jest, Vitest, JUnit 5, pytest |
-| **Dobles** | Fakes, Stubs, Spies (ver `tdd-guide.md`) |
-| **Cuándo corren** | En cada `git commit` (pre-commit hook) y en CI |
+| Aspect | Value |
+|--------|-------|
+| **What they test** | Aggregates, Value Objects, Domain Services, use cases |
+| **Isolation** | Complete — no real calls to DB or external services |
+| **Speed** | < 5ms per test |
+| **Target coverage** | ≥ 80% of lines (≥ 90% in `src/domain/`) |
+| **Tools** | Jest, Vitest, JUnit 5, pytest |
+| **Doubles** | Fakes, Stubs, Spies (see `tdd-guide.md`) |
+| **When they run** | On every `git commit` (pre-commit hook) and in CI |
 
-**Estructura de carpetas:**
+**Folder structure:**
 
 ```
 tests/
@@ -58,37 +58,37 @@ tests/
         └── [UseCase].spec.ts
 ```
 
-**Ejemplo de test unitario (ver guía completa en `tdd-guide.md`):**
+**Unit test example (see complete guide in `tdd-guide.md`):**
 
 ```typescript
-// tests/unit/domain/Pedido.spec.ts
-it('el total debe ser la suma de items × cantidad', () => {
+// tests/unit/domain/Order.spec.ts
+it('total should be the sum of items × quantity', () => {
   const items = [
-    new ItemPedido(prod1Id, 2, new Dinero(100, 'COP')),
-    new ItemPedido(prod2Id, 1, new Dinero(50, 'COP')),
+    new OrderItem(prod1Id, 2, new Money(100, 'USD')),
+    new OrderItem(prod2Id, 1, new Money(50, 'USD')),
   ];
-  const pedido = Pedido.crear(clienteId, items);
-  expect(pedido.total).toEqual(new Dinero(250, 'COP'));
+  const order = Order.create(customerId, items);
+  expect(order.total).toEqual(new Money(250, 'USD'));
 });
 ```
 
 ---
 
-## Tier 2: Tests de Integración
+## Tier 2: Integration Tests
 
-**Objetivo:** Verificar que los adaptadores funcionan correctamente con sistemas reales.
+**Objective:** Verify that the adapters work correctly with real systems.
 
-| Aspecto | Valor |
-|---------|-------|
-| **Qué prueban** | Repositorios vs BD real, publishers vs broker real |
-| **Aislamiento** | Bajo — usan BD y broker reales en Docker |
-| **Velocidad** | 50ms – 2s por test |
-| **Cobertura objetivo** | Paths feliz + 2-3 casos de error por adaptador |
-| **Herramientas** | Jest + Testcontainers, Spring Boot Test |
+| Aspect | Value |
+|--------|-------|
+| **What they test** | Repositories vs real DB, publishers vs real broker |
+| **Isolation** | Low — use real DB and broker in Docker |
+| **Speed** | 50ms – 2s per test |
+| **Target coverage** | Happy path + 2-3 error cases per adapter |
+| **Tools** | Jest + Testcontainers, Spring Boot Test |
 | **Setup** | `docker compose up -d test-db test-broker` |
-| **Cuándo corren** | En CI, NO en pre-commit (demasiado lentos) |
+| **When they run** | In CI, NOT in pre-commit (too slow) |
 
-**Setup con Testcontainers:**
+**Setup with Testcontainers:**
 
 ```typescript
 // tests/integration/setup.ts
@@ -105,9 +105,9 @@ beforeAll(async () => {
 
   process.env.DATABASE_URL = pgContainer.getConnectionUri();
 
-  // Aplicar migraciones
+  // Apply migrations
   await runMigrations(process.env.DATABASE_URL);
-}, 60_000); // 60s timeout para pull de imagen
+}, 60_000); // 60s timeout for image pull
 
 afterAll(async () => {
   await pgContainer.stop();
@@ -116,17 +116,17 @@ afterAll(async () => {
 
 ---
 
-## Tier 3: Tests de Contrato (Consumer-Driven Contract Testing)
+## Tier 3: Contract Tests (Consumer-Driven Contract Testing)
 
-**Objetivo:** Verificar que el contrato OpenAPI (lo que el servicio documenta) coincide con lo que el servicio implementa realmente.
+**Objective:** Verify that the OpenAPI contract (what the service documents) matches what the service actually implements.
 
-| Aspecto | Valor |
-|---------|-------|
-| **Qué prueban** | API HTTP vs contrato OpenAPI |
-| **Herramientas** | Pact, Dredd, supertest + openapi-validator |
-| **Cuándo corren** | En CI antes de subir a staging |
+| Aspect | Value |
+|--------|-------|
+| **What they test** | HTTP API vs OpenAPI contract |
+| **Tools** | Pact, Dredd, supertest + openapi-validator |
+| **When they run** | In CI before pushing to staging |
 
-**Validación con openapi-validator:**
+**Validation with openapi-validator:**
 
 ```typescript
 // tests/contract/api-contract.spec.ts
@@ -134,56 +134,56 @@ import { createOpenAPIValidatorMiddleware } from 'express-openapi-validator';
 
 const app = buildApp();
 app.use(createOpenAPIValidatorMiddleware({
-  apiSpec: './07-api/contracts/openapi/[servicio].yaml',
+  apiSpec: './07-api/contracts/openapi/[service].yaml',
   validateRequests: true,
   validateResponses: true,
 }));
 
-it('POST /pedidos devuelve 201 con el esquema correcto', async () => {
+it('POST /orders returns 201 with the correct schema', async () => {
   const response = await request(app)
-    .post('/pedidos')
+    .post('/orders')
     .set('Authorization', `Bearer ${testJWT}`)
-    .send(validPedidoPayload);
+    .send(validOrderPayload);
 
   expect(response.status).toBe(201);
-  // La validación del esquema de respuesta la hace el middleware OpenAPI
+  // Response schema validation is done by the OpenAPI middleware
 });
 ```
 
 ---
 
-## Tier 4: Tests End-to-End (E2E)
+## Tier 4: End-to-End Tests (E2E)
 
-**Objetivo:** Verificar flujos completos de usuario como lo haría el usuario final.
+**Objective:** Verify complete user flows as the end user would experience them.
 
-| Aspecto | Valor |
-|---------|-------|
-| **Qué prueban** | Flujos críticos de negocio de extremo a extremo |
-| **Aislamiento** | Ninguno — ambiente real (staging o ambiente E2E dedicado) |
-| **Velocidad** | 5s – 60s por test |
-| **Herramientas** | Playwright (UI), K6 (API E2E), Cypress |
-| **Cuándo corren** | En CI solo en el pipeline de staging, no en cada PR |
-| **Scope** | Solo flujos críticos — registrar + crear pedido + confirmar pago |
+| Aspect | Value |
+|--------|-------|
+| **What they test** | Critical business flows end-to-end |
+| **Isolation** | None — real environment (staging or dedicated E2E environment) |
+| **Speed** | 5s – 60s per test |
+| **Tools** | Playwright (UI), K6 (API E2E), Cypress |
+| **When they run** | In CI only in the staging pipeline, not on every PR |
+| **Scope** | Critical flows only — register + create order + confirm payment |
 
-**Flujos E2E prioritarios:**
+**Priority E2E flows:**
 
-| # | Flujo | Servicios involucrados |
-|---|-------|----------------------|
-| 1 | Registro de usuario y login | auth-service |
-| 2 | [Flujo principal de negocio] | [servicios] |
-| 3 | [Flujo de error crítico] | [servicios] |
+| # | Flow | Services involved |
+|---|------|------------------|
+| 1 | User registration and login | auth-service |
+| 2 | [Main business flow] | [services] |
+| 3 | [Critical error flow] | [services] |
 
 ---
 
-## Tests de Performance
+## Performance Tests
 
-**Objetivo:** Verificar que los RNFs de rendimiento se cumplen bajo carga.
+**Objective:** Verify that NFR performance requirements are met under load.
 
-| Aspecto | Valor |
-|---------|-------|
-| **Herramienta** | k6 |
-| **Cuándo corren** | En el pipeline de staging (no en cada PR) |
-| **Criterio de falla** | Si P95 > 300ms o error rate > 1% |
+| Aspect | Value |
+|--------|-------|
+| **Tool** | k6 |
+| **When they run** | In the staging pipeline (not on every PR) |
+| **Failure criterion** | If P95 > 300ms or error rate > 1% |
 
 ```javascript
 // tests/performance/load-test.js (k6)
@@ -192,18 +192,18 @@ import { check } from 'k6';
 
 export const options = {
   stages: [
-    { duration: '30s', target: 100 },  // Rampa a 100 usuarios
-    { duration: '60s', target: 100 },  // Mantener 100 usuarios
-    { duration: '30s', target: 0 },    // Bajar
+    { duration: '30s', target: 100 },  // Ramp up to 100 users
+    { duration: '60s', target: 100 },  // Hold 100 users
+    { duration: '30s', target: 0 },    // Ramp down
   ],
   thresholds: {
     'http_req_duration': ['p(95)<300'],  // P95 < 300ms
-    'http_req_failed': ['rate<0.01'],    // < 1% de errores
+    'http_req_failed': ['rate<0.01'],    // < 1% errors
   },
 };
 
 export default function () {
-  const res = http.get('http://localhost:8080/[endpoint-critico]', {
+  const res = http.get('http://localhost:8080/[critical-endpoint]', {
     headers: { 'Authorization': `Bearer ${__ENV.TEST_TOKEN}` },
   });
   check(res, { 'status is 200': (r) => r.status === 200 });
@@ -212,10 +212,10 @@ export default function () {
 
 ---
 
-## Configuración del CI por pipeline
+## CI configuration per pipeline
 
 ```yaml
-# .github/workflows/ci.yml (simplificado)
+# .github/workflows/ci.yml (simplified)
 jobs:
   unit-tests:
     steps:
@@ -235,7 +235,7 @@ jobs:
     steps:
       - run: npm run test:contract
 
-  # Solo en push a main/develop:
+  # Only on push to main/develop:
   performance-tests:
     if: github.ref == 'refs/heads/main'
     steps:
@@ -244,7 +244,7 @@ jobs:
 
 ---
 
-## Cobertura de código — Umbrales por capa
+## Code coverage — Thresholds per layer
 
 ```json
 // jest.config.json
@@ -264,51 +264,51 @@ jobs:
 }
 ```
 
-**Regla de la cobertura:** Si un PR baja la cobertura global, falla el CI.
-La cobertura no puede bajar — si hay código sin tests, los tests deben agregarse en el mismo PR.
+**Coverage rule:** If a PR lowers the global coverage, CI fails.
+Coverage cannot go down — if there is uncovered code, tests must be added in the same PR.
 
 ---
 
-## Archivos de fixtures y test data
+## Fixture and test data files
 
 ```
 tests/
 ├── fixtures/
-│   ├── pedido.fixture.ts       # Builders de objetos de test
-│   ├── usuario.fixture.ts
+│   ├── order.fixture.ts       # Test object builders
+│   ├── user.fixture.ts
 │   └── db-seeds/
-│       └── test-data.sql       # Datos base para tests de integración
+│       └── test-data.sql       # Base data for integration tests
 ├── helpers/
-│   ├── auth.helper.ts          # Generar JWT de test
-│   └── database.helper.ts      # Reset de BD entre tests
+│   ├── auth.helper.ts          # Generate test JWT
+│   └── database.helper.ts      # Reset DB between tests
 ```
 
 **Fixture Builder pattern:**
 
 ```typescript
-// tests/fixtures/pedido.fixture.ts
-export class PedidoFixture {
-  static crearValido(overrides: Partial<PedidoData> = {}): Pedido {
-    return Pedido.crear(
-      overrides.clienteId ?? new ClienteId('cliente-test-uuid'),
-      overrides.items ?? [ItemPedidoFixture.unItem()],
+// tests/fixtures/order.fixture.ts
+export class OrderFixture {
+  static createValid(overrides: Partial<OrderData> = {}): Order {
+    return Order.create(
+      overrides.customerId ?? new CustomerId('customer-test-uuid'),
+      overrides.items ?? [OrderItemFixture.oneItem()],
     );
   }
 
-  static enEstadoConfirmado(): Pedido {
-    const pedido = PedidoFixture.crearValido();
-    pedido.confirmar();
-    return pedido;
+  static inConfirmedState(): Order {
+    const order = OrderFixture.createValid();
+    order.confirm();
+    return order;
   }
 }
 ```
 
 ---
 
-## Correlaciones
+## Correlations
 
-- Guía TDD completa → `11-quality/tdd-guide.md`
-- Definition of Done (cobertura requerida) → `00-governance/definition-of-done.md`
-- Contratos OpenAPI que se validan → `07-api/contracts/openapi/`
-- Hexagonal Architecture (facilita el testing) → `05-architecture/hexagonal-architecture.md`
-- Pipeline de CI/CD → `10-devops/README.md`
+- Complete TDD guide → `11-quality/tdd-guide.md`
+- Definition of Done (required coverage) → `00-governance/definition-of-done.md`
+- OpenAPI contracts to validate → `07-api/contracts/openapi/`
+- Hexagonal Architecture (facilitates testing) → `05-architecture/hexagonal-architecture.md`
+- CI/CD pipeline → `10-devops/README.md`

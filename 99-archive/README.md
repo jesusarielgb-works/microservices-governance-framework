@@ -1,29 +1,29 @@
-# 99 — Archivo
+# 99 — Archive
 
-> **¿Qué es esto?** Documentos que ya no están activos pero que se conservan por contexto histórico.
-> Nunca se borra — se archiva.
+> **What is this?** Documents that are no longer active but are kept for historical context.
+> Nothing is ever deleted — it is archived.
 
-## Por qué conservar documentos obsoletos
+## Why keep obsolete documents
 
-- Los ADRs rechazados explican por qué NO se tomó cierta decisión (evita repetir discusiones)
-- Los documentos deprecados muestran la evolución del sistema
-- El historial de decisiones ayuda a entender el presente
+- Rejected ADRs explain why a certain decision was NOT made (avoids repeating discussions)
+- Deprecated documents show the evolution of the system
+- The decision history helps understand the present
 
-## Estructura
+## Structure
 
 ```
 99-archive/
-├── deprecated/         ← Documentos que reemplazaron a otros (mover aquí con nota)
-└── old-decisions/      ← Propuestas y decisiones que no prosperaron
+├── deprecated/         ← Documents replaced by others (move here with a note)
+└── old-decisions/      ← Proposals and decisions that did not move forward
 ```
 
-## Cómo archivar un documento
+## How to archive a document
 
-1. Agrega al inicio del archivo:
+1. Add at the beginning of the file:
    ```markdown
-   > ⚠️ ARCHIVADO — [Fecha]
-   > Reemplazado por: [link al nuevo documento]
-   > Razón: [breve explicación]
+   > ⚠️ ARCHIVED — [Date]
+   > Replaced by: [link to the new document]
+   > Reason: [brief explanation]
    ```
-2. Mueve el archivo a la carpeta correspondiente
-3. Actualiza cualquier link que apuntara al archivo original
+2. Move the file to the corresponding folder
+3. Update any links that pointed to the original file

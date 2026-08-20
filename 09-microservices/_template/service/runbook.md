@@ -1,75 +1,75 @@
-# Runbook — [Nombre del Servicio]
+# Runbook — [Service Name]
 
-> Un runbook es para alguien en guardia a las 3am. Cada sección debe ser ejecutable
-> sin necesidad de contexto adicional. Si un procedimiento no tiene comandos concretos
-> o no dice quién lo ejecuta, no está completo.
+> A runbook is for someone on-call at 3am. Each section must be executable
+> without needing additional context. If a procedure has no concrete commands
+> or does not say who executes it, it is not complete.
 
-**Servicio:** [nombre]
-**Repositorio:** [URL]
-**Versión:** 1.0
-**Última actualización:** YYYY-MM-DD
+**Service:** [name]
+**Repository:** [URL]
+**Version:** 1.0
+**Last updated:** YYYY-MM-DD
 
 ---
 
-## 1. Información rápida del servicio
+## 1. Quick service information
 
-| Campo | Valor |
+| Field | Value |
 |-------|-------|
-| Puerto local | [8001] |
-| URL producción | [https://api.domain.com/servicio] |
-| URL staging | [https://staging.api.domain.com/servicio] |
-| Dashboard | [URL Grafana] |
-| Canal de alertas | [#alerts en Slack / PagerDuty] |
-| Escalamiento | [nombre y contacto del responsable] |
-| RTO objetivo | [30 min] |
-| RPO objetivo | [5 min] |
+| Local port | [8001] |
+| Production URL | [https://api.domain.com/service] |
+| Staging URL | [https://staging.api.domain.com/service] |
+| Dashboard | [Grafana URL] |
+| Alert channel | [#alerts on Slack / PagerDuty] |
+| Escalation | [name and contact of the responsible person] |
+| Target RTO | [30 min] |
+| Target RPO | [5 min] |
 
 ---
 
-## 2. Verificar que el servicio está sano
+## 2. Verify the service is healthy
 
 ```bash
 # Health check
-curl https://api.domain.com/servicio/health
+curl https://api.domain.com/service/health
 
-# Respuesta esperada:
+# Expected response:
 # {"status": "ok", "version": "1.2.3", "db": "connected"}
 ```
 
 ---
 
-## 3. Alertas frecuentes y qué hacer
+## 3. Frequent alerts and what to do
 
-### Alerta: Alta tasa de errores 5xx
+### Alert: High 5xx error rate
 
-**Síntoma:** Error rate > 2% durante 5 minutos.
+**Symptom:** Error rate > 2% for 5 minutes.
 
 ```bash
-# 1. Ver logs recientes
+# 1. View recent logs
 kubectl logs -n [namespace] -l app=[service-name] --tail=100 | grep ERROR
 
-# 2. Ver estado de los pods
+# 2. View pod status
 kubectl get pods -n [namespace] -l app=[service-name]
 
-# 3. Ver eventos recientes del deployment
+# 3. View recent deployment events
 kubectl describe deployment [service-name] -n [namespace]
 ```
 
-**Árbol de decisión:**
-- ¿Hay crash loops? → Ver sección 3.3
-- ¿Errores de BD? → Ver sección 4.1
-- ¿Errores de servicio externo? → Ver sección 4.2
-- ¿Deploy reciente? → Evaluar rollback (sección 5.3)
+**Decision tree:**
+- Crash loops present? → See section 3.3
+- DB errors? → See section 4.1
+- External service errors? → See section 4.2
+- Recent deploy? → Evaluate rollback (section 5.3)
 
 ---
 
-### Alerta: Latencia alta (p95 > SLO)
+### Alert: High latency (p95 > SLO)
 
 ```bash
-# Ver uso de recursos de los pods
+# View pod resource usage
 kubectl top pods -n [namespace]
 
-# Ver queries lentos en la BD
+# View slow queries in the DB
 kubectl exec -n [namespace] [postgres-pod] -- psql -U [user] -d [db] \
   -c "SELECT pid, now()-query_start AS duration, query
       FROM pg_stat_activity
@@ -79,54 +79,54 @@ kubectl exec -n [namespace] [postgres-pod] -- psql -U [user] -d [db] \
 
 ---
 
-### Alerta: Pod en CrashLoopBackOff
+### Alert: Pod in CrashLoopBackOff
 
 ```bash
-# Ver razón del crash
+# View crash reason
 kubectl describe pod [pod-name] -n [namespace]
 kubectl logs [pod-name] -n [namespace] --previous
 
-# Restart manual
+# Manual restart
 kubectl rollout restart deployment/[service-name] -n [namespace]
 ```
 
 ---
 
-## 4. Procedimientos por componente
+## 4. Procedures by component
 
-### 4.1 Base de datos
+### 4.1 Database
 
 ```bash
-# Verificar salud
+# Verify health
 kubectl exec -n [namespace] [postgres-pod] -- pg_isready -U [user]
 
-# Ver conexiones activas
+# View active connections
 kubectl exec -n [namespace] [postgres-pod] -- psql -U [user] -d [db] \
   -c "SELECT state, count(*) FROM pg_stat_activity GROUP BY state;"
 ```
 
-### 4.2 Dependencias externas
+### 4.2 External dependencies
 
-**Si [servicio externo X] falla:**
-- El circuit breaker se activa después de [N] fallos
-- El servicio responde con [comportamiento degradado]
-- Estado del servicio externo: [URL de status page]
+**If [external service X] fails:**
+- The circuit breaker activates after [N] failures
+- The service responds with [degraded behavior]
+- External service status: [status page URL]
 
 ---
 
-## 5. Operaciones de mantenimiento
+## 5. Maintenance operations
 
-### 5.1 Escalar el servicio
+### 5.1 Scale the service
 
 ```bash
 kubectl scale deployment/[service-name] -n [namespace] --replicas=[N]
-kubectl get pods -n [namespace] -l app=[service-name]  # verificar
+kubectl get pods -n [namespace] -l app=[service-name]  # verify
 ```
 
-### 5.2 Deploy de emergencia (hotfix)
+### 5.2 Emergency deploy (hotfix)
 
 ```bash
-# Solo si la imagen ya está probada en staging
+# Only if the image has already been tested in staging
 kubectl set image deployment/[service-name] \
   [container]=[image]:[hotfix-tag] -n [namespace]
 kubectl rollout status deployment/[service-name] -n [namespace]
@@ -141,21 +141,21 @@ kubectl rollout undo deployment/[service-name] -n [namespace]
 
 ---
 
-## 6. Comunicación durante incidente
+## 6. Communication during incident
 
-| Evento | Canal | Mensaje tipo |
-|--------|-------|-------------|
-| P0 detectado | #incidents | `[P0 INICIO] [servicio] degradado desde [HH:MM]. Investigando.` |
-| Update cada 15 min | #incidents | `[P0 UPDATE] Causa probable: [...]. Acción en curso: [...]. ETA: [...]` |
-| Resolución | #incidents + stakeholders | `[P0 RESUELTO] Duración: [X min]. Causa raíz: [...]. Post-mortem: [fecha]` |
+| Event | Channel | Sample message |
+|-------|---------|---------------|
+| P0 detected | #incidents | `[P0 START] [service] degraded since [HH:MM]. Investigating.` |
+| Update every 15 min | #incidents | `[P0 UPDATE] Probable cause: [...]. Action in progress: [...]. ETA: [...]` |
+| Resolution | #incidents + stakeholders | `[P0 RESOLVED] Duration: [X min]. Root cause: [...]. Post-mortem: [date]` |
 
 ---
 
-## 7. Checklist post-incidente
+## 7. Post-incident checklist
 
-- [ ] Servicio estable con métricas en objetivo SLO
-- [ ] Error budget actualizado en dashboard
-- [ ] Incidente registrado en `13-operations/incident-management.md`
-- [ ] Stakeholders notificados de resolución
-- [ ] Ticket de mejora creado en `15-project-control/technical-backlog.md`
-- [ ] Post-mortem programado (si fue P0 o P1)
+- [ ] Service stable with metrics at SLO target
+- [ ] Error budget updated in dashboard
+- [ ] Incident recorded in `13-operations/incident-management.md`
+- [ ] Stakeholders notified of resolution
+- [ ] Improvement ticket created in `15-project-control/technical-backlog.md`
+- [ ] Post-mortem scheduled (if P0 or P1)

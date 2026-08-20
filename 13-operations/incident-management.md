@@ -1,192 +1,192 @@
-# Gestión de Incidentes
+# Incident Management
 
-> Un incidente es cualquier evento no planificado que interrumpe o degrada el servicio.
-> La respuesta efectiva a incidentes se entrena antes de que ocurran, no durante.
-> Sigue este playbook en orden — en un incidente, el estrés bloquea el pensamiento libre.
-
----
-
-## Clasificación de severidad
-
-| Nivel | Nombre | Definición | Ejemplo | Tiempo de respuesta |
-|-------|--------|------------|---------|---------------------|
-| **P0** | Crítico | Sistema completamente caído. Impacto total a todos los usuarios. | API Gateway down, DB inaccesible | **Inmediato** (<5 min) |
-| **P1** | Alto | Funcionalidad core degradada. Impacto a > 50% de usuarios. | Login no funciona, pagos fallan | **15 minutos** |
-| **P2** | Medio | Funcionalidad secundaria degradada. Workaround disponible. | Exportación de reportes lenta | **1 hora** |
-| **P3** | Bajo | Molestia menor. Sin impacto en operación del negocio. | Botón con label incorrecto | **Próximo sprint** |
+> An incident is any unplanned event that interrupts or degrades service.
+> Effective incident response is trained before incidents occur, not during.
+> Follow this playbook in order — in an incident, stress blocks free thinking.
 
 ---
 
-## Roles durante un incidente
+## Severity classification
 
-| Rol | Responsabilidad | Cuándo se activa |
-|-----|----------------|-----------------|
-| **Incident Commander (IC)** | Coordina la respuesta. Toma decisiones. Comunica. | P0 y P1 siempre |
-| **Tech Lead** | Diagnóstico técnico profundo | P0 y P1 siempre |
-| **On-Call Engineer** | Primer respondedor. Ejecuta acciones técnicas | Todos los incidentes |
-| **Comms Lead** | Comunica a stakeholders externos | P0 y P1 |
+| Level | Name | Definition | Example | Response time |
+|-------|------|------------|---------|---------------|
+| **P0** | Critical | System completely down. Total impact to all users. | API Gateway down, DB inaccessible | **Immediate** (<5 min) |
+| **P1** | High | Core functionality degraded. Impact to > 50% of users. | Login not working, payments failing | **15 minutes** |
+| **P2** | Medium | Secondary functionality degraded. Workaround available. | Report export slow | **1 hour** |
+| **P3** | Low | Minor nuisance. No impact on business operations. | Button with incorrect label | **Next sprint** |
 
 ---
 
-## Playbook de respuesta
+## Roles during an incident
 
-### Paso 1: DETECTAR (0-5 min)
+| Role | Responsibility | When activated |
+|------|----------------|----------------|
+| **Incident Commander (IC)** | Coordinates response. Makes decisions. Communicates. | P0 and P1 always |
+| **Tech Lead** | In-depth technical diagnosis | P0 and P1 always |
+| **On-Call Engineer** | First responder. Executes technical actions | All incidents |
+| **Comms Lead** | Communicates to external stakeholders | P0 and P1 |
 
-```
-¿Cómo sabes que hay un incidente?
-  → Alerta de Prometheus / PagerDuty
-  → Reporte de usuario
-  → Monitoreo proactivo en el dashboard
+---
 
-Acción inmediata:
-  1. Acepta la alerta en PagerDuty (para silenciarla y marcar que alguien respondió)
-  2. Ve al canal de Slack #incidents y escribe: "Investigando [descripción breve] — [tu nombre]"
-  3. Abre el runbook del servicio afectado: `09-microservices/services/[servicio]/runbook.md`
-```
+## Response playbook
 
-### Paso 2: CLASIFICAR (5-10 min)
+### Step 1: DETECT (0-5 min)
 
 ```
-Determina la severidad:
-  → ¿Cuántos usuarios están afectados?
-  → ¿Qué funcionalidades están caídas?
-  → ¿Hay un workaround disponible?
+How do you know there is an incident?
+  → Alert from Prometheus / PagerDuty
+  → User report
+  → Proactive monitoring on the dashboard
 
-Si es P0 o P1:
-  → Activa al Incident Commander
-  → Crea el ticket de incidente en [Jira/Linear]: INC-XXX
-  → Abre el War Room (canal de Slack temporal o videollamada)
+Immediate action:
+  1. Acknowledge the alert in PagerDuty (to silence it and mark that someone responded)
+  2. Go to the Slack #incidents channel and write: "Investigating [brief description] — [your name]"
+  3. Open the runbook for the affected service: `09-microservices/services/[service]/runbook.md`
 ```
 
-### Paso 3: COMUNICAR (10-15 min)
-
-Actualización inicial en el canal del equipo y a los stakeholders:
+### Step 2: CLASSIFY (5-10 min)
 
 ```
-Template de comunicación inicial:
+Determine severity:
+  → How many users are affected?
+  → What features are down?
+  → Is there a workaround available?
+
+If P0 or P1:
+  → Activate the Incident Commander
+  → Create the incident ticket in [Jira/Linear]: INC-XXX
+  → Open the War Room (temporary Slack channel or video call)
+```
+
+### Step 3: COMMUNICATE (10-15 min)
+
+Initial update in the team channel and to stakeholders:
+
+```
+Initial communication template:
 ─────────────────────────────────
-🔴 INCIDENTE P[N] — [INC-XXX]
-Servicio afectado: [nombre]
-Impacto: [Qué no funciona para quién]
-Estado: Investigando
-Próxima actualización: en 30 minutos
-IC: [Nombre del Incident Commander]
+🔴 INCIDENT P[N] — [INC-XXX]
+Affected service: [name]
+Impact: [What is not working for whom]
+Status: Investigating
+Next update: in 30 minutes
+IC: [Incident Commander Name]
 ─────────────────────────────────
 ```
 
-### Paso 4: DIAGNOSTICAR (10-30 min)
+### Step 4: DIAGNOSE (10-30 min)
 
 ```
-Herramientas de diagnóstico (en orden):
-  1. Grafana → ¿Cuándo empezó el problema? ¿Qué servicio tiene alta tasa de errores?
-  2. Logs (Kibana/CloudWatch) → ¿Qué dice el servicio afectado?
-  3. Jaeger/Zipkin → ¿Dónde se rompe la traza?
-  4. kubectl get pods / docker ps → ¿El pod/contenedor está corriendo?
-  5. Health check manual → curl http://[servicio]/health
+Diagnostic tools (in order):
+  1. Grafana → When did the problem start? Which service has a high error rate?
+  2. Logs (Kibana/CloudWatch) → What does the affected service say?
+  3. Jaeger/Zipkin → Where does the trace break?
+  4. kubectl get pods / docker ps → Is the pod/container running?
+  5. Manual health check → curl http://[service]/health
 
-Pregunta clave: ¿Qué cambió en las últimas 2 horas?
-  → Último deploy
-  → Cambio de configuración
-  → Aumento de tráfico
-  → Cambio en un sistema externo
+Key question: What changed in the last 2 hours?
+  → Last deploy
+  → Configuration change
+  → Traffic spike
+  → Change in an external system
 ```
 
-**Ver árbol de decisión específico:** `09-microservices/services/[servicio]/runbook.md`
+**See specific decision tree:** `09-microservices/services/[service]/runbook.md`
 
-### Paso 5: MITIGAR (15-60 min)
-
-```
-Opciones de mitigación (de más segura a más riesgosa):
-  1. Rollback al último deploy estable (si fue un deploy el que causó el problema)
-  2. Desactivar la feature flag que introdujo el problema
-  3. Escalar horizontalmente si es un problema de capacidad
-  4. Aumentar el timeout / circuit breaker temporalmente
-  5. Redirigir tráfico a una región alternativa (si hay)
-  6. Activar modo de mantenimiento (último recurso)
-```
-
-**Antes de cada cambio durante un incidente:**
-- Anuncia en el War Room qué vas a hacer
-- Espera confirmación del IC
-- Ejecuta el cambio
-- Reporta el resultado en 2 minutos
-
-### Paso 6: RESOLVER Y COMUNICAR
+### Step 5: MITIGATE (15-60 min)
 
 ```
-El incidente está resuelto cuando:
-  - Las métricas de error vuelven a niveles normales
-  - Health checks responden 200 en todos los servicios
-  - El PO / stakeholder confirma que los usuarios pueden operar normal
+Mitigation options (from safest to riskiest):
+  1. Rollback to the last stable deploy (if a deploy caused the problem)
+  2. Disable the feature flag that introduced the problem
+  3. Scale horizontally if it is a capacity issue
+  4. Temporarily increase timeout / circuit breaker
+  5. Redirect traffic to an alternative region (if available)
+  6. Activate maintenance mode (last resort)
+```
 
-Comunicación de resolución:
+**Before each change during an incident:**
+- Announce in the War Room what you are going to do
+- Wait for the IC's confirmation
+- Execute the change
+- Report the result within 2 minutes
+
+### Step 6: RESOLVE AND COMMUNICATE
+
+```
+The incident is resolved when:
+  - Error metrics return to normal levels
+  - Health checks respond 200 on all services
+  - The PO / stakeholder confirms users can operate normally
+
+Resolution communication:
 ─────────────────────────
-✅ RESUELTO — [INC-XXX]
-Causa raíz: [descripción breve]
-Resolución: [qué se hizo]
-Duración total: [X] minutos
-Post-mortem: [fecha de la reunión]
+✅ RESOLVED — [INC-XXX]
+Root cause: [brief description]
+Resolution: [what was done]
+Total duration: [X] minutes
+Post-mortem: [meeting date]
 ─────────────────────────
 ```
 
 ---
 
-## Post-Mortem (Retrospectiva del Incidente)
+## Post-Mortem (Incident Retrospective)
 
-El post-mortem no es para culpar a nadie — es para entender y prevenir.
-Se hace dentro de los 2 días hábiles después de resolver el incidente.
+The post-mortem is not to blame anyone — it is to understand and prevent.
+Held within 2 business days after resolving the incident.
 
-### Estructura del post-mortem
+### Post-mortem structure
 
-**INC-XXX — [Título del incidente]**
+**INC-XXX — [Incident title]**
 
-**Datos clave:**
-- Fecha y hora inicio: 
-- Fecha y hora resolución: 
-- Duración total: 
-- Severidad: P[N]
-- Usuarios afectados: [N]
+**Key data:**
+- Start date and time: 
+- Resolution date and time: 
+- Total duration: 
+- Severity: P[N]
+- Affected users: [N]
 
 **Timeline:**
 
-| Hora | Evento | Acción tomada |
-|------|--------|---------------|
-| HH:MM | [Qué ocurrió] | [Quién hizo qué] |
+| Time | Event | Action taken |
+|------|-------|-------------|
+| HH:MM | [What happened] | [Who did what] |
 
-**Causa raíz:**
-> ¿Por qué ocurrió? (5 Why's — llega a la causa real, no al síntoma)
+**Root cause:**
+> Why did it happen? (5 Why's — get to the real cause, not the symptom)
 
-**Contribuidores:**
-> Factores que facilitaron el incidente (sin culpar personas)
+**Contributing factors:**
+> Factors that facilitated the incident (without blaming people)
 
-**Lo que funcionó bien:**
-> [Qué parte de la respuesta al incidente fue efectiva]
+**What went well:**
+> [What part of the incident response was effective]
 
-**Lo que no funcionó:**
-> [Qué parte falló o podría mejorar]
+**What did not work:**
+> [What part failed or could be improved]
 
 **Action items:**
 
-| Acción | Propietario | Fecha límite | Estado |
-|--------|-------------|-------------|--------|
-| [Acción concreta para prevenir recurrencia] | [Nombre] | [fecha] | Pendiente |
+| Action | Owner | Deadline | Status |
+|--------|-------|---------|--------|
+| [Concrete action to prevent recurrence] | [Name] | [date] | Pending |
 
 ---
 
-## Canales de comunicación
+## Communication channels
 
-| Canal | Propósito |
-|-------|-----------|
-| Slack `#incidents` | Canal principal de todos los incidentes |
-| Slack `#war-room-[INC-XXX]` | Canal temporal creado para incidentes P0/P1 |
-| PagerDuty | Alertas y on-call rotation |
-| [Sistema de tickets] | Registro oficial: INC-XXX |
-| Status Page | Comunicación pública a usuarios (si aplica) |
+| Channel | Purpose |
+|---------|---------|
+| Slack `#incidents` | Main channel for all incidents |
+| Slack `#war-room-[INC-XXX]` | Temporary channel created for P0/P1 incidents |
+| PagerDuty | Alerts and on-call rotation |
+| [Ticketing system] | Official record: INC-XXX |
+| Status Page | Public communication to users (if applicable) |
 
 ---
 
-## Correlaciones
+## Correlations
 
-- Alertas de observabilidad → `13-operations/observability.md`
-- Runbook de cada servicio → `09-microservices/services/XX/runbook.md`
-- SLOs y Error Budget → `13-operations/README.md`
+- Observability alerts → `13-operations/observability.md`
+- Service runbooks → `09-microservices/services/XX/runbook.md`
+- SLOs and Error Budget → `13-operations/README.md`

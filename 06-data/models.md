@@ -1,83 +1,83 @@
-# Modelos de Datos por Servicio
+# Data Models per Service
 
-> **Qué llenar aquí:** El esquema de datos de cada microservicio.
-> Cada servicio tiene su propia sección. Recuerda: **cada servicio tiene su propia base de datos**.
-> Los cambios de esquema siempre se hacen con migraciones versionadas, nunca modificando tablas en caliente.
+> **What to fill in here:** The data schema for each microservice.
+> Each service has its own section. Remember: **each service has its own database**.
+> Schema changes are always done with versioned migrations, never by modifying tables in place.
 
-> **Nota de motor de BD:** Este documento es agnóstico de tecnología. Los ejemplos muestran SQL
-> estándar compatible con la mayoría de motores relacionales. Para bases de datos documentales
-> (MongoDB) o de clave-valor (Redis), adapta los diagramas y esquemas al formato correspondiente.
-> La elección del motor se documenta en cada sección de servicio — el scaffold no asume cuál usar.
+> **DB engine note:** This document is technology-agnostic. The examples show standard SQL
+> compatible with most relational engines. For document databases
+> (MongoDB) or key-value stores (Redis), adapt the diagrams and schemas to the corresponding format.
+> The engine choice is documented in each service section — the scaffold does not assume which one to use.
 
 ---
 
-## Principios de modelado de datos
+## Data modeling principles
 
-### 1. Database per Service (obligatorio)
-Ningún servicio accede directamente a la base de datos de otro.
-La comunicación entre servicios es siempre por API o eventos.
+### 1. Database per Service (mandatory)
+No service directly accesses another service's database.
+Communication between services is always via API or events.
 
 ```
-✓ Servicio A → BD A (PostgreSQL)
-✓ Servicio B → BD B (MongoDB)
-✗ Servicio A → JOIN con tablas del Servicio B
+✓ Service A → DB A (PostgreSQL)
+✓ Service B → DB B (MongoDB)
+✗ Service A → JOIN with Service B's tables
 ```
 
-### 2. Campos de auditoría estándar
-Todas las tablas incluyen:
+### 2. Standard audit fields
+All tables include:
 
 ```sql
 id          UUID        PRIMARY KEY  DEFAULT gen_random_uuid(),
 created_at  TIMESTAMPTZ NOT NULL     DEFAULT NOW(),
 updated_at  TIMESTAMPTZ NOT NULL     DEFAULT NOW(),
-deleted_at  TIMESTAMPTZ              -- NULL = activo (soft delete)
+deleted_at  TIMESTAMPTZ              -- NULL = active (soft delete)
 ```
 
-### 3. Soft delete por defecto
-No borres registros con DELETE físico. Usa `deleted_at IS NOT NULL` para marcar como eliminado.
-Esto facilita la auditoría y la recuperación.
+### 3. Soft delete by default
+Do not delete records with a physical DELETE. Use `deleted_at IS NOT NULL` to mark as deleted.
+This facilitates auditing and recovery.
 
 ### 4. Naming conventions
 
 ```sql
--- Tablas:      snake_case, plural              → pedidos, items_pedido, usuarios
--- Columnas:    snake_case, descriptivo         → precio_unitario, fecha_entrega
--- FKs:         [tabla_referenciada]_id         → cliente_id, producto_id
--- Índices:     idx_[tabla]_[columna(s)]        → idx_pedidos_cliente_id
--- Timestamps:  siempre con zona horaria (TIMESTAMPTZ, no TIMESTAMP)
+-- Tables:      snake_case, plural              → orders, order_items, users
+-- Columns:     snake_case, descriptive         → unit_price, delivery_date
+-- FKs:         [referenced_table]_id           → customer_id, product_id
+-- Indexes:     idx_[table]_[column(s)]         → idx_orders_customer_id
+-- Timestamps:  always with timezone (TIMESTAMPTZ, not TIMESTAMP)
 ```
 
 ---
 
-## Servicio: [nombre-servicio]
+## Service: [service-name]
 
-**Motor de BD:** PostgreSQL 15 / MongoDB 7 / Redis 7 — [justificación de la elección]
+**DB Engine:** PostgreSQL 15 / MongoDB 7 / Redis 7 — [justification for the choice]
 
-**Justificación del motor:**
-- [Por qué este motor para este servicio. Ej: "PostgreSQL por soporte ACID en transacciones financieras"]
-- [Qué funcionalidades del motor se usan: JSONB, full-text search, geo, etc.]
+**Engine justification:**
+- [Why this engine for this service. E.g.: "PostgreSQL for ACID support in financial transactions"]
+- [Which engine features are used: JSONB, full-text search, geo, etc.]
 
-### Tabla: [nombre_tabla]
+### Table: [table_name]
 
-**Propósito:** [Qué registra esta tabla]
+**Purpose:** [What this table records]
 
 ```sql
-CREATE TABLE [nombre_tabla] (
+CREATE TABLE [table_name] (
   id              UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
   
-  -- Campos del negocio
-  [campo1]        [TIPO]      NOT NULL,
-  [campo2]        [TIPO],
-  [campo3]        [TIPO]      NOT NULL DEFAULT [valor],
+  -- Business fields
+  [field1]        [TYPE]      NOT NULL,
+  [field2]        [TYPE],
+  [field3]        [TYPE]      NOT NULL DEFAULT [value],
   
-  -- Relaciones
-  [referencia]_id UUID        REFERENCES [tabla_referenciada](id) ON DELETE RESTRICT,
+  -- Relationships
+  [reference]_id  UUID        REFERENCES [referenced_table](id) ON DELETE RESTRICT,
   
-  -- Campos de estado
-  estado          VARCHAR(50) NOT NULL DEFAULT 'ACTIVO'
-                  CHECK (estado IN ('ACTIVO', 'INACTIVO', 'CANCELADO')),
+  -- Status fields
+  status          VARCHAR(50) NOT NULL DEFAULT 'ACTIVE'
+                  CHECK (status IN ('ACTIVE', 'INACTIVE', 'CANCELLED')),
   
-  -- Auditoría (en todas las tablas)
+  -- Audit (in all tables)
   created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   deleted_at      TIMESTAMPTZ,
@@ -85,147 +85,147 @@ CREATE TABLE [nombre_tabla] (
   updated_by      UUID
 );
 
--- Índices
-CREATE INDEX idx_[tabla]_[campo] ON [nombre_tabla] ([campo]);
-CREATE INDEX idx_[tabla]_deleted ON [nombre_tabla] (deleted_at) WHERE deleted_at IS NULL;
--- Para búsquedas frecuentes:
-CREATE INDEX idx_[tabla]_[campo_busqueda] ON [nombre_tabla] ([campo_busqueda]);
+-- Indexes
+CREATE INDEX idx_[table]_[field] ON [table_name] ([field]);
+CREATE INDEX idx_[table]_deleted ON [table_name] (deleted_at) WHERE deleted_at IS NULL;
+-- For frequent searches:
+CREATE INDEX idx_[table]_[search_field] ON [table_name] ([search_field]);
 ```
 
-**Diccionario de datos:**
+**Data dictionary:**
 
-| Columna | Tipo | Descripción | Ejemplo |
-|---------|------|-------------|---------|
-| id | UUID | Identificador único autogenerado | `550e8400-...` |
-| [campo1] | [TIPO] | [Descripción de negocio] | [Ejemplo] |
-| estado | VARCHAR(50) | Estado del ciclo de vida | `ACTIVO` |
-| created_at | TIMESTAMPTZ | Cuándo se creó el registro | `2024-01-15T10:30:00Z` |
-| deleted_at | TIMESTAMPTZ | NULL = activo; con valor = eliminado | `NULL` |
+| Column | Type | Description | Example |
+|--------|------|-------------|---------|
+| id | UUID | Auto-generated unique identifier | `550e8400-...` |
+| [field1] | [TYPE] | [Business description] | [Example] |
+| status | VARCHAR(50) | Lifecycle status | `ACTIVE` |
+| created_at | TIMESTAMPTZ | When the record was created | `2024-01-15T10:30:00Z` |
+| deleted_at | TIMESTAMPTZ | NULL = active; with value = deleted | `NULL` |
 
-**Decisiones de modelado:**
-1. [Por qué el campo X es NOT NULL y no nullable]
-2. [Por qué se usa soft delete en vez de hard delete]
-3. [Por qué el campo de estado tiene ese conjunto de valores]
+**Modeling decisions:**
+1. [Why field X is NOT NULL and not nullable]
+2. [Why soft delete is used instead of hard delete]
+3. [Why the status field has that set of values]
 
 ---
 
-### Tabla: [tabla_relacionada]
+### Table: [related_table]
 
 ```sql
-CREATE TABLE [tabla_relacionada] (
+CREATE TABLE [related_table] (
   id              UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
-  [principal]_id  UUID        NOT NULL REFERENCES [tabla_principal](id) ON DELETE CASCADE,
+  [principal]_id  UUID        NOT NULL REFERENCES [principal_table](id) ON DELETE CASCADE,
   
-  -- Campos
-  [campo]         [TIPO]      NOT NULL,
+  -- Fields
+  [field]         [TYPE]      NOT NULL,
   
-  -- Auditoría
+  -- Audit
   created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   deleted_at      TIMESTAMPTZ
 );
 
-CREATE INDEX idx_[tabla_rel]_[principal]_id ON [tabla_relacionada] ([principal]_id);
+CREATE INDEX idx_[related_table]_[principal]_id ON [related_table] ([principal]_id);
 ```
 
 ---
 
-## Estrategia de migraciones
+## Migration strategy
 
-**Herramienta:** [Flyway / Liquibase / Prisma Migrate / TypeORM Migrations]
+**Tool:** [Flyway / Liquibase / Prisma Migrate / TypeORM Migrations]
 
-**Convención de nombre de archivos:**
-
-```
-V{número_versión}__{descripcion_snake_case}.sql
-
-Ejemplos:
-  V001__create_pedidos_table.sql
-  V002__add_estado_to_pedidos.sql
-  V003__create_index_pedidos_cliente_id.sql
-```
-
-**Reglas de migraciones:**
+**File naming convention:**
 
 ```
-✓ Las migraciones son SIEMPRE hacia adelante (forward-only)
-✓ Una migración por cambio lógico
-✓ Los datos de seed van en migraciones separadas con prefijo S: S001__seed_...
-✗ Nunca modifiques una migración ya ejecutada en cualquier ambiente
-✗ Nunca hagas DROP COLUMN / DROP TABLE en una migración si hay código en producción que la usa
-    (proceso: 1-deprecar en código → 2-migración de limpieza en el siguiente release)
+V{version_number}__{snake_case_description}.sql
+
+Examples:
+  V001__create_orders_table.sql
+  V002__add_status_to_orders.sql
+  V003__create_index_orders_customer_id.sql
 ```
 
-**Cambios de esquema compatibles (no rompen):**
+**Migration rules:**
+
+```
+✓ Migrations are ALWAYS forward-only
+✓ One migration per logical change
+✓ Seed data goes in separate migrations with prefix S: S001__seed_...
+✗ Never modify a migration already executed in any environment
+✗ Never do DROP COLUMN / DROP TABLE in a migration if there is code in production that uses it
+    (process: 1-deprecate in code → 2-cleanup migration in the next release)
+```
+
+**Compatible schema changes (non-breaking):**
 
 ```sql
--- Agregar columna nullable → siempre seguro
-ALTER TABLE pedidos ADD COLUMN notas TEXT;
+-- Add nullable column → always safe
+ALTER TABLE orders ADD COLUMN notes TEXT;
 
--- Agregar columna NOT NULL con DEFAULT → seguro si el DEFAULT es válido
-ALTER TABLE pedidos ADD COLUMN prioridad VARCHAR(20) NOT NULL DEFAULT 'NORMAL';
+-- Add NOT NULL column with DEFAULT → safe if DEFAULT is valid
+ALTER TABLE orders ADD COLUMN priority VARCHAR(20) NOT NULL DEFAULT 'NORMAL';
 
--- Crear nuevo índice → seguro (en producción usar CONCURRENTLY)
-CREATE INDEX CONCURRENTLY idx_pedidos_fecha ON pedidos (created_at);
+-- Create new index → safe (in production use CONCURRENTLY)
+CREATE INDEX CONCURRENTLY idx_orders_date ON orders (created_at);
 ```
 
-**Cambios incompatibles (requieren migración en 2 fases):**
+**Incompatible changes (require 2-phase migration):**
 
 ```sql
--- Renombrar columna → 2 fases:
--- Fase 1 (release N): Agregar nueva columna, copiar datos, actualizar código para usar ambas
-ALTER TABLE pedidos ADD COLUMN fecha_entrega TIMESTAMPTZ;
-UPDATE pedidos SET fecha_entrega = delivery_date;
+-- Rename column → 2 phases:
+-- Phase 1 (release N): Add new column, copy data, update code to use both
+ALTER TABLE orders ADD COLUMN delivery_date TIMESTAMPTZ;
+UPDATE orders SET delivery_date = fecha_entrega;
 
--- Fase 2 (release N+1): Eliminar columna antigua (código ya no la usa)
-ALTER TABLE pedidos DROP COLUMN delivery_date;
+-- Phase 2 (release N+1): Remove old column (code no longer uses it)
+ALTER TABLE orders DROP COLUMN fecha_entrega;
 ```
 
 ---
 
-## Guía de selección de motor de BD
+## DB engine selection guide
 
-| Motor | Usar cuando... | Evitar cuando... |
-|-------|---------------|-----------------|
-| **PostgreSQL** | Transacciones ACID, relaciones complejas, JSONB, full-text | Documentos muy anidados, grafos |
-| **MongoDB** | Documentos flexibles, catálogos de productos, catálogos | Transacciones complejas entre colecciones |
-| **Redis** | Caché, sesiones, colas ligeras, contadores | Fuente de verdad, datos críticos |
-| **Elasticsearch** | Búsqueda full-text, análisis, logs | Fuente de verdad (es un índice, no una BD) |
-| **InfluxDB / TimescaleDB** | Series de tiempo, métricas, IoT | Datos de negocio transaccionales |
+| Engine | Use when... | Avoid when... |
+|--------|------------|---------------|
+| **PostgreSQL** | ACID transactions, complex relationships, JSONB, full-text | Deeply nested documents, graphs |
+| **MongoDB** | Flexible documents, product catalogs, catalogs | Complex transactions across collections |
+| **Redis** | Cache, sessions, lightweight queues, counters | Source of truth, critical data |
+| **Elasticsearch** | Full-text search, analytics, logs | Source of truth (it's an index, not a DB) |
+| **InfluxDB / TimescaleDB** | Time series, metrics, IoT | Transactional business data |
 
 ---
 
-## Diagrama de relaciones (por servicio)
+## Relationship diagram (per service)
 
 ```
-Reemplaza con un diagrama ER del servicio usando notación de tu herramienta preferida.
+Replace with an ER diagram of the service using your preferred tool's notation.
 
-Ejemplo Mermaid:
+Mermaid example:
 \```mermaid
 erDiagram
-    PEDIDOS ||--o{ ITEMS_PEDIDO : contiene
-    PEDIDOS {
+    ORDERS ||--o{ ORDER_ITEMS : contains
+    ORDERS {
         uuid id PK
-        uuid cliente_id FK
-        varchar estado
+        uuid customer_id FK
+        varchar status
         decimal total
         timestamptz created_at
     }
-    ITEMS_PEDIDO {
+    ORDER_ITEMS {
         uuid id PK
-        uuid pedido_id FK
-        uuid producto_id FK
-        integer cantidad
-        decimal precio_unitario
+        uuid order_id FK
+        uuid product_id FK
+        integer quantity
+        decimal unit_price
     }
 \```
 ```
 
 ---
 
-## Correlaciones
+## Correlations
 
-- Entidades del dominio que mapean a estas tablas → `02-domain/entities-and-rules.md`
-- Saga y Outbox pattern para consistencia distribuida → `05-architecture/pattern-guide.md`
-- Datos de cada servicio en detalle → `09-microservices/services/XX/data-model.md`
-- Cómo se accede a los datos vía API → `07-api/contracts/openapi/`
+- Domain entities that map to these tables → `02-domain/entities-and-rules.md`
+- Saga and Outbox pattern for distributed consistency → `05-architecture/pattern-guide.md`
+- Data for each service in detail → `09-microservices/services/XX/data-model.md`
+- How data is accessed via API → `07-api/contracts/openapi/`

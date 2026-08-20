@@ -1,87 +1,87 @@
-# 11 — Calidad
+# 11 — Quality
 
-> **¿Qué es esto?** Cómo el equipo garantiza que el sistema funciona correctamente
-> y sigue funcionando mientras evoluciona. Pruebas, revisión de código y métricas.
+> **What is this?** How the team ensures the system works correctly
+> and keeps working as it evolves. Tests, code review, and metrics.
 
-## La pirámide de pruebas
+## The testing pyramid
 
 ```
           /\
          /  \
-        / E2E \      ← Pocos, lentos, caros (pruebas de extremo a extremo)
+        / E2E \      ← Few, slow, expensive (end-to-end tests)
        /--------\
-      / Integra-  \   ← Algunos, moderados (prueban la interacción entre partes)
-     /  ción       \
+      / Integra-  \   ← Some, moderate (test interaction between parts)
+     /  tion       \
     /--------------\
-   / Unitarias      \  ← Muchos, rápidos, baratos (prueban una función/clase)
+   / Unit Tests     \  ← Many, fast, cheap (test a function/class)
   /------------------\
 ```
 
-En microservicios, agrega una capa: **Pruebas de contrato** (contract testing).
-Verifican que el consumidor y el proveedor de una API están de acuerdo en el contrato.
+In microservices, add a layer: **Contract Tests**.
+They verify that the consumer and provider of an API agree on the contract.
 
 ---
 
-## Qué hay aquí y cómo llenarlo
+## What is here and how to fill it in
 
 ### `testing-strategy.md` ⭐
-La estrategia completa de pruebas del proyecto.
-**Llena:** qué tipos de pruebas se hacen, con qué herramienta, cobertura mínima esperada,
-cuáles van en el pipeline CI/CD, cuáles son manuales.
+The complete testing strategy for the project.
+**Fill in:** what types of tests are done, with what tool, minimum expected coverage,
+which go in the CI/CD pipeline, which are manual.
 
-**Formato:**
+**Format:**
 ```markdown
-## Tipos de pruebas
+## Types of tests
 
-### Unitarias
-- **Herramienta:** [Jest / JUnit / pytest / etc.]
-- **Cobertura mínima:** [80%]
-- **Qué prueban:** funciones, clases, lógica de negocio en aislamiento
-- **Qué NO prueban:** BD, red, servicios externos
+### Unit
+- **Tool:** [Jest / JUnit / pytest / etc.]
+- **Minimum coverage:** [80%]
+- **What they test:** functions, classes, business logic in isolation
+- **What they do NOT test:** DB, network, external services
 
-### Integración
-- **Herramienta:** [Testcontainers + JUnit / pytest]
-- **Qué prueban:** servicio + BD real (en contenedor), sin servicios externos
-- **Cuándo corren:** en cada PR
+### Integration
+- **Tool:** [Testcontainers + JUnit / pytest]
+- **What they test:** service + real DB (in container), without external services
+- **When they run:** on every PR
 
-### Contrato (Contract Testing)
-- **Herramienta:** [Pact / Spring Cloud Contract]
-- **Qué prueban:** que el productor cumple lo que el consumidor espera
-- **Cuándo corren:** en cada PR del productor y del consumidor
+### Contract (Contract Testing)
+- **Tool:** [Pact / Spring Cloud Contract]
+- **What they test:** that the producer fulfills what the consumer expects
+- **When they run:** on every PR of the producer and consumer
 
-### E2E (Extremo a Extremo)
-- **Herramienta:** [Playwright / Cypress / k6]
-- **Qué prueban:** flujos completos del usuario con todo el sistema levantado
-- **Cuándo corren:** antes de cada deploy a staging
+### E2E (End-to-End)
+- **Tool:** [Playwright / Cypress / k6]
+- **What they test:** complete user flows with the entire system running
+- **When they run:** before each deploy to staging
 
-## Cobertura mínima por servicio
-| Servicio | Unitarias | Integración | Contrato |
-|---------|-----------|-------------|---------|
-| iam | 85% | Obligatorio | Obligatorio |
-| [resto] | 80% | Obligatorio | Recomendado |
+## Minimum coverage per service
+| Service | Unit | Integration | Contract |
+|---------|------|-------------|---------|
+| iam | 85% | Required | Required |
+| [rest] | 80% | Required | Recommended |
 ```
 
 ### `code-review.md`
-Guía de revisión de código del equipo.
-**Llena:** qué verificar en un PR (más allá de que "funciona"), lista de checks obligatorios,
-cómo dar feedback constructivo, tiempo máximo para revisar un PR.
+Team code review guide.
+**Fill in:** what to verify in a PR (beyond "it works"), list of required checks,
+how to give constructive feedback, maximum time to review a PR.
 
 ---
 
-## Correlaciones con otras secciones
+## Correlations with other sections
 
-| Esta sección se alimenta de... | Y alimenta a... |
-|-------------------------------|-----------------|
-| `04-requirements/traceability-matrix.md` → qué probar | Casos de prueba que cubren cada RF |
-| `07-api/contracts/` → contratos API | Pruebas de contrato |
-| `00-governance/definition-of-done.md` → qué debe tener todo PR | Checklist de code review |
-| `10-devops/ci-cd.md` | Qué pruebas van en qué paso del pipeline |
+| This section is fed by... | And feeds into... |
+|---------------------------|-------------------|
+| `04-requirements/traceability-matrix.md` → what to test | Test cases covering each FR |
+| `07-api/contracts/` → API contracts | Contract tests |
+| `00-governance/definition-of-done.md` → what every PR must have | Code review checklist |
+| `10-devops/ci-cd.md` | Which tests go in which pipeline step |
 
 ---
 
-## Preguntas que esta sección debe responder
+## Questions this section must answer
 
-- ¿Qué tipos de pruebas escribe el equipo?
-- ¿Cuánta cobertura de código se requiere?
-- ¿Qué verifica un revisor en un Pull Request?
-- ¿Cómo sabemos que un cambio no rompió nada?
+- What types of tests does the team write?
+- How much code coverage is required?
+- What does a reviewer check in a Pull Request?
+- How do we know a change did not break anything?

@@ -1,109 +1,109 @@
-# Alcance del Sistema
+# System Scope
 
-> **Por qué este documento existe:** El alcance previene el scope creep y alinea las expectativas.
-> Es igual de importante definir lo que el sistema NO hace como lo que sí hace.
-> Revisa este documento al inicio de cada ciclo de planificación.
-
----
-
-## En alcance (In Scope)
-
-Lo que el sistema **SÍ construye y mantiene**:
-
-### Funcionalidades del MVP
-
-| # | Funcionalidad | Descripción | Servicio responsable |
-|---|--------------|-------------|---------------------|
-| 1 | [Funcionalidad A] | [Descripción breve] | [nombre-servicio] |
-| 2 | [Funcionalidad B] | [Descripción breve] | [nombre-servicio] |
-| 3 | [Funcionalidad C] | [Descripción breve] | [nombre-servicio] |
-
-### Integraciones incluidas
-
-| Sistema externo | Tipo de integración | Para qué |
-|----------------|--------------------|-|
-| [Sistema A] | REST API / Webhook / SDK | [propósito] |
-| [Sistema B] | SFTP / Base de datos | [propósito] |
-
-### Ambientes que se construyen
-
-| Ambiente | Propósito |
-|---------|-----------|
-| Local | Desarrollo en máquina del desarrollador |
-| Development (dev) | Integración continua y pruebas de desarrollo |
-| Staging | Pre-producción, pruebas de aceptación del PO |
-| Production | Ambiente productivo |
+> **Why this document exists:** Scope prevents scope creep and aligns expectations.
+> It is equally important to define what the system does NOT do as what it does.
+> Review this document at the start of each planning cycle.
 
 ---
 
-## Fuera de alcance (Out of Scope)
+## In Scope
 
-Lo que el sistema **NO construye** en esta versión y por qué:
+What the system **DOES build and maintain**:
 
-| # | Qué está fuera | Razón | ¿Versión futura? |
-|---|---------------|-------|-----------------|
-| 1 | [Funcionalidad X] | [Fuera del presupuesto / No es MVP / Usa sistema externo] | Sí — H2 2024 |
-| 2 | [Integración con Y] | [El proveedor no tiene API pública aún] | Pendiente de proveedor |
-| 3 | [Módulo Z] | [Otro equipo lo construye] | N/A |
+### MVP Features
 
-### Qué hace otro sistema / equipo (y por qué no nosotros)
+| # | Feature | Description | Responsible service |
+|---|---------|-------------|---------------------|
+| 1 | [Feature A] | [Brief description] | [service-name] |
+| 2 | [Feature B] | [Brief description] | [service-name] |
+| 3 | [Feature C] | [Brief description] | [service-name] |
 
-| Funcionalidad | Quién la construye | Por qué no nosotros |
-|--------------|-------------------|--------------------:|
-| [Autenticación SSO] | Equipo IAM central | Reusar la implementación existente |
-| [Reportes financieros] | Sistema de BI / Equipo Analytics | Fuera del core domain |
+### Included integrations
+
+| External system | Integration type | Purpose |
+|----------------|-----------------|---------|
+| [System A] | REST API / Webhook / SDK | [purpose] |
+| [System B] | SFTP / Database | [purpose] |
+
+### Environments being built
+
+| Environment | Purpose |
+|-------------|---------|
+| Local | Development on the developer's machine |
+| Development (dev) | Continuous integration and development testing |
+| Staging | Pre-production, PO acceptance testing |
+| Production | Production environment |
 
 ---
 
-## Supuestos del alcance
+## Out of Scope
 
-> Estos supuestos se asumen verdaderos. Si cambian, el alcance debe renegociarse.
+What the system **does NOT build** in this version and why:
 
-| # | Supuesto | Consecuencia si es falso |
-|---|----------|--------------------------|
-| 1 | El sistema externo [X] tiene una API REST disponible | Tendríamos que construir la integración diferente |
-| 2 | Los usuarios manejan [idioma / dispositivo / etc.] | El diseño UX cambiaría |
-| 3 | El volumen de datos inicial es < [N] registros | La estrategia de base de datos podría cambiar |
+| # | What is out of scope | Reason | Future version? |
+|---|---------------------|--------|----------------|
+| 1 | [Feature X] | [Out of budget / Not MVP / Uses external system] | Yes — H2 2024 |
+| 2 | [Integration with Y] | [Provider has no public API yet] | Pending provider |
+| 3 | [Module Z] | [Another team builds it] | N/A |
+
+### What another system / team handles (and why not us)
+
+| Feature | Who builds it | Why not us |
+|---------|--------------|-----------|
+| [SSO Authentication] | Central IAM team | Reuse existing implementation |
+| [Financial reports] | BI system / Analytics team | Outside the core domain |
 
 ---
 
-## Restricciones
+## Scope assumptions
 
-| Tipo | Descripción |
+> These assumptions are taken to be true. If they change, the scope must be renegotiated.
+
+| # | Assumption | Consequence if false |
+|---|-----------|---------------------|
+| 1 | External system [X] has an available REST API | We would have to build the integration differently |
+| 2 | Users use [language / device / etc.] | The UX design would change |
+| 3 | Initial data volume is < [N] records | The database strategy might change |
+
+---
+
+## Constraints
+
+| Type | Description |
 |------|-------------|
-| **Tiempo** | [El MVP debe estar listo en X semanas / para fecha Y] |
-| **Presupuesto** | [N horas de desarrollo / X USD de infraestructura] |
-| **Tecnología** | [Debe usar el stack corporativo: Java + PostgreSQL] |
-| **Regulatorio** | [Debe cumplir con X regulación / certificación] |
-| **Equipo** | [N desarrolladores disponibles] |
+| **Time** | [MVP must be ready in X weeks / by date Y] |
+| **Budget** | [N development hours / X USD of infrastructure] |
+| **Technology** | [Must use the corporate stack: Java + PostgreSQL] |
+| **Regulatory** | [Must comply with X regulation / certification] |
+| **Team** | [N developers available] |
 
 ---
 
-## Dependencias externas
+## External dependencies
 
-| Dependencia | Equipo / Proveedor | Fecha requerida | Estado |
-|------------|-------------------|----------------|--------|
-| API de [Sistema X] | [Nombre del equipo] | [fecha] | 🟢 Disponible |
-| Credenciales de [Proveedor Y] | [Contacto] | [fecha] | 🟡 En proceso |
-| [Infraestructura Z] | DevOps | [fecha] | 🔴 Pendiente |
-
----
-
-## Cómo actualizar el alcance
-
-El alcance puede cambiar, pero el cambio tiene un proceso:
-
-1. Documentar el cambio propuesto en este archivo
-2. Evaluar el impacto en el cronograma y esfuerzo
-3. Obtener aprobación del Product Owner y Tech Lead
-4. Actualizar el roadmap en `03-product/vision.md`
-5. Crear o actualizar HUs en `04-requirements/user-stories.md`
+| Dependency | Team / Provider | Required date | Status |
+|-----------|----------------|--------------|--------|
+| API of [System X] | [Team name] | [date] | 🟢 Available |
+| Credentials for [Provider Y] | [Contact] | [date] | 🟡 In progress |
+| [Infrastructure Z] | DevOps | [date] | 🔴 Pending |
 
 ---
 
-## Correlaciones
+## How to update the scope
 
-- Visión y roadmap → `03-product/vision.md`
-- Glosario de términos → `01-context/glossary.md`
-- Descripción general del sistema → `01-context/overview.md`
-- Riesgos relacionados con el alcance → `15-project-control/risks.md`
+The scope can change, but the change has a process:
+
+1. Document the proposed change in this file
+2. Evaluate the impact on schedule and effort
+3. Obtain approval from the Product Owner and Tech Lead
+4. Update the roadmap in `03-product/vision.md`
+5. Create or update HUs in `04-requirements/user-stories.md`
+
+---
+
+## Correlations
+
+- Vision and roadmap → `03-product/vision.md`
+- Term glossary → `01-context/glossary.md`
+- System overview → `01-context/overview.md`
+- Scope-related risks → `15-project-control/risks.md`

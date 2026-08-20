@@ -1,184 +1,193 @@
-# Setup Local del Proyecto
+# Local Project Setup
 
-> Este documento garantiza que cualquier desarrollador pueda tener el ambiente local
-> funcional en menos de 1 hora. Si tarda más, el documento está incompleto.
-> **Regla:** Si tienes que adivinar algo o buscar en otro lado, agrega lo que falta aquí.
+> This document ensures that any developer can have a functional local environment
+> in less than 1 hour. If it takes longer, the document is incomplete.
+> **Rule:** If you have to guess something or look elsewhere, add what's missing here.
 
 ---
 
-## Prerequisitos
+## Prerequisites
 
-### Herramientas universales (todos los stacks)
+### Universal tools (all stacks)
 
-| Herramienta | Versión mínima | Instalar desde | Verificar con |
-|-------------|---------------|----------------|--------------|
+| Tool | Minimum version | Install from | Verify with |
+|------|----------------|--------------|-------------|
 | Docker | 24.0+ | docker.com | `docker --version` |
-| Docker Compose | 2.20+ | Incluido con Docker Desktop | `docker compose version` |
+| Docker Compose | 2.20+ | Included with Docker Desktop | `docker compose version` |
 | Git | 2.40+ | git-scm.com | `git --version` |
 
-### Herramienta del lenguaje del proyecto
+### Project language tool
 
-> Añade aquí la herramienta específica del stack elegido y elimina esta instrucción.
-> Ver guía de tu stack en `_stacks/` para las versiones recomendadas.
+> Add here the specific tool for the chosen stack and remove this instruction.
+> See your stack guide in `_stacks/` for recommended versions.
 
-| Herramienta | Versión mínima | Instalar desde | Verificar con |
-|-------------|---------------|----------------|--------------|
-| [Lenguaje / Runtime] | [versión LTS] | [URL oficial] | `[comando --version]` |
-| [Gestor de paquetes] | [versión] | [incluido / URL] | `[comando --version]` |
-| [Herramienta adicional] | [versión] | [URL] | [comando] |
+| Tool | Minimum version | Install from | Verify with |
+|------|----------------|--------------|-------------|
+| [Language / Runtime] | [LTS version] | [Official URL] | `[command --version]` |
+| [Package manager] | [version] | [included / URL] | `[command --version]` |
+| [Additional tool] | [version] | [URL] | [command] |
 
-**Referencia de herramientas por stack:**
+**Stack tool reference:**
 - Node.js + TypeScript → [`_stacks/node-typescript.md`](../_stacks/node-typescript.md)
 - Java + Spring Boot → [`_stacks/java-spring.md`](../_stacks/java-spring.md)
 - Python + FastAPI → [`_stacks/python-fastapi.md`](../_stacks/python-fastapi.md)
 - Go → [`_stacks/go.md`](../_stacks/go.md)
 
-**Recomendados (no obligatorios):**
-- Editor del equipo: [VS Code / IntelliJ IDEA / PyCharm / GoLand]
-- Postman o Insomnia para probar endpoints manualmente
+**Recommended (not required):**
+- Team editor: [VS Code / IntelliJ IDEA / PyCharm / GoLand]
+- Postman or Insomnia for manually testing endpoints
 
 ---
 
-## Puertos usados en local
+## Local ports in use
 
-Verifica que estos puertos estén libres antes de iniciar:
+Verify these ports are free before starting:
 
-| Puerto | Servicio | Descripción |
-|--------|---------|-------------|
-| 8080 | api-gateway | Punto de entrada principal |
-| 3001 | auth-service | Servicio de autenticación |
-| 300X | [nombre-servicio] | [descripción] |
-| 5432 | PostgreSQL | Base de datos relacional |
-| 6379 | Redis | Caché y message queue |
+| Port | Service | Description |
+|------|---------|-------------|
+| 8080 | api-gateway | Main entry point |
+| 3001 | auth-service | Authentication service |
+| 300X | [service-name] | [description] |
+| 5432 | PostgreSQL | Relational database |
+| 6379 | Redis | Cache and message queue |
 | 5672 | RabbitMQ | Message broker (AMQP) |
-| 15672 | RabbitMQ Management | Interfaz web de RabbitMQ |
-| 9092 | Kafka | Message broker (si aplica) |
+| 15672 | RabbitMQ Management | RabbitMQ web interface |
+| 9092 | Kafka | Message broker (if applicable) |
 
-**Verificar puertos libres:**
+**Check free ports:**
 ```bash
 # Windows
-netstat -ano | findstr ":[PUERTO]"
+netstat -ano | findstr ":[PORT]"
 
 # macOS / Linux
-lsof -i :[PUERTO]
+lsof -i :[PORT]
 ```
 
 ---
 
-## Instalación paso a paso
+## Step-by-step installation
 
-### Paso 1: Clonar el repositorio
+### Step 1: Clone the repository
 
 ```bash
 git clone https://github.com/[org]/[repo].git
 cd [repo]
 ```
 
-### Paso 2: Variables de ambiente
+### Step 2: Environment variables
 
 ```bash
-# Copia las variables de ambiente de ejemplo
+# Copy the example environment variables
 cp .env.example .env
 
-# Edita .env si necesitas cambiar algún valor
-# (para local, los defaults del .env.example deberían funcionar)
+# Edit .env if you need to change any value
+# (for local, the .env.example defaults should work)
 ```
 
-**Variables obligatorias de configurar en .env:**
+**Required variables to configure in .env:**
 
-| Variable | Descripción | Valor para local |
-|----------|-------------|-----------------|
-| `DATABASE_URL` | Conexión a PostgreSQL | `postgresql://dev:dev@localhost:5432/dev` |
-| `REDIS_URL` | Conexión a Redis | `redis://localhost:6379` |
-| `JWT_SECRET` | Clave para firmar JWT | `[generar con: openssl rand -base64 32]` |
-| `[VARIABLE]` | [descripción] | [valor de ejemplo] |
+| Variable | Description | Value for local |
+|----------|-------------|----------------|
+| `DATABASE_URL` | PostgreSQL connection | `postgresql://dev:dev@localhost:5432/dev` |
+| `REDIS_URL` | Redis connection | `redis://localhost:6379` |
+| `JWT_SECRET` | Key for signing JWT | `[generate with: openssl rand -base64 32]` |
+| `[VARIABLE]` | [description] | [example value] |
 
-> **NUNCA** comitas el archivo `.env`. Está en `.gitignore` por razón.
+> **NEVER** commit the `.env` file. It is in `.gitignore` for a reason.
 
-### Paso 3: Levantar la infraestructura
+### Step 3: Start the infrastructure
 
 ```bash
-# Levantar bases de datos y brokers en Docker
+# Start databases and brokers in Docker
 docker compose up -d
 
-# Verificar que estén healthy
+# Verify they are healthy
 docker compose ps
 ```
 
-El comando debe mostrar todos los contenedores en estado `healthy` o `running`.
+The command should show all containers in `healthy` or `running` state.
 
-### Paso 4: Instalar dependencias
+### Step 4: Install dependencies
+
+> Commands depend on the project stack. See `_stacks/[your-stack].md → Project commands`.
+
+| Stack | Command |
+|-------|---------|
+| Node.js + npm | `npm install` |
+| Java + Maven | `mvn install -DskipTests` |
+| Python + Poetry | `poetry install` |
+| Go | `go mod download` |
+
+### Step 5: Run migrations
+
+> The migration tool varies by stack. See `_stacks/[your-stack].md`.
+
+| Stack / Tool | Command |
+|--------------|---------|
+| Node.js + knex/Prisma | `npm run db:migrate` |
+| Java + Flyway | `mvn flyway:migrate` (or automatic on startup) |
+| Python + Alembic | `alembic upgrade head` |
+| Go + golang-migrate | `make migrate-up` |
 
 ```bash
-# Desde la raíz del repo (si es un monorepo)
-npm install
-
-# O por servicio (si son repositorios separados)
-cd services/auth-service && npm install
-cd ../[otro-servicio] && npm install
+# Optionally: load initial test data (seed)
+# [see command in your stack guide]
 ```
 
-### Paso 5: Ejecutar migraciones
+### Step 6: Start the services
+
+> Startup commands depend on the stack. See `_stacks/[your-stack].md → Project commands`.
+
+| Stack | Development command |
+|-------|---------------------|
+| Node.js | `npm run dev` |
+| Java | `mvn spring-boot:run` or `java -jar target/app.jar` |
+| Python | `uvicorn main:app --reload` |
+| Go | `go run ./cmd/server/...` or `make dev` |
+
+### Step 7: Verify it works
 
 ```bash
-# Aplica las migraciones de base de datos
-npm run db:migrate
-
-# Opcionalmente: cargar datos de prueba (seed)
-npm run db:seed
-```
-
-### Paso 6: Iniciar los servicios
-
-```bash
-# Opción A: Todos los servicios a la vez (monorepo)
-npm run dev
-
-# Opción B: Por servicio en terminales separadas
-npm run dev --workspace=auth-service
-npm run dev --workspace=[nombre-servicio]
-```
-
-### Paso 7: Verificar que funciona
-
-```bash
-# Health check del API Gateway
+# Health check of the API Gateway
 curl http://localhost:8080/health
 
-# Respuesta esperada:
+# Expected response:
 # {"status": "ok", "timestamp": "2024-01-15T10:30:00Z"}
 ```
 
-Abre el navegador en `http://localhost:15672` para la interfaz de RabbitMQ (si usas RabbitMQ).
+Open your browser at `http://localhost:15672` for the RabbitMQ interface (if using RabbitMQ).
 
 ---
 
-## Flujo de trabajo diario
+## Daily workflow
 
 ```bash
-# Al empezar el día
+# At the start of the day
 git pull origin develop
-npm install  # si cambiaron dependencias
-npm run db:migrate  # si hay migraciones nuevas
-npm run dev
+# Install dependencies if they changed (see stack):
+#   npm install / mvn install / poetry install / go mod download
+# Run migrations if there are new ones (see stack):
+#   npm run db:migrate / alembic upgrade head / make migrate-up
+# Start the service (see stack):
+#   npm run dev / mvn spring-boot:run / uvicorn main:app --reload / make dev
 
-# Al terminar
-git add [archivos específicos]
-git commit -m "feat(scope): descripción"
+# At the end
+git add [specific files]
+git commit -m "feat(scope): description"
 ```
 
 ---
 
-## Problemas comunes
+## Common issues
 
 ### "Port already in use"
 
 ```bash
-# Encuentra qué proceso usa el puerto
+# Find which process is using the port
 lsof -i :5432    # macOS/Linux
 netstat -ano | findstr :5432  # Windows
 
-# Mata el proceso (reemplaza PID)
+# Kill the process (replace PID)
 kill -9 [PID]    # macOS/Linux
 taskkill /PID [PID] /F  # Windows
 ```
@@ -186,10 +195,10 @@ taskkill /PID [PID] /F  # Windows
 ### "Docker containers not starting"
 
 ```bash
-# Ver los logs del contenedor que falla
-docker compose logs [nombre-servicio]
+# View logs of the failing container
+docker compose logs [service-name]
 
-# Reiniciar desde cero (borra volúmenes)
+# Restart from scratch (deletes volumes)
 docker compose down -v
 docker compose up -d
 ```
@@ -197,75 +206,75 @@ docker compose up -d
 ### "Database connection refused"
 
 ```bash
-# Verificar que PostgreSQL esté corriendo
+# Verify PostgreSQL is running
 docker compose ps | grep postgres
 
-# Ver logs de PostgreSQL
+# View PostgreSQL logs
 docker compose logs postgres
 ```
 
 ### "Migration failed"
 
 ```bash
-# Ver el estado de las migraciones
+# View migration status
 npm run db:migrate:status
 
-# Revertir la última migración
+# Revert the last migration
 npm run db:migrate:revert
 
-# Ejecutar desde una versión específica
+# Run from a specific version
 npm run db:migrate -- --from V005
 ```
 
-### "JWT_SECRET not set" o errores de autenticación
+### "JWT_SECRET not set" or authentication errors
 
 ```bash
-# Generar un JWT_SECRET válido
+# Generate a valid JWT_SECRET
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
-# Copia el resultado en .env
+# Copy the result into .env
 ```
 
 ---
 
-## Comandos de utilidad
+## Utility commands
 
 ```bash
 # Tests
-npm test                    # Todos los tests
-npm run test:unit           # Solo unitarios
-npm run test:integration    # Solo integración
-npm run test:coverage       # Con reporte de cobertura
+npm test                    # All tests
+npm run test:unit           # Unit tests only
+npm run test:integration    # Integration tests only
+npm run test:coverage       # With coverage report
 
-# Base de datos
-npm run db:migrate          # Aplicar migraciones pendientes
-npm run db:seed             # Cargar datos de prueba
-npm run db:reset            # Revertir todo y volver a empezar (¡BORRA DATOS!)
+# Database
+npm run db:migrate          # Apply pending migrations
+npm run db:seed             # Load test data
+npm run db:reset            # Revert everything and start over (DELETES DATA!)
 
-# Calidad de código
-npm run lint                # Verificar ESLint
-npm run lint:fix            # Corregir automáticamente
-npm run format              # Aplicar Prettier
+# Code quality
+npm run lint                # Check ESLint
+npm run lint:fix            # Auto-fix
+npm run format              # Apply Prettier
 
 # Build
-npm run build               # Compilar TypeScript
-npm run build:docker        # Construir imagen Docker local
+npm run build               # Compile TypeScript
+npm run build:docker        # Build local Docker image
 ```
 
 ---
 
-## URLs útiles en local
+## Useful local URLs
 
-| Servicio | URL | Credentials (solo local) |
+| Service | URL | Credentials (local only) |
 |---------|-----|--------------------------|
 | API Gateway | http://localhost:8080 | |
 | RabbitMQ UI | http://localhost:15672 | guest / guest |
-| [Herramienta] | http://localhost:[puerto] | [user / pass] |
+| [Tool] | http://localhost:[port] | [user / pass] |
 | Swagger UI | http://localhost:3001/api-docs | |
 
 ---
 
-## Correlaciones
+## Correlations
 
-- Variables de ambiente de cada ambiente → `10-devops/environments.md`
-- Pipeline de CI/CD → `10-devops/README.md`
-- Troubleshooting en producción → `09-microservices/services/XX/runbook.md`
+- Environment variables per environment → `10-devops/environments.md`
+- CI/CD pipeline → `10-devops/README.md`
+- Production troubleshooting → `09-microservices/services/XX/runbook.md`

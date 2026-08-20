@@ -1,98 +1,98 @@
 # 12 — UX/UI
 
-> **¿Qué es esto?** El diseño de la experiencia de usuario: cómo se ve, cómo se navega
-> y cómo se comporta el sistema desde la perspectiva del usuario final.
+> **What is this?** The user experience design: how the system looks, how it is navigated,
+> and how it behaves from the end user's perspective.
 
-## Por qué el diseño va antes del código
+## Why design comes before code
 
-Cambiar un wireframe toma 5 minutos. Cambiar el código toma horas.
-Cambiar el código en producción con usuarios reales puede costar días y mala reputación.
+Changing a wireframe takes 5 minutes. Changing the code takes hours.
+Changing the code in production with real users can cost days and reputation.
 
-**Diseñar primero → implementar después.**
+**Design first → implement later.**
 
 ---
 
-## Qué hay aquí y cómo llenarlo
+## What is here and how to fill it in
 
-### `navigation-map.md` ⭐ (Empezar aquí)
-El mapa de todas las pantallas/páginas y cómo se conectan.
-**Llena:** árbol de navegación, desde qué pantalla se llega a cuál, qué rol puede acceder a qué.
+### `navigation-map.md` ⭐ (Start here)
+The map of all screens/pages and how they connect.
+**Fill in:** navigation tree, from which screen you reach which, what role can access what.
 
-**Formato:**
+**Format:**
 ```markdown
-## Mapa de navegación
+## Navigation map
 
-### Área pública (sin autenticación)
-- / (inicio)
+### Public area (no authentication)
+- / (home)
   - /login
-  - /registro
-  - /recuperar-contraseña
+  - /register
+  - /recover-password
 
-### Área privada — Rol: [Rol 1]
+### Private area — Role: [Role 1]
 - /dashboard
-  - /[modulo-1]
-    - /[modulo-1]/lista
-    - /[modulo-1]/{id}/detalle
-  - /perfil
+  - /[module-1]
+    - /[module-1]/list
+    - /[module-1]/{id}/detail
+  - /profile
 
-### Área privada — Rol: [Rol 2]
+### Private area — Role: [Role 2]
 [...]
 
-## Matriz de acceso
-| Pantalla | [Rol 1] | [Rol 2] | [Admin] |
-|---------|---------|---------|---------|
+## Access matrix
+| Screen | [Role 1] | [Role 2] | [Admin] |
+|--------|---------|---------|---------|
 | /dashboard | ✅ | ✅ | ✅ |
 | /admin | ❌ | ❌ | ✅ |
 ```
 
 ### `wireframes.md`
-Diseños de baja fidelidad de las pantallas principales.
-**Llena:** wireframes en ASCII, Figma, o Balsamiq. Enfócate en estructura, no en colores.
+Low-fidelity designs of the main screens.
+**Fill in:** wireframes in ASCII, Figma, or Balsamiq. Focus on structure, not colors.
 
 ### `design-system.md`
-El sistema de diseño del proyecto: tokens, componentes, patrones.
-**Llena:** paleta de colores, tipografía, espaciado, componentes base (botones, formularios, tablas).
+The project's design system: tokens, components, patterns.
+**Fill in:** color palette, typography, spacing, base components (buttons, forms, tables).
 
-**Formato:**
+**Format:**
 ```markdown
-## Tokens de diseño
+## Design tokens
 
-### Colores
-| Token | Valor | Uso |
+### Colors
+| Token | Value | Use |
 |-------|-------|-----|
-| --color-primary | #1976D2 | Botones principales, links |
-| --color-error | #D32F2F | Mensajes de error |
-| --color-success | #388E3C | Confirmaciones |
+| --color-primary | #1976D2 | Primary buttons, links |
+| --color-error | #D32F2F | Error messages |
+| --color-success | #388E3C | Confirmations |
 
-### Tipografía
-| Nivel | Tamaño | Peso | Uso |
-|-------|--------|------|-----|
-| H1 | 32px | 700 | Títulos de página |
-| Body | 16px | 400 | Texto general |
+### Typography
+| Level | Size | Weight | Use |
+|-------|------|--------|-----|
+| H1 | 32px | 700 | Page titles |
+| Body | 16px | 400 | General text |
 
-## Componentes
-### Botón primario
-[descripción, variantes, cuándo usarlo]
+## Components
+### Primary button
+[description, variants, when to use it]
 
-### Tabla de datos
-[columnas, paginación, búsqueda, acciones inline]
+### Data table
+[columns, pagination, search, inline actions]
 ```
 
 ---
 
-## Correlaciones con otras secciones
+## Correlations with other sections
 
-| Esta sección se alimenta de... | Y alimenta a... |
-|-------------------------------|-----------------|
-| `04-requirements/user-stories.md` → qué flujos existen | Pantallas que implementan cada HU |
-| `02-domain/entities-and-rules.md` → qué datos mostrar | Campos en wireframes |
-| `09-microservices/` → qué APIs consume el frontend | Qué datos llegan a cada pantalla |
+| This section is fed by... | And feeds into... |
+|---------------------------|-------------------|
+| `04-requirements/user-stories.md` → what flows exist | Screens implementing each HU |
+| `02-domain/entities-and-rules.md` → what data to display | Fields in wireframes |
+| `09-microservices/` → what APIs the frontend consumes | What data arrives at each screen |
 
 ---
 
-## Preguntas que esta sección debe responder
+## Questions this section must answer
 
-- ¿Cuántas pantallas tiene el sistema?
-- ¿Cómo navega cada tipo de usuario?
-- ¿Qué componentes visuales se repiten?
-- ¿Cuál es el lenguaje visual del sistema?
+- How many screens does the system have?
+- How does each type of user navigate?
+- What visual components are repeated?
+- What is the system's visual language?

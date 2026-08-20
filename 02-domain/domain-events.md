@@ -1,69 +1,69 @@
-# Eventos de Dominio
+# Domain Events
 
-> **Qué llenar aquí:** Un evento de dominio es un hecho que ocurrió en el negocio.
-> Son la columna vertebral de la comunicación asíncrona entre bounded contexts.
-> El nombre SIEMPRE en pasado y en el lenguaje ubicuo del dominio.
-
----
-
-## ¿Qué es un evento de dominio?
-
-Un **Evento de Dominio** comunica que algo importante ocurrió en el negocio.
-Es un mensaje inmutable que describe el hecho en pasado.
-
-```
-✓ PedidoCreado
-✓ PagoRechazado
-✓ UsuarioRegistrado
-✓ StockAgotado
-
-✗ CrearPedido (esto es un comando, no un evento)
-✗ PedidoActualizado (demasiado genérico, ¿qué cambió?)
-✗ EventoPedido (no indica qué ocurrió)
-```
-
-### Diferencia entre Comando y Evento
-
-| Concepto | Intención | Tiempo | Puede fallar? |
-|----------|-----------|--------|---------------|
-| **Comando** | Instrucción para hacer algo | Presente | Sí |
-| **Evento** | Notificación de algo que ocurrió | Pasado | No (ya ocurrió) |
-
-```
-Usuario → [CrearPedido] → Sistema → [PedidoCreado] → Otros contextos
-            (Comando)                   (Evento)
-```
+> **What to fill in here:** A domain event is a fact that occurred in the business.
+> They are the backbone of asynchronous communication between bounded contexts.
+> The name is ALWAYS in past tense and in the ubiquitous language of the domain.
 
 ---
 
-## Catálogo de eventos
+## What is a domain event?
 
-### Evento: [NombreEvento]
+A **Domain Event** communicates that something important occurred in the business.
+It is an immutable message that describes the fact in past tense.
 
-| Campo | Valor |
+```
+✓ OrderCreated
+✓ PaymentRejected
+✓ UserRegistered
+✓ StockDepleted
+
+✗ CreateOrder (this is a command, not an event)
+✗ OrderUpdated (too generic — what changed?)
+✗ OrderEvent (does not indicate what occurred)
+```
+
+### Difference between Command and Event
+
+| Concept | Intent | Tense | Can fail? |
+|---------|--------|-------|-----------|
+| **Command** | Instruction to do something | Present | Yes |
+| **Event** | Notification of something that occurred | Past | No (it already happened) |
+
+```
+User → [CreateOrder] → System → [OrderCreated] → Other contexts
+          (Command)                  (Event)
+```
+
+---
+
+## Event catalog
+
+### Event: [EventName]
+
+| Field | Value |
 |-------|-------|
-| **Nombre** | `[NombreDelEvento]` |
-| **Bounded Context** | [Contexto origen] |
-| **Aggregate** | [Aggregate que lo genera] |
-| **Disparador** | [Qué acción de negocio genera este evento] |
-| **Consumidores** | [Qué servicios/contextos escuchan este evento] |
-| **Canal (topic)** | `[nombre.del.topic]` |
-| **Versión del esquema** | `v1` |
-| **Garantía de entrega** | At-least-once / At-most-once / Exactly-once |
+| **Name** | `[EventName]` |
+| **Bounded Context** | [Origin context] |
+| **Aggregate** | [Aggregate that generates it] |
+| **Trigger** | [Which business action generates this event] |
+| **Consumers** | [Which services/contexts listen to this event] |
+| **Channel (topic)** | `[topic.name]` |
+| **Schema version** | `v1` |
+| **Delivery guarantee** | At-least-once / At-most-once / Exactly-once |
 
-**Payload (esquema JSON):**
+**Payload (JSON schema):**
 
 ```json
 {
   "eventId": "550e8400-e29b-41d4-a716-446655440000",
-  "eventType": "[NombreDelEvento]",
+  "eventType": "[EventName]",
   "aggregateId": "550e8400-e29b-41d4-a716-446655440001",
-  "aggregateType": "[NombreAggregate]",
+  "aggregateType": "[AggregateName]",
   "occurredAt": "2024-01-15T10:30:00Z",
   "version": 1,
   "payload": {
-    "[campo1]": "[tipo y descripción]",
-    "[campo2]": "[tipo y descripción]"
+    "[field1]": "[type and description]",
+    "[field2]": "[type and description]"
   },
   "metadata": {
     "correlationId": "550e8400-e29b-41d4-a716-446655440002",
@@ -73,186 +73,186 @@ Usuario → [CrearPedido] → Sistema → [PedidoCreado] → Otros contextos
 }
 ```
 
-**Ejemplo real del payload:**
+**Real payload example:**
 
 ```json
 {
-  "eventId": "uuid-generado",
-  "eventType": "[NombreDelEvento]",
-  "aggregateId": "uuid-del-aggregate",
-  "aggregateType": "[NombreAggregate]",
+  "eventId": "generated-uuid",
+  "eventType": "[EventName]",
+  "aggregateId": "aggregate-uuid",
+  "aggregateType": "[AggregateName]",
   "occurredAt": "2024-01-15T10:30:00Z",
   "version": 1,
   "payload": {
-    "[campo1]": "valor de ejemplo",
-    "[campo2]": 150.00
+    "[field1]": "example value",
+    "[field2]": 150.00
   }
 }
 ```
 
-**¿Qué hacen los consumidores con este evento?**
+**What do consumers do with this event?**
 
-| Servicio consumidor | Acción | Idempotente? |
-|--------------------|--------|--------------|
-| [Servicio A] | [Actualiza su modelo de datos] | Sí — usa eventId como idempotency key |
-| [Servicio B] | [Envía notificación] | Sí — verifica si notif ya fue enviada |
+| Consuming service | Action | Idempotent? |
+|------------------|--------|-------------|
+| [Service A] | [Updates its data model] | Yes — uses eventId as idempotency key |
+| [Service B] | [Sends notification] | Yes — checks if notification was already sent |
 
 ---
 
-## Campos estándar de todos los eventos
+## Standard fields for all events
 
-Todos los eventos deben incluir estos campos en la envoltura:
+All events must include these fields in the envelope:
 
-| Campo | Tipo | Descripción |
+| Field | Type | Description |
 |-------|------|-------------|
-| `eventId` | UUID | ID único del evento (para idempotencia) |
-| `eventType` | string | Nombre del evento en PascalCase |
-| `aggregateId` | UUID | ID del aggregate que generó el evento |
-| `aggregateType` | string | Tipo del aggregate |
-| `occurredAt` | ISO 8601 | Cuándo ocurrió el hecho de negocio |
-| `version` | integer | Versión del esquema (para evolución) |
-| `payload` | object | Datos del evento (específico por tipo) |
-| `metadata.correlationId` | UUID | Para rastrear una transacción a través de servicios |
-| `metadata.causationId` | UUID | ID del evento o comando que causó este evento |
-| `metadata.userId` | UUID | Usuario que inició la cadena (si aplica) |
+| `eventId` | UUID | Unique event ID (for idempotency) |
+| `eventType` | string | Event name in PascalCase |
+| `aggregateId` | UUID | ID of the aggregate that generated the event |
+| `aggregateType` | string | Aggregate type |
+| `occurredAt` | ISO 8601 | When the business fact occurred |
+| `version` | integer | Schema version (for evolution) |
+| `payload` | object | Event data (specific per type) |
+| `metadata.correlationId` | UUID | For tracing a transaction across services |
+| `metadata.causationId` | UUID | ID of the event or command that caused this event |
+| `metadata.userId` | UUID | User who initiated the chain (if applicable) |
 
 ---
 
-## Flujo de eventos: [Nombre del flujo]
+## Event flow: [Flow name]
 
-> Documenta aquí los flujos de eventos para los procesos de negocio principales.
-> Usa el formato de Event Storming: naranja=evento, azul=comando, verde=vista/policy, amarillo=aggregate.
+> Document here the event flows for the main business processes.
+> Use the Event Storming format: orange=event, blue=command, green=view/policy, yellow=aggregate.
 
 ```
 [Actor]
   │
-  │  [ComandoA]           [ComandoB]           [ComandoC]
+  │  [CommandA]           [CommandB]           [CommandC]
   ▼      │                    │                    │
 [AggregateA]          [AggregateB]          [AggregateC]
   │                        ▲                    ▲
-  │   [EventoA]            │   [EventoB]        │
+  │   [EventA]             │   [EventB]         │
   └──────────────────────▶│──────────────────▶│
 ```
 
-### Ejemplo: Flujo de creación de pedido
+### Example: Order creation flow
 
 ```
-Cliente
+Customer
   │
-  │  CrearPedido (comando)
+  │  CreateOrder (command)
   ▼
-[Aggregate: Pedido]
+[Aggregate: Order]
   │
-  │  PedidoCreado (evento)
+  │  OrderCreated (event)
   ├──────────────────────────────────┐
   │                                   ▼
-  │                          [Servicio: Inventario]
-  │                          Descuenta stock
-  │                          StockReservado (evento)
+  │                          [Service: Inventory]
+  │                          Decrements stock
+  │                          StockReserved (event)
   │
-  │  PedidoCreado (evento)
+  │  OrderCreated (event)
   └──────────────────────────────────┐
                                       ▼
-                            [Servicio: Notificaciones]
-                            Envía email al cliente
+                            [Service: Notifications]
+                            Sends email to customer
 ```
 
 ---
 
-## Estrategia de evolución de esquemas
+## Schema evolution strategy
 
-Los eventos son contratos. Cambiarlos de forma incompatible rompe a los consumidores.
+Events are contracts. Changing them in an incompatible way breaks consumers.
 
-### ¿Qué es un cambio compatible (no rompe)?
-
-```
-✓ Agregar un campo opcional nuevo al payload
-✓ Agregar un nuevo tipo de evento
-✓ Hacer un campo obligatorio → opcional
-```
-
-### ¿Qué es un cambio incompatible (rompe)?
+### What is a compatible change (does not break)?
 
 ```
-✗ Eliminar un campo del payload
-✗ Cambiar el tipo de un campo (string → number)
-✗ Hacer un campo opcional → obligatorio
-✗ Cambiar el nombre del evento
+✓ Add a new optional field to the payload
+✓ Add a new event type
+✓ Change a required field → optional
 ```
 
-### Cómo evolucionar un esquema sin romper consumidores
-
-**Estrategia: Versionar el evento**
+### What is an incompatible change (breaks)?
 
 ```
-Paso 1: Publicar EventoV2 (nuevo tipo con cambios incompatibles)
-Paso 2: Publicar ambos EventoV1 y EventoV2 durante el período de migración
-Paso 3: Migrar consumidores a V2 uno por uno
-Paso 4: Deprecar EventoV1 (avisar con 1 sprint de anticipación)
-Paso 5: Eliminar la publicación de EventoV1
+✗ Remove a field from the payload
+✗ Change the type of a field (string → number)
+✗ Change an optional field → required
+✗ Change the event name
+```
+
+### How to evolve a schema without breaking consumers
+
+**Strategy: Version the event**
+
+```
+Step 1: Publish EventV2 (new type with incompatible changes)
+Step 2: Publish both EventV1 and EventV2 during the migration period
+Step 3: Migrate consumers to V2 one by one
+Step 4: Deprecate EventV1 (announce 1 sprint in advance)
+Step 5: Stop publishing EventV1
 ```
 
 ---
 
-## Tabla resumen de eventos
+## Event summary table
 
-| Evento | Contexto origen | Topic | Consumidores | Versión |
-|--------|----------------|-------|-------------|---------|
-| [EventoA] | [ContextoA] | `[topic.a]` | [SvcB, SvcC] | v1 |
-| [EventoB] | [ContextoB] | `[topic.b]` | [SvcA] | v1 |
-
----
-
-## Políticas (Policies) — Reactions a eventos
-
-Una **Policy** (o Saga paso) describe qué ocurre automáticamente cuando llega un evento.
-Es la lógica de "siempre que X ocurra, hacer Y".
-
-```
-Evento:  PedidoCreado
-Policy:  Siempre que un PedidoCreado llegue con tipo=URGENTE,
-         emitir el comando NotificarEquipoOperaciones
-```
-
-| Evento disparador | Policy | Comando emitido | Servicio |
-|------------------|--------|-----------------|---------|
-| [EventoA] | Siempre que [condición], entonces... | [ComandoB] | [ServicioX] |
+| Event | Origin context | Topic | Consumers | Version |
+|-------|---------------|-------|-----------|---------|
+| [EventA] | [ContextA] | `[topic.a]` | [SvcB, SvcC] | v1 |
+| [EventB] | [ContextB] | `[topic.b]` | [SvcA] | v1 |
 
 ---
 
-## Patrones de resiliencia para eventos
+## Policies — Reactions to events
 
-### At-least-once delivery + Idempotencia
+A **Policy** (or Saga step) describes what happens automatically when an event arrives.
+It is the logic of "whenever X occurs, do Y".
 
-El message broker garantiza que el evento se entregue **al menos una vez** pero puede
-entregarse más de una vez (en caso de reintentos). Los consumidores deben ser **idempotentes**.
+```
+Event:  OrderCreated
+Policy: Whenever an OrderCreated arrives with type=URGENT,
+        emit the command NotifyOperationsTeam
+```
+
+| Trigger event | Policy | Emitted command | Service |
+|--------------|--------|----------------|---------|
+| [EventA] | Whenever [condition], then... | [CommandB] | [ServiceX] |
+
+---
+
+## Resilience patterns for events
+
+### At-least-once delivery + Idempotency
+
+The message broker guarantees the event is delivered **at least once** but it may be
+delivered more than once (in case of retries). Consumers must be **idempotent**.
 
 ```typescript
-// Consumidor idempotente — guarda el eventId procesado
-async function procesarEventoCreado(event: PedidoCreado): Promise<void> {
-  // 1. Verificar si ya fue procesado
-  if (await eventoYaProcesado(event.eventId)) {
-    logger.info(`Evento ${event.eventId} ya procesado, ignorando`);
+// Idempotent consumer — stores the processed eventId
+async function processOrderCreatedEvent(event: OrderCreated): Promise<void> {
+  // 1. Check if already processed
+  if (await isEventAlreadyProcessed(event.eventId)) {
+    logger.info(`Event ${event.eventId} already processed, ignoring`);
     return;
   }
 
-  // 2. Procesar el evento
-  await actualizarModelo(event.payload);
+  // 2. Process the event
+  await updateModel(event.payload);
 
-  // 3. Marcar como procesado (en la misma transacción)
-  await marcarEventoProcesado(event.eventId);
+  // 3. Mark as processed (in the same transaction)
+  await markEventProcessed(event.eventId);
 }
 ```
 
 ### Dead Letter Queue (DLQ)
 
-Cuando un evento falla después de N reintentos, va a la DLQ.
+When an event fails after N retries, it goes to the DLQ.
 
-| Configuración | Valor recomendado |
+| Configuration | Recommended value |
 |--------------|------------------|
-| Reintentos antes de DLQ | 3-5 |
-| Backoff | Exponencial (1s → 2s → 4s → 8s) |
-| Retención en DLQ | 7 días |
-| Alerta | Cuando DLQ tenga > 0 mensajes |
+| Retries before DLQ | 3-5 |
+| Backoff | Exponential (1s → 2s → 4s → 8s) |
+| DLQ retention | 7 days |
+| Alert | When DLQ has > 0 messages |
 
-> Ver runbook de DLQ en `09-microservices/services/XX-servicio/runbook.md`
+> See DLQ runbook in `09-microservices/services/XX-service/runbook.md`

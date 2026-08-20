@@ -1,121 +1,121 @@
-# Reglas de Documentación
+# Documentation Rules
 
-> Estas reglas determinan cómo se escribe, organiza y mantiene la documentación de este proyecto.
-> Una documentación que no sigue estas reglas puede ser rechazada en code review.
-
----
-
-## Principio fundamental
-
-> **"La documentación es código. Si no está actualizada, está rota."**
-
-Cada HU que modifica comportamiento del sistema DEBE incluir la actualización de los documentos
-afectados. El DoD lo exige.
+> These rules determine how documentation is written, organized, and maintained in this project.
+> Documentation that does not follow these rules may be rejected in code review.
 
 ---
 
-## Idioma
+## Core principle
 
-| Artefacto | Idioma |
-|-----------|--------|
-| Código fuente (variables, funciones, clases) | [Inglés / Español] |
-| Comentarios en código | [Inglés / Español] |
-| Commits | [Inglés / Español] (Conventional Commits) |
-| Nombres de ramas | [Inglés / Español] |
-| Documentación en Markdown | [Español] |
-| Contratos OpenAPI (descriptions) | [Español] |
-| Mensajes de error devueltos al frontend | [Español] |
-| Logs internos del sistema | [Inglés] |
+> **"Documentation is code. If it's not up to date, it's broken."**
 
-> **Regla:** Una vez elegido el idioma para cada categoría, es vinculante para todo el proyecto.
-> Mezclar idiomas en la misma categoría es motivo de rechazo en PR.
+Every HU that modifies system behavior MUST include updating the affected documents.
+The DoD requires it.
 
 ---
 
-## Estructura de archivos
+## Language
+
+| Artifact | Language |
+|----------|----------|
+| Source code (variables, functions, classes) | English |
+| Code comments | English |
+| Commits | English (Conventional Commits) |
+| Branch names | English |
+| Markdown documentation | English |
+| OpenAPI contracts (descriptions) | English |
+| Error messages returned to frontend | English (or localized) |
+| Internal system logs | English |
+
+> **Rule:** Once the language for each category is chosen, it is binding for the entire project.
+> Mixing languages in the same category is grounds for PR rejection.
+
+---
+
+## File structure
 
 ```
-Cada sección tiene su README.md que explica el propósito de la carpeta.
-Los documentos de contenido usan kebab-case.md (ej: domain-map.md, risk-register.md).
-Los templates tienen prefijo _ para aparecer primero (ej: _template-hu.md, _template-adr.md).
-Los ADRs se numeran secuencialmente: ADR-001-titulo-corto.md.
+Each section has its README.md that explains the folder's purpose.
+Content documents use kebab-case.md (e.g.: domain-map.md, risk-register.md).
+Templates are prefixed with _ to appear first (e.g.: _template-hu.md, _template-adr.md).
+ADRs are numbered sequentially: ADR-001-short-title.md.
 ```
 
 ---
 
-## Qué documentar y qué NO
+## What to document and what NOT to
 
-### SÍ documentar
+### DO document
 
-| Qué | Dónde |
-|-----|-------|
-| Decisiones de arquitectura no obvias | `05-architecture/decisions/records/ADR-NNN.md` |
-| Reglas de negocio e invariantes del dominio | `02-domain/entities-and-rules.md` |
-| Contratos API de cada servicio | `07-api/contracts/openapi/[servicio].yaml` |
-| Cambios al modelo de datos | `06-data/models.md` |
-| Procedimientos de operación | `13-operations/` |
-| Riesgos identificados | `15-project-control/risks.md` |
+| What | Where |
+|------|-------|
+| Non-obvious architectural decisions | `05-architecture/decisions/records/ADR-NNN.md` |
+| Business rules and domain invariants | `02-domain/entities-and-rules.md` |
+| API contracts for each service | `07-api/contracts/openapi/[service].yaml` |
+| Data model changes | `06-data/models.md` |
+| Operational procedures | `13-operations/` |
+| Identified risks | `15-project-control/risks.md` |
 
-### NO documentar
+### DO NOT document
 
-- Lo que el código ya dice claramente (no repetir en comentarios lo que se lee en el código)
-- Decisiones temporales o experimentos que se van a revertir
-- Detalle de implementación de librerías externas (esas tienen su propia documentación)
-- El historial de cambios (eso es git log)
-
----
-
-## Dueños de cada sección
-
-| Sección | Dueño | Frecuencia de revisión |
-|---------|-------|------------------------|
-| `00-governance/` | Tech Lead | Inicio de cada sprint |
-| `02-domain/` | Tech Lead + PO | Cuando cambia el dominio |
-| `04-requirements/` | Product Owner | Cada sprint |
-| `05-architecture/` | Tech Lead | Cada decisión de diseño |
-| `07-api/contracts/` | Desarrollador dueño del servicio | Cada cambio de API |
-| `09-microservices/` | Desarrollador dueño del servicio | Cada release |
-| `13-operations/` | DevOps / On-call | Después de cada incidente |
-| `15-project-control/` | Tech Lead | Revisión semanal |
+- What the code already says clearly (do not repeat in comments what can be read in the code)
+- Temporary decisions or experiments that will be reverted
+- Implementation details of external libraries (those have their own documentation)
+- Change history (that's what git log is for)
 
 ---
 
-## Formato de los documentos
+## Owners per section
 
-### Encabezados
-- `# H1` — solo uno por archivo, es el título
-- `## H2` — secciones principales
-- `### H3` — subsecciones
-- No usar H4 o más profundo; si lo necesitas, el documento tiene demasiada jerarquía
+| Section | Owner | Review frequency |
+|---------|-------|-----------------|
+| `00-governance/` | Tech Lead | Start of each sprint |
+| `02-domain/` | Tech Lead + PO | When the domain changes |
+| `04-requirements/` | Product Owner | Each sprint |
+| `05-architecture/` | Tech Lead | Each design decision |
+| `07-api/contracts/` | Service-owning developer | Each API change |
+| `09-microservices/` | Service-owning developer | Each release |
+| `13-operations/` | DevOps / On-call | After each incident |
+| `15-project-control/` | Tech Lead | Weekly review |
 
-### Tablas
-Usar tablas para comparaciones, registros y matrices. No usar tablas para listas simples.
+---
 
-### Código
-Siempre usar bloques de código con el lenguaje especificado:
+## Document format
+
+### Headings
+- `# H1` — only one per file; it is the title
+- `## H2` — main sections
+- `### H3` — subsections
+- Do not use H4 or deeper; if you need it, the document has too much hierarchy
+
+### Tables
+Use tables for comparisons, registers, and matrices. Do not use tables for simple lists.
+
+### Code
+Always use code blocks with the language specified:
 ````
 ```typescript
 const x = 1;
 ```
 ````
 
-### Instrucciones de plantilla
-Los bloques `> [!NOTE] INSTRUCCIONES` indican que el documento es una plantilla sin llenar.
-Eliminarlos cuando el documento esté completo.
+### Template instructions
+Blocks marked `> [!NOTE] INSTRUCTIONS` indicate the document is an unfilled template.
+Remove them when the document is complete.
 
 ---
 
-## Proceso de actualización
+## Update process
 
-1. El desarrollador identifica qué documentos afecta su cambio
-2. Actualiza los documentos junto con el código (mismo PR)
-3. El reviewer verifica que la documentación esté actualizada
-4. Si el PR cierra una HU que tenía impacto en API → el contrato OpenAPI debe estar actualizado
+1. The developer identifies which documents their change affects
+2. Updates the documents together with the code (same PR)
+3. The reviewer verifies the documentation is up to date
+4. If the PR closes a HU that had API impact → the OpenAPI contract must be updated
 
 ---
 
-## Correlaciones
+## Correlations
 
 - Git conventions → `00-governance/git-conventions.md`
-- Estándar de documentación por microservicio → `00-governance/microservices-documentation.md`
-- Definition of Done (doc como parte del DoD) → `00-governance/definition-of-done.md`
+- Per-microservice documentation standard → `00-governance/microservices-documentation.md`
+- Definition of Done (docs as part of DoD) → `00-governance/definition-of-done.md`

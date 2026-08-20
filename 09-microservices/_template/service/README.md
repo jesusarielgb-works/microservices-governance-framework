@@ -1,56 +1,56 @@
-# [Nombre del Servicio]
+# [Service Name]
 
-> Reemplaza este README con la documentación del servicio específico.
-> Elimina las instrucciones entre `[corchetes]` cuando estén completas.
-
----
-
-## Responsabilidad
-
-> [Una oración: qué hace este servicio. Qué dato es su dueño autoritativo.]
+> Replace this README with the specific service's documentation.
+> Delete the instructions in `[brackets]` when they are complete.
 
 ---
 
-## Ubicación en la arquitectura
+## Responsibility
 
-| Campo | Valor |
+> [One sentence: what this service does. What data is its authoritative owner.]
+
+---
+
+## Location in the architecture
+
+| Field | Value |
 |-------|-------|
-| Número en catálogo | [NN] |
-| Puerto local | [80XX] |
-| Repositorio | [URL] |
-| Motor de BD | [PostgreSQL / MongoDB / Redis / —] |
-| Comunica con | [lista de otros servicios que consume] |
-| Es consumido por | [lista de servicios/frontends que lo llaman] |
+| Number in catalog | [NN] |
+| Local port | [80XX] |
+| Repository | [URL] |
+| DB engine | [PostgreSQL / MongoDB / Redis / —] |
+| Communicates with | [list of other services it consumes] |
+| Consumed by | [list of services/frontends that call it] |
 
 ---
 
-## Responsabilidades (qué SÍ hace este servicio)
+## Responsibilities (what this service DOES)
 
-- [Responsabilidad 1]
-- [Responsabilidad 2]
+- [Responsibility 1]
+- [Responsibility 2]
 
-## Fuera de su alcance (qué NO hace)
+## Out of scope (what it does NOT do)
 
-- [Qué delegó a otro servicio y cuál]
+- [What it delegated to another service and which one]
 
 ---
 
-## Cómo correrlo localmente
+## How to run it locally
 
 ```bash
-# Desde la raíz del proyecto
-docker compose up -d [nombre-servicio]
+# From the project root
+docker compose up -d [service-name]
 
-# Verificar
-curl http://localhost:[puerto]/health
+# Verify
+curl http://localhost:[port]/health
 ```
 
 ---
 
-## Documentos relacionados
+## Related documents
 
-- [data-model.md](./data-model.md) — Esquema de BD
-- [events.md](./events.md) — Eventos que publica y consume
-- [decisions.md](./decisions.md) — Decisiones de diseño internas
-- [runbook.md](./runbook.md) — Operación en producción
-- [Contrato API](../../../07-api/contracts/openapi/[nombre-servicio].yaml)
+- [data-model.md](./data-model.md) — DB schema
+- [events.md](./events.md) — Events it publishes and consumes
+- [decisions.md](./decisions.md) — Internal design decisions
+- [runbook.md](./runbook.md) — Operation in production
+- [API Contract](../../../07-api/contracts/openapi/[service-name].yaml)

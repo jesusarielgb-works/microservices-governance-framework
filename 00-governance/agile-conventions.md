@@ -1,111 +1,111 @@
-# Convenciones Ágiles del Equipo
+# Agile Team Conventions
 
-> Define cómo trabaja el equipo en sus ciclos de desarrollo. Acuerda y firma con todo el equipo
-> antes de iniciar el primer sprint. Actualiza cuando el equipo decida cambiar algo.
+> Defines how the team works through its development cycles. Agree on and sign off
+> with the entire team before the first sprint. Update when the team decides to change something.
 
 ---
 
-## Estructura del Sprint
+## Sprint structure
 
-| Campo | Valor |
+| Field | Value |
 |-------|-------|
-| Duración | [1 semana / 2 semanas / 3 semanas] |
-| Inicio del sprint | [Lunes / Martes / Miércoles] |
-| Fin del sprint | [Viernes de la semana N] |
-| Sprint actual | Sprint [N] — [fecha inicio] al [fecha fin] |
-| Capacidad estimada | [N story points por sprint] |
+| Duration | [1 week / 2 weeks / 3 weeks] |
+| Sprint start | [Monday / Tuesday / Wednesday] |
+| Sprint end | [Friday of week N] |
+| Current sprint | Sprint [N] — [start date] to [end date] |
+| Estimated capacity | [N story points per sprint] |
 
 ---
 
-## Ceremonias
+## Ceremonies
 
 ### Sprint Planning
-- **Cuándo:** Primer día del sprint — [hora]
-- **Duración:** Máximo [1h por semana de sprint]
-- **Quiénes:** Todo el equipo
-- **Objetivo:** Seleccionar y comprometer las HUs del sprint, dividir en tareas técnicas
-- **Artefacto de salida:** Sprint Backlog actualizado en [herramienta: Jira / Linear / GitHub Issues]
+- **When:** First day of the sprint — [time]
+- **Duration:** Maximum [1h per week of sprint]
+- **Who:** Entire team
+- **Goal:** Select and commit to sprint user stories, break down into technical tasks
+- **Output artifact:** Sprint Backlog updated in [tool: Jira / Linear / GitHub Issues]
 
 ### Daily Stand-up
-- **Cuándo:** Todos los días — [hora]
-- **Duración:** Máximo 15 minutos
-- **Formato:**
-  1. ¿Qué hice ayer?
-  2. ¿Qué haré hoy?
-  3. ¿Hay algo que me bloquea?
-- **Regla:** Las discusiones técnicas van después del daily, no durante
+- **When:** Every day — [time]
+- **Duration:** Maximum 15 minutes
+- **Format:**
+  1. What did I do yesterday?
+  2. What will I do today?
+  3. Is anything blocking me?
+- **Rule:** Technical discussions happen after the daily, not during it
 
 ### Sprint Review
-- **Cuándo:** Último día del sprint — [hora]
-- **Duración:** Máximo [30 min]
-- **Quiénes:** Equipo + Product Owner (+ stakeholders si aplica)
-- **Objetivo:** Mostrar lo que se construyó y recoger feedback
+- **When:** Last day of the sprint — [time]
+- **Duration:** Maximum [30 min]
+- **Who:** Team + Product Owner (+ stakeholders if applicable)
+- **Goal:** Show what was built and collect feedback
 
-### Sprint Retrospectiva
-- **Cuándo:** Último día del sprint — después del review
-- **Duración:** Máximo [45 min]
-- **Formato:** [Qué salió bien / Qué mejorar / Compromisos de acción]
-- **Regla:** Cada retro produce mínimo 1 acción de mejora con dueño y fecha
+### Sprint Retrospective
+- **When:** Last day of the sprint — after the review
+- **Duration:** Maximum [45 min]
+- **Format:** [What went well / What to improve / Action commitments]
+- **Rule:** Each retro produces at least 1 improvement action with an owner and due date
 
-### Refinamiento (Backlog Grooming)
-- **Cuándo:** [Miércoles de la segunda semana / a mitad del sprint]
-- **Duración:** Máximo [1h]
-- **Objetivo:** Detallar y estimar HUs para el siguiente sprint
-- **Criterio de salida de refinamiento:** La HU cumple el Definition of Ready
-
----
-
-## Estimación
-
-### Escala
-| Puntos | Significado |
-|--------|-------------|
-| 1 | Trivial — se hace en horas |
-| 2 | Pequeño — se hace en un día |
-| 3 | Mediano — toma 2-3 días |
-| 5 | Grande — toma casi un sprint completo |
-| 8 | Muy grande — debería dividirse |
-| 13 | Épico — DEBE dividirse antes de sprint |
-
-**Técnica:** [Planning Poker / T-shirt sizing]
-**Herramienta:** [nombre de la herramienta]
-
-### Regla de estimación
-- Si hay desacuerdo en 2+ niveles (ej: alguien dice 3 y otro dice 8), discutir antes de votar de nuevo.
-- Si una HU se estima en 8 o 13, debe dividirse en sub-tareas menores.
+### Backlog Refinement
+- **When:** [Wednesday of the second week / mid-sprint]
+- **Duration:** Maximum [1h]
+- **Goal:** Detail and estimate user stories for the next sprint
+- **Exit criterion:** The user story meets the Definition of Ready
 
 ---
 
-## Herramienta de backlog
+## Estimation
 
-**Herramienta:** [Jira / Linear / GitHub Projects / Trello]
-**URL del tablero:** [URL]
+### Scale
+| Points | Meaning |
+|--------|---------|
+| 1 | Trivial — done in hours |
+| 2 | Small — done in one day |
+| 3 | Medium — takes 2–3 days |
+| 5 | Large — takes almost a full sprint |
+| 8 | Very large — should be split |
+| 13 | Epic — MUST be split before the sprint |
 
-### Columnas del tablero
-| Columna | Significado |
-|---------|-------------|
-| Backlog | Pendiente de refinar |
-| Ready | Lista para entrar al sprint (cumple DoR) |
-| In Progress | Alguien está trabajando en ello |
-| In Review | En Pull Request / code review |
-| Done | Cumple DoD y está cerrada |
+**Technique:** [Planning Poker / T-shirt sizing]
+**Tool:** [tool name]
+
+### Estimation rule
+- If there is disagreement of 2+ levels (e.g., someone says 3 and another says 8), discuss before voting again.
+- If a story is estimated at 8 or 13, it must be split into smaller sub-tasks.
 
 ---
 
-## Velocidad del equipo
+## Backlog tool
 
-| Sprint | Story Points completados | Notas |
-|--------|--------------------------|-------|
+**Tool:** [Jira / Linear / GitHub Projects / Trello]
+**Board URL:** [URL]
+
+### Board columns
+| Column | Meaning |
+|--------|---------|
+| Backlog | Pending refinement |
+| Ready | Ready to enter the sprint (meets DoR) |
+| In Progress | Someone is actively working on it |
+| In Review | In Pull Request / code review |
+| Done | Meets DoD and is closed |
+
+---
+
+## Team velocity
+
+| Sprint | Story points completed | Notes |
+|--------|----------------------|-------|
 | Sprint 1 | — | — |
 | Sprint 2 | — | — |
 | Sprint 3 | — | — |
-| Promedio | — | — |
+| Average | — | — |
 
 ---
 
-## Correlaciones
+## Related documents
 
 - Definition of Ready → `00-governance/definition-of-ready.md`
 - Definition of Done → `00-governance/definition-of-done.md`
-- Gestión de riesgos → `15-project-control/risks.md`
-- Backlog de deuda técnica → `15-project-control/tech-backlog.md`
+- Risk management → `15-project-control/risks.md`
+- Technical debt backlog → `15-project-control/tech-backlog.md`

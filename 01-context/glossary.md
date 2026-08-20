@@ -1,54 +1,54 @@
-# Glosario del Proyecto
+# Project Glossary
 
-> **Instrucciones:** Define aquí todos los términos técnicos y de negocio usados en el proyecto.
-> Este es el diccionario oficial — si hay ambigüedad, este documento gana.
-> Agrega términos durante todo el proyecto, no solo al inicio.
-
----
-
-## Cómo usar este glosario
-
-1. Antes de usar un término técnico o de negocio en código, docs o conversaciones: búscalo aquí.
-2. Si no está: agrégalo con su definición.
-3. Si hay desacuerdo sobre la definición: discútela en el equipo y actualiza este documento.
+> **Instructions:** Define here all technical and business terms used in the project.
+> This is the official dictionary — if there is ambiguity, this document wins.
+> Add terms throughout the project, not only at the start.
 
 ---
 
-## Términos del dominio
+## How to use this glossary
 
-| Término | Definición | Notas / Sinónimos |
-|---------|------------|------------------|
-| [Término A] | [Definición precisa en el contexto de este sistema] | [Sinónimos o usos alternativos a EVITAR] |
-| [Término B] | [Definición] | |
-
----
-
-## Términos técnicos del proyecto
-
-| Término | Definición |
-|---------|------------|
-| Microservicio | Servicio independiente con responsabilidad única, su propio proceso y su propia base de datos |
-| Evento de dominio | Hecho que ocurrió en el negocio y que otros servicios pueden observar. Nombre siempre en pasado. |
-| Bounded Context | Límite dentro del cual un modelo de dominio particular tiene significado consistente |
-| API Gateway | Punto único de entrada al sistema que enruta solicitudes a los microservicios correspondientes |
-| Circuit Breaker | Patrón que detiene las llamadas a un servicio que está fallando, evitando cascadas de fallos |
-| Saga | Secuencia de transacciones locales en diferentes servicios con compensaciones en caso de fallo |
-| Dead Letter Queue | Cola donde van los mensajes que no pudieron ser procesados después de varios reintentos |
-| Idempotencia | Propiedad de una operación de producir el mismo resultado si se ejecuta varias veces |
+1. Before using a technical or business term in code, docs, or conversations: look it up here.
+2. If it's not there: add it with its definition.
+3. If there is disagreement about the definition: discuss it as a team and update this document.
 
 ---
 
-## Acrónimos
+## Domain terms
 
-| Acrónimo | Significado |
-|----------|-------------|
+| Term | Definition | Notes / Synonyms |
+|------|-----------|-----------------|
+| [Term A] | [Precise definition in the context of this system] | [Synonyms or alternative uses to AVOID] |
+| [Term B] | [Definition] | |
+
+---
+
+## Technical terms of the project
+
+| Term | Definition |
+|------|-----------|
+| Microservice | Independent service with a single responsibility, its own process, and its own database |
+| Domain Event | A fact that occurred in the business that other services can observe. Name always in past tense. |
+| Bounded Context | Boundary within which a particular domain model has consistent meaning |
+| API Gateway | Single entry point to the system that routes requests to the corresponding microservices |
+| Circuit Breaker | Pattern that stops calls to a failing service, preventing failure cascades |
+| Saga | Sequence of local transactions across different services with compensating transactions on failure |
+| Dead Letter Queue | Queue where messages that could not be processed after several retries are sent |
+| Idempotence | Property of an operation to produce the same result if executed multiple times |
+
+---
+
+## Acronyms
+
+| Acronym | Meaning |
+|---------|---------|
 | IAM | Identity and Access Management |
 | JWT | JSON Web Token |
 | API | Application Programming Interface |
 | CRUD | Create, Read, Update, Delete |
 | DTO | Data Transfer Object |
-| RF | Requisito Funcional |
-| RNF | Requisito No Funcional |
+| FR | Functional Requirement |
+| NFR | Non-Functional Requirement |
 | SLO | Service Level Objective |
 | SLA | Service Level Agreement |
 | ADR | Architecture Decision Record |

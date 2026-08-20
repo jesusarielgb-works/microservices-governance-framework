@@ -1,154 +1,154 @@
-# Política de Seguridad
+# Security Policy
 
-> La seguridad no es una feature — es una propiedad del sistema que se construye desde
-> el primer día. Este documento define las prácticas obligatorias.
-> Cualquier desviación debe ser aprobada explícitamente por el Tech Lead.
-
----
-
-## Principios de seguridad
-
-1. **Defense in Depth:** Múltiples capas de seguridad. Si una falla, las otras contienen el daño.
-2. **Least Privilege:** Cada componente tiene solo los permisos mínimos necesarios.
-3. **Fail Secure:** En caso de error, el sistema deniega el acceso, no lo permite.
-4. **Security by Design:** Los controles de seguridad se diseñan desde el inicio, no se agregan al final.
-5. **Zero Trust:** Verificar siempre, nunca confiar implícitamente, incluso dentro de la red interna.
+> Security is not a feature — it is a system property built from day one. This document
+> defines the mandatory practices.
+> Any deviation must be explicitly approved by the Tech Lead.
 
 ---
 
-## Autenticación
+## Security principles
+
+1. **Defense in Depth:** Multiple security layers. If one fails, the others contain the damage.
+2. **Least Privilege:** Each component has only the minimum necessary permissions.
+3. **Fail Secure:** In case of error, the system denies access, does not allow it.
+4. **Security by Design:** Security controls are designed from the start, not added at the end.
+5. **Zero Trust:** Always verify, never implicitly trust, even within the internal network.
+
+---
+
+## Authentication
 
 ### JWT (JSON Web Tokens)
 
-| Propiedad | Valor obligatorio |
-|-----------|------------------|
-| Algoritmo de firma | RS256 (asimétrico) o HS256 con secret de 256+ bits |
-| Expiración del access token | 1 hora (`exp`) |
-| Expiración del refresh token | 7 días |
-| Claims obligatorios | `sub` (userId), `iat`, `exp`, `jti` (unique ID del token) |
-| Almacenamiento en cliente | `httpOnly cookie` (web) o Keychain/Keystore (móvil) |
+| Property | Required value |
+|----------|---------------|
+| Signing algorithm | RS256 (asymmetric) or HS256 with 256+ bit secret |
+| Access token expiration | 1 hour (`exp`) |
+| Refresh token expiration | 7 days |
+| Required claims | `sub` (userId), `iat`, `exp`, `jti` (unique token ID) |
+| Client storage | `httpOnly cookie` (web) or Keychain/Keystore (mobile) |
 
-**Claims prohibidos en el payload:**
-- Contraseñas
-- Datos de tarjetas
-- PII completo (solo el ID del usuario)
+**Prohibited in the payload:**
+- Passwords
+- Card data
+- Full PII (only the user ID)
 
 ### Refresh Token
 
-- Almacenado en la base de datos (con hash bcrypt)
-- Rotación obligatoria en cada uso (un refresh token = un uso)
-- Invalidación en logout y en cambio de contraseña
-- Invalidación de TODOS los tokens activos si se detecta uso de token revocado
+- Stored in the database (with bcrypt hash)
+- Mandatory rotation on each use (one refresh token = one use)
+- Invalidated on logout and on password change
+- ALL active tokens invalidated if use of a revoked token is detected
 
 ---
 
-## Autorización
+## Authorization
 
 ### RBAC (Role-Based Access Control)
 
-| Rol | Descripción | Permisos |
-|-----|-------------|---------|
-| `SUPER_ADMIN` | Administrador técnico del sistema | Todos |
-| `ADMIN` | Administrador de negocio | [definir] |
-| `OPERATOR` | Operador con permisos de escritura | [definir] |
-| `VIEWER` | Solo lectura | [definir] |
-| `[ROL_PERSONALIZADO]` | [descripción] | [definir] |
+| Role | Description | Permissions |
+|------|-------------|------------|
+| `SUPER_ADMIN` | System technical administrator | All |
+| `ADMIN` | Business administrator | [define] |
+| `OPERATOR` | Operator with write permissions | [define] |
+| `VIEWER` | Read-only | [define] |
+| `[CUSTOM_ROLE]` | [description] | [define] |
 
-**Modelo de permisos:**
+**Permission model:**
 
 ```
-Permiso: [recurso]:[acción]
+Permission: [resource]:[action]
 
-Ejemplos:
-  pedidos:create
-  pedidos:read
-  pedidos:update
-  pedidos:delete
-  usuarios:read
-  reportes:export
+Examples:
+  orders:create
+  orders:read
+  orders:update
+  orders:delete
+  users:read
+  reports:export
 ```
 
-**Validación:**
-- El API Gateway valida el JWT (firma y expiración)
-- Cada servicio valida los permisos del rol para la operación específica
-- Los roles se incluyen en el JWT como claim `roles: ["OPERATOR", "VIEWER"]`
+**Validation:**
+- The API Gateway validates the JWT (signature and expiration)
+- Each service validates the role permissions for the specific operation
+- Roles are included in the JWT as claim `roles: ["OPERATOR", "VIEWER"]`
 
 ---
 
-## Comunicación segura
+## Secure communication
 
-### Transmisión
+### Transmission
 
-- **HTTPS obligatorio** en todos los ambientes excepto local
-- TLS 1.2 mínimo; TLS 1.3 recomendado
-- Certificados: Let's Encrypt (staging) / CA corporativa (producción)
-- HSTS activado en producción
+- **HTTPS mandatory** in all environments except local
+- TLS 1.2 minimum; TLS 1.3 recommended
+- Certificates: Let's Encrypt (staging) / Corporate CA (production)
+- HSTS enabled in production
 
-### Comunicación interna entre servicios
+### Internal service-to-service communication
 
-- mTLS para comunicación servicio-a-servicio en producción (si es posible con service mesh)
-- Bearer token o API key interna para servicios que no soporten mTLS
+- mTLS for service-to-service communication in production (if possible with service mesh)
+- Bearer token or internal API key for services that do not support mTLS
 
 ---
 
-## Manejo de secretos
+## Secret management
 
 ```
-✗ NUNCA en el código fuente
-✗ NUNCA en .env commiteado
-✗ NUNCA en logs
-✗ NUNCA en mensajes de error al cliente
-✓ Variables de ambiente (inyectadas por el orchestrador)
+✗ NEVER in source code
+✗ NEVER in committed .env
+✗ NEVER in logs
+✗ NEVER in client error messages
+✓ Environment variables (injected by the orchestrator)
 ✓ Vault (HashiCorp Vault, AWS Secrets Manager, etc.)
-✓ Kubernetes Secrets (encriptados con KMS)
+✓ Kubernetes Secrets (encrypted with KMS)
 ```
 
-**Rotación de secretos:**
-- API keys: cada 90 días
-- Certificados TLS: 60 días antes del vencimiento
-- Passwords de BD: cada 6 meses o inmediatamente si hay sospecha de compromiso
+**Secret rotation:**
+- API keys: every 90 days
+- TLS certificates: 60 days before expiration
+- DB passwords: every 6 months or immediately if compromise is suspected
 
 ---
 
-## Validación y sanitización de entradas
+## Input validation and sanitization
 
-### Reglas generales
+### General rules
 
-1. **Nunca confíes en el input del usuario.** Valida en el borde (controller) antes de procesar.
-2. **Whitelist, no blacklist.** Define lo que se permite, no solo lo que se prohíbe.
-3. **Rechaza temprano.** Si el input es inválido, responde 400 y no proceses más.
+1. **Never trust user input.** Validate at the edge (controller) before processing.
+2. **Whitelist, not blacklist.** Define what is allowed, not only what is prohibited.
+3. **Reject early.** If input is invalid, respond 400 and do not process further.
 
-### SQL Injection — Prevención
+### SQL Injection — Prevention
 
 ```typescript
 // ✗ VULNERABLE
 const result = await db.query(`SELECT * FROM users WHERE email = '${userInput}'`);
 
-// ✓ SEGURO — Usar parámetros preparados siempre
+// ✓ SAFE — always use prepared parameters
 const result = await db.query('SELECT * FROM users WHERE email = $1', [userInput]);
 ```
 
-### XSS — Prevención
+### XSS — Prevention
 
 ```typescript
-// ✗ VULNERABLE — renderizar HTML sin escapar
+// ✗ VULNERABLE — rendering HTML without escaping
 element.innerHTML = userProvidedContent;
 
-// ✓ SEGURO — usar textContent o sanitizar
+// ✓ SAFE — use textContent or sanitize
 element.textContent = userProvidedContent;
-// o con librería: DOMPurify.sanitize(userProvidedContent)
+// or with library: DOMPurify.sanitize(userProvidedContent)
 ```
 
-### Validación con Zod / Joi
+### Validation with Zod / Joi
 
 ```typescript
-// Schema de validación explícito en el controller
-const CrearPedidoSchema = z.object({
-  clienteId: z.string().uuid(),
+// Explicit validation schema in the controller
+const CreateOrderSchema = z.object({
+  clientId: z.string().uuid(),
   items: z.array(z.object({
-    productoId: z.string().uuid(),
-    cantidad: z.number().int().positive().max(1000),
-    precio: z.object({
+    productId: z.string().uuid(),
+    quantity: z.number().int().positive().max(1000),
+    price: z.object({
       amount: z.number().positive(),
       currency: z.enum(['COP', 'USD']),
     }),
@@ -158,29 +158,29 @@ const CrearPedidoSchema = z.object({
 
 ---
 
-## OWASP Top 10 — Checklist de revisión
+## OWASP Top 10 — Review checklist
 
-| Vulnerabilidad | Control implementado |
-|----------------|---------------------|
-| A01: Broken Access Control | RBAC + validación de permisos en cada servicio |
-| A02: Cryptographic Failures | TLS 1.2+, bcrypt para passwords, secrets en vault |
-| A03: Injection | Parámetros preparados en SQL, validación de schema |
-| A04: Insecure Design | Threat modeling en el diseño, Security review |
-| A05: Security Misconfiguration | IaC para configuración, revisión de defaults |
-| A06: Vulnerable Components | Dependabot / Snyk para actualizaciones automáticas |
-| A07: Authentication Failures | JWT con rotación, brute-force protection |
-| A08: Software Integrity Failures | Verificar checksums de dependencias, SBOM |
-| A09: Logging Failures | Logs sin PII, centralizados, con alertas |
-| A10: SSRF | Whitelist de URLs externas, no seguir redirects automáticamente |
+| Vulnerability | Implemented control |
+|---------------|-------------------|
+| A01: Broken Access Control | RBAC + permission validation in each service |
+| A02: Cryptographic Failures | TLS 1.2+, bcrypt for passwords, secrets in vault |
+| A03: Injection | Prepared parameters in SQL, schema validation |
+| A04: Insecure Design | Threat modeling in design, Security review |
+| A05: Security Misconfiguration | IaC for configuration, review of defaults |
+| A06: Vulnerable Components | Dependabot / Snyk for automatic updates |
+| A07: Authentication Failures | JWT with rotation, brute-force protection |
+| A08: Software Integrity Failures | Verify dependency checksums, SBOM |
+| A09: Logging Failures | Logs without PII, centralized, with alerts |
+| A10: SSRF | Whitelist of external URLs, do not follow redirects automatically |
 
 ---
 
-## Auditoría y logs de seguridad
+## Audit and security logs
 
-### Eventos que SIEMPRE se registran
+### Events that are ALWAYS recorded
 
 ```typescript
-// Eventos de seguridad — guardar en log separado, con retención > 1 año
+// Security events — store in a separate log, with retention > 1 year
 const SECURITY_EVENTS = [
   'auth.login.success',
   'auth.login.failure',
@@ -194,8 +194,8 @@ const SECURITY_EVENTS = [
 ];
 ```
 
-**Campos obligatorios en logs de seguridad:**
-- `userId` (o `ANONYMOUS` si no autenticado)
+**Required fields in security logs:**
+- `userId` (or `ANONYMOUS` if not authenticated)
 - `sourceIp`
 - `action`
 - `resource`
@@ -204,30 +204,30 @@ const SECURITY_EVENTS = [
 
 ---
 
-## Proceso de vulnerabilidades
+## Vulnerability process
 
-### Qué hacer si encuentras una vulnerabilidad
+### What to do if you find a vulnerability
 
-1. **No la comitas al repo público** ni la discutas en canales abiertos
-2. Notifica inmediatamente al Tech Lead por canal privado
-3. Crea un issue privado o en repositorio restringido
-4. Se asigna severidad (CVSS score o clasificación interna)
-5. Se remedia en el sprint actual si es crítica, en el siguiente si es alta
+1. **Do not commit it to the public repo** or discuss it in open channels
+2. Immediately notify the Tech Lead via a private channel
+3. Create a private issue or a restricted repository issue
+4. Severity is assigned (CVSS score or internal classification)
+5. Remediated in the current sprint if critical, in the next sprint if high
 
-### SLAs de remediación
+### Remediation SLAs
 
-| Severidad | Tiempo de remediación |
-|-----------|----------------------|
-| Crítica (CVSS 9-10) | 24 horas |
-| Alta (CVSS 7-8.9) | 1 semana |
-| Media (CVSS 4-6.9) | 1 mes |
-| Baja (CVSS < 4) | Próxima revisión de seguridad |
+| Severity | Remediation time |
+|----------|----------------|
+| Critical (CVSS 9-10) | 24 hours |
+| High (CVSS 7-8.9) | 1 week |
+| Medium (CVSS 4-6.9) | 1 month |
+| Low (CVSS < 4) | Next security review |
 
 ---
 
-## Correlaciones
+## Correlations
 
-- Requisitos no funcionales de seguridad → `04-requirements/non-functional.md`
-- ADR sobre autenticación → `05-architecture/decisions/`
-- Observabilidad de eventos de seguridad → `13-operations/observability.md`
-- RBAC implementado en → `09-microservices/services/XX-auth-service/`
+- Security non-functional requirements → `04-requirements/non-functional.md`
+- ADR on authentication → `05-architecture/decisions/`
+- Security event observability → `13-operations/observability.md`
+- RBAC implemented in → `09-microservices/services/XX-auth-service/`

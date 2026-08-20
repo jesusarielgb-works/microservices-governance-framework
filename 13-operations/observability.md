@@ -1,30 +1,30 @@
-# Observabilidad del Sistema
+# System Observability
 
-> Un sistema no observable no puede ser operado. La observabilidad no es un feature opcional
-> que se agrega después — se diseña desde el primer sprint.
-> Los 3 pilares: Logs, Métricas, Trazas.
+> An unobservable system cannot be operated. Observability is not an optional feature
+> added later — it is designed from the first sprint.
+> The 3 pillars: Logs, Metrics, Traces.
 
-> **Nota de stack:** Los conceptos (structured logging, RED metrics, OpenTelemetry) aplican
-> a cualquier lenguaje. Los ejemplos de código usan las librerías del ecosistema Node.js
-> (pino, prom-client, @opentelemetry/sdk-node). Para otras tecnologías, los equivalentes son:
+> **Stack note:** The concepts (structured logging, RED metrics, OpenTelemetry) apply
+> to any language. Code examples use Node.js ecosystem libraries
+> (pino, prom-client, @opentelemetry/sdk-node). For other technologies, the equivalents are:
 > - Java: Logback/SLF4J + Micrometer + OpenTelemetry Java Agent
 > - Python: structlog + prometheus_client + opentelemetry-sdk
 > - Go: zap + prometheus/client_golang + go.opentelemetry.io/otel
 
 ---
 
-## Los 3 pilares de la observabilidad
+## The 3 pillars of observability
 
 ```
                     ┌───────────────────────────────────────────┐
-                    │           Sistema en producción           │
+                    │           Production system               │
                     │                                           │
-                    │  [Servicio A]  [Servicio B]  [Servicio C] │
+                    │  [Service A]   [Service B]  [Service C]  │
                     └──────┬──────────────┬───────────┬─────────┘
                            │              │           │
                ┌───────────┼──────────────┼───────────┼──────────┐
                ▼           ▼              ▼           ▼          │
-           [LOGS]      [MÉTRICAS]     [TRAZAS]   [EVENTOS]      │
+           [LOGS]      [METRICS]      [TRACES]   [EVENTS]       │
                │           │              │                       │
                ▼           ▼              ▼                       │
        [Elasticsearch] [Prometheus]  [Jaeger/Zipkin]             │
@@ -34,7 +34,7 @@
                            │              │                       │
                            └──────────────┘                      │
                                   │                              │
-                           [ALERTAS] ──────────────────────────▶│
+                           [ALERTS] ──────────────────────────▶│
                         [Alertmanager]                          │
                         [PagerDuty]                             │
                         [Slack]                                  │
@@ -45,9 +45,9 @@
 
 ## Logs
 
-### Formato estándar (JSON estructurado)
+### Standard format (structured JSON)
 
-Todos los servicios deben producir logs en JSON con estos campos mínimos:
+All services must produce JSON logs with these minimum fields:
 
 ```json
 {
@@ -57,8 +57,8 @@ Todos los servicios deben producir logs en JSON con estos campos mínimos:
   "version": "1.3.0",
   "environment": "production",
   "correlationId": "550e8400-e29b-41d4-a716-446655440000",
-  "userId": "uuid-del-usuario-si-disponible",
-  "message": "Usuario autenticado correctamente",
+  "userId": "user-uuid-if-available",
+  "message": "User authenticated successfully",
   "context": {
     "userId": "uuid",
     "method": "POST",
@@ -69,129 +69,129 @@ Todos los servicios deben producir logs en JSON con estos campos mínimos:
 }
 ```
 
-**Campos obligatorios:**
+**Required fields:**
 
-| Campo | Descripción |
+| Field | Description |
 |-------|-------------|
-| `timestamp` | ISO 8601 con milisegundos y zona UTC |
+| `timestamp` | ISO 8601 with milliseconds and UTC timezone |
 | `level` | `DEBUG`, `INFO`, `WARN`, `ERROR`, `FATAL` |
-| `service` | Nombre del microservicio |
-| `correlationId` | Para rastrear la transacción a través de servicios |
-| `message` | Mensaje descriptivo, sin datos sensibles |
+| `service` | Microservice name |
+| `correlationId` | For tracing the transaction across services |
+| `message` | Descriptive message, without sensitive data |
 
-### Niveles de log
+### Log levels
 
-| Nivel | Cuándo usarlo | Ejemplo |
-|-------|--------------|---------|
-| `DEBUG` | Info de desarrollo. Desactivado en producción | "Query SQL ejecutada: SELECT..." |
-| `INFO` | Eventos de negocio normales | "Pedido #123 creado" |
-| `WARN` | Situación anormal pero no falla | "Token a punto de expirar", "Retry #2" |
-| `ERROR` | Error que requiere atención | "Fallo al conectar a PostgreSQL" |
-| `FATAL` | Error que hace caer el servicio | "No se puede iniciar: puerto en uso" |
+| Level | When to use it | Example |
+|-------|---------------|---------|
+| `DEBUG` | Development info. Disabled in production | "SQL query executed: SELECT..." |
+| `INFO` | Normal business events | "Order #123 created" |
+| `WARN` | Abnormal but not failure | "Token about to expire", "Retry #2" |
+| `ERROR` | Error that requires attention | "Failed to connect to PostgreSQL" |
+| `FATAL` | Error that brings down the service | "Cannot start: port in use" |
 
-### Lo que NO va en los logs
+### What NOT to log
 
 ```
-✗ Contraseñas o tokens completos
-✗ Números de tarjeta de crédito
-✗ PII sin enmascarar (GDPR/Habeas Data)
-✗ Queries SQL completos con datos de usuarios
-✓ IDs, conteos, duraciones, códigos de estado
-✓ Primeros/últimos 4 dígitos de tarjeta: "****1234"
-✓ Email enmascarado: "u***@ejemplo.com"
+✗ Passwords or full tokens
+✗ Credit card numbers
+✗ Unmasked PII (GDPR/Data Protection)
+✗ Full SQL queries with user data
+✓ IDs, counts, durations, status codes
+✓ First/last 4 digits of card: "****1234"
+✓ Masked email: "u***@example.com"
 ```
 
-### Implementación
+### Implementation
 
 ```typescript
-// Usar siempre un logger configurado, nunca console.log
+// Always use a configured logger, never console.log
 import { logger } from '@shared/logger';
 
-// ✓ Correcto
-logger.info('Pedido creado', { pedidoId: pedido.id, clienteId: pedido.clienteId });
+// ✓ Correct
+logger.info('Order created', { orderId: order.id, customerId: order.customerId });
 
-// ✗ Incorrecto
-console.log('pedido:', JSON.stringify(pedido)); // Puede exponer datos sensibles
+// ✗ Incorrect
+console.log('order:', JSON.stringify(order)); // May expose sensitive data
 ```
 
 ---
 
-## Métricas
+## Metrics
 
-### Métricas RED (Rate, Errors, Duration)
+### RED Metrics (Rate, Errors, Duration)
 
-Para cada endpoint y cada operación de negocio, medir:
+For each endpoint and each business operation, measure:
 
-| Métrica | Tipo | Descripción |
-|---------|------|-------------|
-| `http_requests_total` | Counter | Total de requests por método, path, status |
-| `http_request_duration_seconds` | Histogram | Latencia de cada request |
-| `http_requests_in_flight` | Gauge | Requests activos en este momento |
+| Metric | Type | Description |
+|--------|------|-------------|
+| `http_requests_total` | Counter | Total requests by method, path, status |
+| `http_request_duration_seconds` | Histogram | Latency of each request |
+| `http_requests_in_flight` | Gauge | Active requests at this moment |
 
 ```typescript
-// Implementación con prom-client (Node.js)
+// Implementation with prom-client (Node.js)
 import { Counter, Histogram, Registry } from 'prom-client';
 
 const requestCounter = new Counter({
   name: 'http_requests_total',
-  help: 'Total de HTTP requests',
+  help: 'Total HTTP requests',
   labelNames: ['method', 'path', 'status'],
 });
 
 const requestDuration = new Histogram({
   name: 'http_request_duration_seconds',
-  help: 'Duración de HTTP requests en segundos',
+  help: 'HTTP request duration in seconds',
   labelNames: ['method', 'path', 'status'],
-  buckets: [0.01, 0.05, 0.1, 0.3, 0.5, 1, 2, 5], // segundos
+  buckets: [0.01, 0.05, 0.1, 0.3, 0.5, 1, 2, 5], // seconds
 });
 ```
 
-### Métricas de negocio (USE method para recursos)
+### Business metrics (USE method for resources)
 
-| Métrica de negocio | Tipo | Descripción |
-|-------------------|------|-------------|
-| `pedidos_creados_total` | Counter | Pedidos creados exitosamente |
-| `pedidos_fallidos_total` | Counter | Pedidos que fallaron (por motivo) |
-| `valor_pedido_cop` | Histogram | Distribución de valor de pedidos |
+| Business metric | Type | Description |
+|----------------|------|-------------|
+| `orders_created_total` | Counter | Orders successfully created |
+| `orders_failed_total` | Counter | Orders that failed (by reason) |
+| `order_value_usd` | Histogram | Distribution of order values |
 
-### Endpoint de métricas
+### Metrics endpoint
 
 ```
 GET /metrics
 ```
 
-Expone métricas en formato Prometheus (text/plain).
-Solo accesible desde la red interna, no expuesto al API Gateway.
+Exposes metrics in Prometheus format (text/plain).
+Only accessible from the internal network, not exposed to the API Gateway.
 
 ---
 
-## Trazas distribuidas
+## Distributed traces
 
-El tracing permite seguir una request a través de múltiples servicios.
+Tracing allows following a request across multiple services.
 
-### Propagación del contexto
+### Context propagation
 
 ```
-Request externa
+External request
      │
      ▼
-[API Gateway]  genera trace-id: abc123, span-id: 001
+[API Gateway]  generates trace-id: abc123, span-id: 001
      │         Headers: traceparent: 00-abc123-001-01
      │
      ▼
-[Auth Service]  crea span hijo: abc123 / 002
+[Auth Service]  creates child span: abc123 / 002
      │
      ▼
-[Pedido Service]  crea span hijo: abc123 / 003
+[Order Service]  creates child span: abc123 / 003
      │
      ▼
-[BD PostgreSQL]  crea span hijo: abc123 / 004 (instrumentación automática)
+[PostgreSQL DB]  creates child span: abc123 / 004 (automatic instrumentation)
 ```
 
-### Implementación con OpenTelemetry
+### Implementation with OpenTelemetry
 
 ```typescript
-// Instrumentación automática (configurar al inicio del servicio)
+// Automatic instrumentation (configure at service startup)
 import { NodeSDK } from '@opentelemetry/sdk-node';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
 
@@ -200,7 +200,7 @@ const sdk = new NodeSDK({
     url: process.env.OTEL_EXPORTER_OTLP_ENDPOINT,
   }),
   instrumentations: [
-    // Instrumenta automáticamente: HTTP, Express, PostgreSQL, Redis
+    // Automatically instruments: HTTP, Express, PostgreSQL, Redis
     getNodeAutoInstrumentations(),
   ],
 });
@@ -208,20 +208,20 @@ const sdk = new NodeSDK({
 sdk.start();
 ```
 
-### Crear spans manuales para lógica de negocio
+### Create manual spans for business logic
 
 ```typescript
 import { trace } from '@opentelemetry/api';
 
 const tracer = trace.getTracer('auth-service');
 
-async function autenticarUsuario(email: string): Promise<Token> {
-  return tracer.startActiveSpan('autenticar-usuario', async (span) => {
+async function authenticateUser(email: string): Promise<Token> {
+  return tracer.startActiveSpan('authenticate-user', async (span) => {
     try {
       span.setAttributes({ 'user.email_domain': email.split('@')[1] });
-      const usuario = await usuarioRepo.buscarPorEmail(email);
-      span.setAttributes({ 'user.found': !!usuario });
-      // ... lógica ...
+      const user = await userRepo.findByEmail(email);
+      span.setAttributes({ 'user.found': !!user });
+      // ... logic ...
       return token;
     } catch (error) {
       span.recordException(error);
@@ -236,39 +236,39 @@ async function autenticarUsuario(email: string): Promise<Token> {
 
 ---
 
-## Dashboards de Grafana
+## Grafana Dashboards
 
-### Dashboard principal — Vista ejecutiva
+### Main dashboard — Executive view
 
-Panels requeridos:
-1. **Tasa de errores** (%) — últimos 30 min
-2. **Latencia P95** (ms) — por servicio
-3. **Throughput** (RPS) — por servicio
-4. **Disponibilidad** (%) — vs SLO
-5. **Instancias por servicio** — para detectar scaling events
+Required panels:
+1. **Error rate** (%) — last 30 min
+2. **P95 latency** (ms) — per service
+3. **Throughput** (RPS) — per service
+4. **Availability** (%) — vs SLO
+5. **Instances per service** — to detect scaling events
 
-### Dashboard por servicio
+### Per-service dashboard
 
-Cada servicio debe tener su propio dashboard con:
+Each service must have its own dashboard with:
 1. RED metrics (Rate, Errors, Duration)
-2. Métricas de JVM / Node.js (GC, heap, CPU)
-3. Pool de conexiones de BD (activas, en espera, máximo)
-4. Métricas de mensajes (publicados / consumidos / DLQ)
+2. JVM / Node.js metrics (GC, heap, CPU)
+3. DB connection pool (active, waiting, maximum)
+4. Message metrics (published / consumed / DLQ)
 
 ---
 
-## Alertas
+## Alerts
 
-### Reglas de alerta estándar
+### Standard alert rules
 
-| Alerta | Condición | Severidad | Notifica a |
-|--------|-----------|-----------|-----------|
-| `HighErrorRate` | Error rate > 5% durante 5 min | P1 | PagerDuty + Slack |
-| `HighLatency` | P95 > 500ms durante 5 min | P2 | Slack #alerts |
-| `ServiceDown` | Health check falla > 1 min | P1 | PagerDuty |
-| `DLQNotEmpty` | DLQ tiene > 0 mensajes | P2 | Slack #alerts |
-| `LowDiskSpace` | Disco > 80% | P2 | Slack #alerts |
-| `PodCrashLooping` | Pod reinicia > 3 veces en 10 min | P1 | PagerDuty |
+| Alert | Condition | Severity | Notifies |
+|-------|-----------|----------|---------|
+| `HighErrorRate` | Error rate > 5% for 5 min | P1 | PagerDuty + Slack |
+| `HighLatency` | P95 > 500ms for 5 min | P2 | Slack #alerts |
+| `ServiceDown` | Health check fails > 1 min | P1 | PagerDuty |
+| `DLQNotEmpty` | DLQ has > 0 messages | P2 | Slack #alerts |
+| `LowDiskSpace` | Disk > 80% | P2 | Slack #alerts |
+| `PodCrashLooping` | Pod restarts > 3 times in 10 min | P1 | PagerDuty |
 
 ```yaml
 # prometheus-rules.yaml
@@ -281,15 +281,15 @@ groups:
         labels:
           severity: critical
         annotations:
-          summary: "Alta tasa de errores en {{ $labels.service }}"
+          summary: "High error rate in {{ $labels.service }}"
           description: "Error rate: {{ $value | humanizePercentage }}"
 ```
 
 ---
 
-## Correlaciones
+## Correlations
 
-- Runbook de respuesta a alertas → `09-microservices/services/XX/runbook.md`
-- SLOs y Error Budget → `13-operations/README.md`
+- Alert response runbook → `09-microservices/services/XX/runbook.md`
+- SLOs and Error Budget → `13-operations/README.md`
 - Incidents → `13-operations/incident-management.md`
-- Cómo agregar métricas de negocio → `09-microservices/services/XX/README.md`
+- How to add business metrics → `09-microservices/services/XX/README.md`

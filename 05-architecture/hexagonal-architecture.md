@@ -1,12 +1,12 @@
-# Arquitectura Hexagonal (Ports & Adapters)
+# Hexagonal Architecture (Ports & Adapters)
 
-> La arquitectura hexagonal, propuesta por Alistair Cockburn, organiza un servicio de forma
-> que el **dominio de negocio sea completamente independiente** de la tecnología que lo rodea.
-> La base de datos, el framework web, el message broker — todos son detalles intercambiables.
-> Lo que importa es la lógica de negocio, que vive en el centro.
+> Hexagonal architecture, proposed by Alistair Cockburn, organizes a service so that the
+> **business domain is completely independent** of the surrounding technology.
+> The database, the web framework, the message broker — all are interchangeable details.
+> What matters is the business logic, which lives at the center.
 
-> **Nota de stack:** Los conceptos de este documento son válidos para cualquier lenguaje.
-> Los ejemplos de código y la estructura de carpetas específica de tu tecnología están en:
+> **Stack note:** The concepts in this document are valid for any language.
+> The code examples and folder structure specific to your technology are in:
 > - Node.js + TypeScript → [`_stacks/node-typescript.md`](../_stacks/node-typescript.md)
 > - Java + Spring Boot → [`_stacks/java-spring.md`](../_stacks/java-spring.md)
 > - Python + FastAPI → [`_stacks/python-fastapi.md`](../_stacks/python-fastapi.md)
@@ -14,342 +14,342 @@
 
 ---
 
-## El problema que resuelve
+## The problem it solves
 
 ```
-❌ Arquitectura tradicional en capas:
+❌ Traditional layered architecture:
 
-  [Controller HTTP]
+  [HTTP Controller]
        ↓
   [Service]
        ↓
   [Repository]
        ↓
-  [Base de datos]
+  [Database]
 
-Problema: El "Service" mezcla lógica de negocio con llamadas a frameworks.
-Si cambias el framework, rompes el negocio. Si quieres testear el negocio,
-necesitas simular la base de datos.
+Problem: The "Service" mixes business logic with framework calls.
+If you change the framework, you break the business. If you want to test the business,
+you need to simulate the database.
 ```
 
 ```
-✓ Arquitectura Hexagonal:
+✓ Hexagonal Architecture:
 
-  [HTTP Controller]  [CLI]  [Test]  ← Adaptadores Primarios (entran al hexágono)
+  [HTTP Controller]  [CLI]  [Test]  ← Primary Adapters (enter the hexagon)
           │            │      │
           └────────────┴──────┘
                        │
-                 [Puerto de Entrada]  ← Interface que define la API del dominio
+                 [Driving Port]  ← Interface that defines the domain's API
                        │
                ┌───────────────┐
                │               │
-               │    DOMINIO    │  ← Lógica de negocio pura, sin dependencias externas
+               │    DOMAIN     │  ← Pure business logic, no external dependencies
                │               │
                └───────────────┘
                        │
-                 [Puerto de Salida]  ← Interface que el dominio necesita del mundo exterior
+                 [Driven Port]  ← Interface the domain needs from the outside world
                        │
           ┌────────────┴──────┐
           │                   │
-  [Adaptador BD]  [Adaptador Kafka]  ← Adaptadores Secundarios (salen del hexágono)
+  [DB Adapter]  [Kafka Adapter]  ← Secondary Adapters (exit the hexagon)
 ```
 
 ---
 
-## Estructura de carpetas
+## Folder structure
 
 ```
 src/
-├── domain/                          # El hexágono — sin frameworks, sin dependencias externas
+├── domain/                          # The hexagon — no frameworks, no external dependencies
 │   ├── [aggregate]/
-│   │   ├── [Aggregate].ts           # Aggregate Root con invariantes
-│   │   ├── [Aggregate]Id.ts         # Value Object para el ID
+│   │   ├── [Aggregate].ts           # Aggregate Root with invariants
+│   │   ├── [Aggregate]Id.ts         # Value Object for the ID
 │   │   ├── events/
-│   │   │   └── [EventoOcurrido].ts  # Eventos de dominio
+│   │   │   └── [EventOccurred].ts   # Domain events
 │   │   ├── services/
-│   │   │   └── [DomainService].ts   # Lógica que no pertenece a una entidad
-│   │   └── ports/                   # Interfaces (puertos) — contratos abstractos
+│   │   │   └── [DomainService].ts   # Logic that does not belong to any entity
+│   │   └── ports/                   # Interfaces (ports) — abstract contracts
 │   │       ├── in/
-│   │       │   └── [UseCasePort].ts # Puerto de entrada: contrato del caso de uso
+│   │       │   └── [UseCasePort].ts # Driving port: use case contract
 │   │       └── out/
-│   │           └── [RepoPort].ts    # Puerto de salida: contrato del repositorio
+│   │           └── [RepoPort].ts    # Driven port: repository contract
 │   └── shared/
-│       └── value-objects/           # VOs compartidos entre aggregates
+│       └── value-objects/           # VOs shared between aggregates
 │           ├── Email.ts
-│           └── Dinero.ts
+│           └── Money.ts
 │
-├── application/                     # Casos de uso — orquesta el dominio
+├── application/                     # Use cases — orchestrate the domain
 │   └── [aggregate]/
-│       ├── [CrearXxxUseCase].ts     # Implementa el puerto de entrada
+│       ├── [CreateXxxUseCase].ts    # Implements the driving port
 │       └── dtos/
-│           ├── [CrearXxxRequest].ts
-│           └── [CrearXxxResponse].ts
+│           ├── [CreateXxxRequest].ts
+│           └── [CreateXxxResponse].ts
 │
-├── infrastructure/                  # Todo lo externo al hexágono
+├── infrastructure/                  # Everything external to the hexagon
 │   ├── adapters/
-│   │   ├── in/                      # Adaptadores primarios — reciben llamadas externas
+│   │   ├── in/                      # Primary adapters — receive external calls
 │   │   │   ├── http/
 │   │   │   │   ├── [XxxController].ts
 │   │   │   │   └── [XxxRouter].ts
 │   │   │   └── messaging/
 │   │   │       └── [XxxEventConsumer].ts
-│   │   └── out/                     # Adaptadores secundarios — llaman al exterior
+│   │   └── out/                     # Secondary adapters — call the outside
 │   │       ├── persistence/
-│   │       │   └── [XxxRepositoryImpl].ts   # Implementa el puerto de salida
+│   │       │   └── [XxxRepositoryImpl].ts   # Implements the driven port
 │   │       ├── messaging/
 │   │       │   └── [XxxEventPublisher].ts
 │   │       └── external/
 │   │           └── [ExternalApiAdapter].ts
 │   └── config/
 │       ├── database.ts
-│       └── container.ts             # Inyección de dependencias (IoC)
+│       └── container.ts             # Dependency injection (IoC)
 │
-└── main.ts                          # Bootstrap — conecta adaptadores con puertos
+└── main.ts                          # Bootstrap — connects adapters with ports
 ```
 
 ---
 
-## Los Puertos
+## The Ports
 
-Los puertos son **interfaces** (contratos abstractos). El dominio los define;
-los adaptadores los implementan.
+Ports are **interfaces** (abstract contracts). The domain defines them;
+adapters implement them.
 
-### Puerto de entrada (Driving Port)
+### Driving Port (Input Port)
 
-Define lo que el dominio puede hacer — su API pública desde el punto de vista del exterior.
+Defines what the domain can do — its public API from the outside's perspective.
 
 ```typescript
-// src/domain/pedido/ports/in/CrearPedidoPort.ts
-export interface CrearPedidoPort {
-  ejecutar(request: CrearPedidoRequest): Promise<CrearPedidoResponse>;
+// src/domain/order/ports/in/CreateOrderPort.ts
+export interface CreateOrderPort {
+  execute(request: CreateOrderRequest): Promise<CreateOrderResponse>;
 }
 ```
 
-### Puerto de salida (Driven Port)
+### Driven Port (Output Port)
 
-Define lo que el dominio necesita del mundo exterior — sin saber cómo se implementa.
+Defines what the domain needs from the outside world — without knowing how it is implemented.
 
 ```typescript
-// src/domain/pedido/ports/out/PedidoRepositoryPort.ts
-export interface PedidoRepositoryPort {
-  guardar(pedido: Pedido): Promise<void>;
-  buscarPorId(id: PedidoId): Promise<Pedido | null>;
-  buscarPorCliente(clienteId: ClienteId): Promise<Pedido[]>;
+// src/domain/order/ports/out/OrderRepositoryPort.ts
+export interface OrderRepositoryPort {
+  save(order: Order): Promise<void>;
+  findById(id: OrderId): Promise<Order | null>;
+  findByCustomer(customerId: CustomerId): Promise<Order[]>;
 }
 
-// src/domain/pedido/ports/out/EventPublisherPort.ts
+// src/domain/order/ports/out/EventPublisherPort.ts
 export interface EventPublisherPort {
-  publicar(evento: DomainEvent): Promise<void>;
+  publish(event: DomainEvent): Promise<void>;
 }
 ```
 
 ---
 
-## Los Adaptadores
+## The Adapters
 
-### Adaptador Primario — HTTP Controller
+### Primary Adapter — HTTP Controller
 
-El controlador HTTP traduce la solicitud HTTP al caso de uso del dominio.
+The HTTP controller translates the HTTP request to the domain use case.
 
 ```typescript
-// src/infrastructure/adapters/in/http/PedidoController.ts
-import { CrearPedidoPort } from '@domain/pedido/ports/in/CrearPedidoPort';
+// src/infrastructure/adapters/in/http/OrderController.ts
+import { CreateOrderPort } from '@domain/order/ports/in/CreateOrderPort';
 
-@Controller('/pedidos')
-export class PedidoController {
+@Controller('/orders')
+export class OrderController {
   constructor(
-    // Inyecta el puerto, NO la implementación concreta
-    private readonly crearPedido: CrearPedidoPort,
+    // Inject the port, NOT the concrete implementation
+    private readonly createOrder: CreateOrderPort,
   ) {}
 
   @Post('/')
-  async crear(@Body() body: CrearPedidoHttpRequest): Promise<void> {
-    // Traduce HTTP request → DTO del dominio
-    const request = new CrearPedidoRequest(body.clienteId, body.items);
-    // Llama al caso de uso a través del puerto
-    const response = await this.crearPedido.ejecutar(request);
+  async create(@Body() body: CreateOrderHttpRequest): Promise<void> {
+    // Translate HTTP request → domain DTO
+    const request = new CreateOrderRequest(body.customerId, body.items);
+    // Call the use case through the port
+    const response = await this.createOrder.execute(request);
     return response;
   }
 }
 ```
 
-### Adaptador Secundario — Repository
+### Secondary Adapter — Repository
 
-El repositorio implementa el puerto de salida. El dominio no sabe que existe PostgreSQL.
+The repository implements the driven port. The domain does not know PostgreSQL exists.
 
 ```typescript
-// src/infrastructure/adapters/out/persistence/PedidoRepositoryImpl.ts
-import { PedidoRepositoryPort } from '@domain/pedido/ports/out/PedidoRepositoryPort';
+// src/infrastructure/adapters/out/persistence/OrderRepositoryImpl.ts
+import { OrderRepositoryPort } from '@domain/order/ports/out/OrderRepositoryPort';
 
-export class PedidoRepositoryImpl implements PedidoRepositoryPort {
+export class OrderRepositoryImpl implements OrderRepositoryPort {
   constructor(private readonly db: DatabaseConnection) {}
 
-  async guardar(pedido: Pedido): Promise<void> {
-    // Traduce Aggregate → fila de base de datos
+  async save(order: Order): Promise<void> {
+    // Translate Aggregate → database row
     await this.db.query(
-      'INSERT INTO pedidos (id, cliente_id, estado, total) VALUES ($1, $2, $3, $4)',
-      [pedido.id.value, pedido.clienteId.value, pedido.estado, pedido.total.amount],
+      'INSERT INTO orders (id, customer_id, status, total) VALUES ($1, $2, $3, $4)',
+      [order.id.value, order.customerId.value, order.status, order.total.amount],
     );
   }
 
-  async buscarPorId(id: PedidoId): Promise<Pedido | null> {
-    const row = await this.db.queryOne('SELECT * FROM pedidos WHERE id = $1', [id.value]);
+  async findById(id: OrderId): Promise<Order | null> {
+    const row = await this.db.queryOne('SELECT * FROM orders WHERE id = $1', [id.value]);
     if (!row) return null;
-    // Traduce fila de base de datos → Aggregate
-    return PedidoMapper.toDomain(row);
+    // Translate database row → Aggregate
+    return OrderMapper.toDomain(row);
   }
 }
 ```
 
 ---
 
-## El Caso de Uso (Application Service)
+## The Use Case (Application Service)
 
-El caso de uso orquesta el dominio. Usa puertos de entrada y salida. No contiene lógica de negocio — esa vive en el Aggregate.
+The use case orchestrates the domain. It uses driving and driven ports. It contains no business logic — that lives in the Aggregate.
 
 ```typescript
-// src/application/pedido/CrearPedidoUseCase.ts
-import { CrearPedidoPort } from '@domain/pedido/ports/in/CrearPedidoPort';
-import { PedidoRepositoryPort } from '@domain/pedido/ports/out/PedidoRepositoryPort';
-import { EventPublisherPort } from '@domain/pedido/ports/out/EventPublisherPort';
+// src/application/order/CreateOrderUseCase.ts
+import { CreateOrderPort } from '@domain/order/ports/in/CreateOrderPort';
+import { OrderRepositoryPort } from '@domain/order/ports/out/OrderRepositoryPort';
+import { EventPublisherPort } from '@domain/order/ports/out/EventPublisherPort';
 
-export class CrearPedidoUseCase implements CrearPedidoPort {
+export class CreateOrderUseCase implements CreateOrderPort {
   constructor(
-    private readonly pedidoRepo: PedidoRepositoryPort,
+    private readonly orderRepo: OrderRepositoryPort,
     private readonly eventPublisher: EventPublisherPort,
   ) {}
 
-  async ejecutar(request: CrearPedidoRequest): Promise<CrearPedidoResponse> {
-    // 1. Crear el aggregate (la lógica de negocio vive AQUÍ, en el dominio)
-    const pedido = Pedido.crear(request.clienteId, request.items);
+  async execute(request: CreateOrderRequest): Promise<CreateOrderResponse> {
+    // 1. Create the aggregate (business logic lives HERE, in the domain)
+    const order = Order.create(request.customerId, request.items);
 
-    // 2. Persistir (a través del puerto — el caso de uso no sabe qué BD se usa)
-    await this.pedidoRepo.guardar(pedido);
+    // 2. Persist (through the port — the use case does not know which DB is used)
+    await this.orderRepo.save(order);
 
-    // 3. Publicar eventos de dominio (a través del puerto)
-    for (const evento of pedido.domainEvents) {
-      await this.eventPublisher.publicar(evento);
+    // 3. Publish domain events (through the port)
+    for (const event of order.domainEvents) {
+      await this.eventPublisher.publish(event);
     }
 
-    return new CrearPedidoResponse(pedido.id.value);
+    return new CreateOrderResponse(order.id.value);
   }
 }
 ```
 
 ---
 
-## La Regla de Dependencia
+## The Dependency Rule
 
-> **Las dependencias siempre apuntan hacia adentro.**
-> El dominio no importa nada de la aplicación ni de la infraestructura.
-> La infraestructura importa del dominio (pero nunca al revés).
+> **Dependencies always point inward.**
+> The domain does not import anything from application or infrastructure.
+> Infrastructure imports from the domain (but never the other way around).
 
 ```
 infrastructure/ → application/ → domain/
                                     ↑
-                         NO puede importar nada de application/ ni infrastructure/
+                         CANNOT import anything from application/ or infrastructure/
 ```
 
-### Inversión de dependencia (DI) en la práctica
+### Dependency inversion (DI) in practice
 
 ```typescript
-// ✓ Correcto — dominio define la interface, infraestructura la implementa
-// En domain/:
-export interface PedidoRepositoryPort { ... }
+// ✓ Correct — domain defines the interface, infrastructure implements it
+// In domain/:
+export interface OrderRepositoryPort { ... }
 
-// En infrastructure/:
-export class PedidoRepositoryImpl implements PedidoRepositoryPort { ... }
+// In infrastructure/:
+export class OrderRepositoryImpl implements OrderRepositoryPort { ... }
 
-// En el bootstrap (main.ts), la implementación concreta se inyecta:
-const pedidoRepo = new PedidoRepositoryImpl(dbConnection);
-const crearPedidoUseCase = new CrearPedidoUseCase(pedidoRepo, eventPublisher);
-const pedidoController = new PedidoController(crearPedidoUseCase);
+// In the bootstrap (main.ts), the concrete implementation is injected:
+const orderRepo = new OrderRepositoryImpl(dbConnection);
+const createOrderUseCase = new CreateOrderUseCase(orderRepo, eventPublisher);
+const orderController = new OrderController(createOrderUseCase);
 ```
 
 ---
 
-## Ventajas para TDD
+## Advantages for TDD
 
-La arquitectura hexagonal es ideal para TDD porque:
+Hexagonal architecture is ideal for TDD because:
 
-1. **El dominio es testeable sin mocks de frameworks.** No necesitas levantar un servidor
-   ni una base de datos para probar la lógica de negocio.
+1. **The domain is testable without framework mocks.** You do not need to start a server
+   or a database to test business logic.
 
-2. **Los puertos de salida se pueden fakeear fácilmente.** En los tests, usas un
-   repositorio en memoria (Fake) en vez del real.
+2. **Driven ports can be faked easily.** In tests, you use an
+   in-memory repository (Fake) instead of the real one.
 
-3. **Las invariantes son explícitas** y se testean en aislamiento.
+3. **Invariants are explicit** and tested in isolation.
 
 ```typescript
-// Test unitario del dominio — cero dependencias externas
-describe('Pedido', () => {
-  it('no puede crearse sin ítems', () => {
-    expect(() => Pedido.crear(clienteId, [])).toThrow('INV-001');
+// Domain unit test — zero external dependencies
+describe('Order', () => {
+  it('cannot be created without items', () => {
+    expect(() => Order.create(customerId, [])).toThrow('INV-001');
   });
 
-  it('al confirmar cambia estado a CONFIRMADO', () => {
-    const pedido = Pedido.crear(clienteId, [itemValido]);
-    pedido.confirmar();
-    expect(pedido.estado).toBe(EstadoPedido.CONFIRMADO);
+  it('on confirm changes status to CONFIRMED', () => {
+    const order = Order.create(customerId, [validItem]);
+    order.confirm();
+    expect(order.status).toBe(OrderStatus.CONFIRMED);
   });
 
-  it('al confirmar emite evento PedidoConfirmado', () => {
-    const pedido = Pedido.crear(clienteId, [itemValido]);
-    pedido.confirmar();
-    expect(pedido.domainEvents).toContainEqual(expect.any(PedidoConfirmadoEvent));
+  it('on confirm emits OrderConfirmed event', () => {
+    const order = Order.create(customerId, [validItem]);
+    order.confirm();
+    expect(order.domainEvents).toContainEqual(expect.any(OrderConfirmedEvent));
   });
 });
 
-// Test del caso de uso con repositorio FAKE (no mock de BD real)
-describe('CrearPedidoUseCase', () => {
-  it('guarda el pedido y publica el evento', async () => {
-    const fakePedidoRepo = new InMemoryPedidoRepository();
+// Use case test with FAKE repository (not a real DB mock)
+describe('CreateOrderUseCase', () => {
+  it('saves the order and publishes the event', async () => {
+    const fakeOrderRepo = new InMemoryOrderRepository();
     const fakeEventPublisher = new InMemoryEventPublisher();
-    const useCase = new CrearPedidoUseCase(fakePedidoRepo, fakeEventPublisher);
+    const useCase = new CreateOrderUseCase(fakeOrderRepo, fakeEventPublisher);
 
-    await useCase.ejecutar(new CrearPedidoRequest(clienteId, [itemValido]));
+    await useCase.execute(new CreateOrderRequest(customerId, [validItem]));
 
-    expect(fakePedidoRepo.pedidos).toHaveLength(1);
-    expect(fakeEventPublisher.eventos).toContainEqual(expect.any(PedidoCreado));
+    expect(fakeOrderRepo.orders).toHaveLength(1);
+    expect(fakeEventPublisher.events).toContainEqual(expect.any(OrderCreated));
   });
 });
 ```
 
-> Ver guía completa de TDD en `11-quality/tdd-guide.md`
+> See full TDD guide in `11-quality/tdd-guide.md`
 
 ---
 
-## Checklist de Arquitectura Hexagonal
+## Hexagonal Architecture Checklist
 
-Al revisar un PR o nuevo servicio, verifica:
+When reviewing a PR or new service, verify:
 
-- [ ] `domain/` no tiene imports de `infrastructure/` ni de `application/`
-- [ ] `domain/` no tiene imports de frameworks (Express, NestJS, TypeORM, etc.)
-- [ ] Toda interfaz de repositorio vive en `domain/ports/out/`
-- [ ] Toda interfaz de caso de uso vive en `domain/ports/in/`
-- [ ] Los mappers (`toDomain` / `toPersistence`) viven en `infrastructure/`, no en `domain/`
-- [ ] Los DTOs de la API HTTP viven en `infrastructure/adapters/in/http/`, no en `domain/`
-- [ ] Existe un test unitario para cada invariante del Aggregate
-
----
-
-## Errores comunes (anti-patrones)
-
-| Anti-patrón | Por qué es malo | Solución |
-|------------|-----------------|---------|
-| `import { Repository } from 'typeorm'` en el dominio | Acopla el dominio a TypeORM | Definir interface port propia |
-| Lógica de negocio en el Controller | Si cambias el endpoint, cambia el negocio | Mover al Aggregate |
-| Repository que devuelve DTOs en vez de Aggregates | El dominio no puede validar invariantes | Usar Mapper para reconstruir el Aggregate |
-| Caso de uso con 15 dependencias | Probablemente hace demasiado | Dividir en casos de uso más pequeños |
-| `any` en las interfaces de los puertos | Pierdes el contrato tipado | Tipado explícito siempre |
+- [ ] `domain/` has no imports from `infrastructure/` or `application/`
+- [ ] `domain/` has no imports from frameworks (Express, NestJS, TypeORM, etc.)
+- [ ] Every repository interface lives in `domain/ports/out/`
+- [ ] Every use case interface lives in `domain/ports/in/`
+- [ ] Mappers (`toDomain` / `toPersistence`) live in `infrastructure/`, not in `domain/`
+- [ ] HTTP API DTOs live in `infrastructure/adapters/in/http/`, not in `domain/`
+- [ ] There is a unit test for each Aggregate invariant
 
 ---
 
-## Referencias y correlaciones
+## Common mistakes (anti-patterns)
+
+| Anti-pattern | Why it is bad | Solution |
+|-------------|--------------|---------|
+| `import { Repository } from 'typeorm'` in the domain | Couples the domain to TypeORM | Define your own port interface |
+| Business logic in the Controller | If you change the endpoint, you change the business | Move to the Aggregate |
+| Repository returning DTOs instead of Aggregates | The domain cannot validate invariants | Use Mapper to reconstruct the Aggregate |
+| Use case with 15 dependencies | It probably does too much | Split into smaller use cases |
+| `any` in port interfaces | You lose the typed contract | Always use explicit typing |
+
+---
+
+## References and correlations
 
 - Bounded Contexts → `02-domain/domain-map.md`
-- Entidades e invariantes → `02-domain/entities-and-rules.md`
-- Eventos de dominio → `02-domain/domain-events.md`
-- Patrones complementarios (CQRS, Event Sourcing, Saga) → `05-architecture/pattern-guide.md`
-- TDD aplicado a la arquitectura hexagonal → `11-quality/tdd-guide.md`
-- Template de servicio con estructura hexagonal → `09-microservices/_template/service/`
+- Entities and invariants → `02-domain/entities-and-rules.md`
+- Domain events → `02-domain/domain-events.md`
+- Complementary patterns (CQRS, Event Sourcing, Saga) → `05-architecture/pattern-guide.md`
+- TDD applied to hexagonal architecture → `11-quality/tdd-guide.md`
+- Service template with hexagonal structure → `09-microservices/_template/service/`

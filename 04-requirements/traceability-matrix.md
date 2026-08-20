@@ -1,92 +1,92 @@
-# Matriz de Trazabilidad
+# Traceability Matrix
 
-> La trazabilidad conecta cada línea de código con su justificación de negocio.
-> Permite responder: "¿Por qué existe esta función?" y "¿Cuál HU cubre esta parte del sistema?"
-> También identifica: requisitos sin implementar y código sin requisito (posible deuda técnica).
+> Traceability connects every line of code to its business justification.
+> It allows answering: "Why does this function exist?" and "Which HU covers this part of the system?"
+> It also identifies: unimplemented requirements and code without a requirement (possible technical debt).
 
 ---
 
-## Cómo usar esta matriz
+## How to use this matrix
 
 ```
-Requisito → HU → Caso de Prueba → Implementación → Servicio
+Requirement → HU → Test Case → Implementation → Service
 
-Si un requisito no tiene HU: no está planificado
-Si una HU no tiene caso de prueba: no tiene criterio de completitud
-Si un caso de prueba no tiene implementación: hay deuda técnica de pruebas
-Si hay código sin HU: posible gold-plating o bug introducido sin historia
+If a requirement has no HU: it is not planned
+If a HU has no test case: it has no completeness criterion
+If a test case has no implementation: there is test technical debt
+If there is code without an HU: possible gold-plating or bug introduced without a story
 ```
 
 ---
 
-## Matriz RF → HU → Test → Servicio
+## FR → HU → Test → Service matrix
 
-| RF ID | Descripción RF | HU(s) | Tests que lo verifican | Servicio | Estado |
-|-------|---------------|-------|----------------------|---------|--------|
-| RF-001 | [El sistema permite registro de usuarios] | HU-001 | `auth.register.spec.ts` | auth-service | ✅ Done |
-| RF-002 | [El sistema permite autenticación] | HU-002 | `auth.login.spec.ts` | auth-service | ✅ Done |
-| RF-003 | [El sistema permite crear pedidos] | HU-003, HU-004 | `pedido.create.spec.ts` | pedido-service | 🟡 In progress |
-| RF-004 | [El sistema notifica por email] | HU-010 | `notifications.spec.ts` | notification-service | 🔴 Pendiente |
-| RF-00X | [descripción] | [HU-00X] | [archivo de test] | [servicio] | [estado] |
-
----
-
-## Matriz RNF → Validación
-
-| RNF ID | Descripción | Cómo se valida | Herramienta | Estado |
-|--------|-------------|---------------|-------------|--------|
-| RNF-001 | P95 < 300ms | Test de carga en staging | k6 | ✅ Validado |
-| RNF-002 | Disponibilidad 99.9% | SLO monitoring | Grafana | 🟡 Monitoreando |
-| RNF-004 | Autenticación JWT | Contract test de seguridad | Postman + OWASP ZAP | 🔴 Pendiente |
+| FR ID | FR Description | HU(s) | Tests that verify it | Service | Status |
+|-------|---------------|-------|---------------------|---------|--------|
+| FR-001 | [System allows user registration] | HU-001 | `auth.register.spec.ts` | auth-service | ✅ Done |
+| FR-002 | [System allows authentication] | HU-002 | `auth.login.spec.ts` | auth-service | ✅ Done |
+| FR-003 | [System allows creating orders] | HU-003, HU-004 | `order.create.spec.ts` | order-service | 🟡 In progress |
+| FR-004 | [System sends email notifications] | HU-010 | `notifications.spec.ts` | notification-service | 🔴 Pending |
+| FR-00X | [description] | [HU-00X] | [test file] | [service] | [status] |
 
 ---
 
-## Trazabilidad inversa: HU → RF
+## NFR → Validation matrix
 
-| HU | Título | RF(s) que implementa | Sprint |
-|----|--------|---------------------|--------|
-| HU-001 | [Registro de usuario] | RF-001 | Sprint 1 |
-| HU-002 | [Login] | RF-002 | Sprint 1 |
-| HU-003 | [Crear pedido básico] | RF-003 | Sprint 2 |
-
----
-
-## Leyenda de estado
-
-| Estado | Significado |
-|--------|-------------|
-| ✅ Done | Implementado, testeado y en producción |
-| 🟡 In progress | En desarrollo en el sprint actual |
-| 🔴 Pendiente | En el backlog, no iniciado |
-| ⏸ Bloqueado | Tiene bloqueante externo |
-| ❌ Cancelado | Se eliminó del scope |
+| NFR ID | Description | How it is validated | Tool | Status |
+|--------|-------------|-------------------|------|--------|
+| NFR-001 | P95 < 300ms | Load test in staging | k6 | ✅ Validated |
+| NFR-002 | 99.9% availability | SLO monitoring | Grafana | 🟡 Monitoring |
+| NFR-004 | JWT authentication | Security contract test | Postman + OWASP ZAP | 🔴 Pending |
 
 ---
 
-## Gaps identificados (requisitos sin cobertura)
+## Inverse traceability: HU → FR
 
-> Esta sección se actualiza automáticamente o manualmente al revisar la matriz.
-> Un gap es: un RF sin HU, o una HU sin test, o un test sin implementación.
-
-| Tipo de gap | Descripción | Acción requerida | Responsable | Fecha |
-|-------------|-------------|-----------------|-------------|-------|
-| RF sin HU | RF-00X no tiene HU asociada | Crear HU en el backlog | Product Owner | [fecha] |
-| HU sin test | HU-00X no tiene test de aceptación | Agregar test antes del siguiente sprint | QA / Dev | [fecha] |
+| HU | Title | FR(s) it implements | Sprint |
+|----|-------|---------------------|--------|
+| HU-001 | [User registration] | FR-001 | Sprint 1 |
+| HU-002 | [Login] | FR-002 | Sprint 1 |
+| HU-003 | [Create basic order] | FR-003 | Sprint 2 |
 
 ---
 
-## Cómo mantener esta matriz
+## Status legend
 
-1. Cuando se crea una HU: agregar la fila en la sección RF → HU → Test → Servicio
-2. Cuando se escribe un test: anotar el archivo en la columna "Tests que lo verifican"
-3. Cuando se completa una HU: cambiar el estado a ✅
-4. En cada Sprint Planning: revisar los gaps y asignar acciones
+| Status | Meaning |
+|--------|---------|
+| ✅ Done | Implemented, tested, and in production |
+| 🟡 In progress | Under development in the current sprint |
+| 🔴 Pending | In the backlog, not started |
+| ⏸ Blocked | Has an external blocker |
+| ❌ Cancelled | Removed from scope |
 
 ---
 
-## Correlaciones
+## Identified gaps (requirements without coverage)
 
-- Historias de Usuario → `04-requirements/user-stories.md`
-- Requisitos No Funcionales → `04-requirements/non-functional.md`
-- Strategy de testing → `11-quality/testing-strategy.md`
-- DoD que determina cuándo una HU es Done → `00-governance/definition-of-done.md`
+> This section is updated automatically or manually when reviewing the matrix.
+> A gap is: an FR without an HU, or an HU without a test, or a test without implementation.
+
+| Gap type | Description | Required action | Owner | Date |
+|----------|-------------|----------------|-------|------|
+| FR without HU | FR-00X has no associated HU | Create HU in the backlog | Product Owner | [date] |
+| HU without test | HU-00X has no acceptance test | Add test before the next sprint | QA / Dev | [date] |
+
+---
+
+## How to maintain this matrix
+
+1. When an HU is created: add the row in the FR → HU → Test → Service section
+2. When a test is written: note the file in the "Tests that verify it" column
+3. When an HU is completed: change the status to ✅
+4. At each Sprint Planning: review gaps and assign actions
+
+---
+
+## Correlations
+
+- User Stories → `04-requirements/user-stories.md`
+- Non-Functional Requirements → `04-requirements/non-functional.md`
+- Testing strategy → `11-quality/testing-strategy.md`
+- DoD that determines when an HU is Done → `00-governance/definition-of-done.md`

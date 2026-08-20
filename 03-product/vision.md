@@ -1,95 +1,95 @@
-# Visión del Producto
+# Product Vision
 
-> La visión es la estrella del norte del equipo. Todos los sprints, decisiones de diseño
-> y trade-offs se evalúan contra esta visión.
-> Debe ser ambiciosa pero alcanzable, inspiradora pero específica.
-
----
-
-## Declaración de visión
-
-> Usa la plantilla de Geoffrey Moore:
-
-**Para** [cliente objetivo]
-**que** [tiene la necesidad / enfrenta el problema]
-**el/la** [nombre del producto]
-**es un/a** [categoría del producto]
-**que** [beneficio principal / razón de compra]
-**a diferencia de** [alternativa competidora]
-**nuestro producto** [diferenciador clave].
+> The vision is the team's north star. All sprints, design decisions,
+> and trade-offs are evaluated against this vision.
+> It must be ambitious yet achievable, inspiring but specific.
 
 ---
 
-## Misión del equipo
+## Vision statement
 
-> En 1-2 oraciones: ¿por qué existe este equipo? ¿Qué cambio en el mundo busca lograr?
+> Use the Geoffrey Moore template:
 
----
-
-## Pilares estratégicos
-
-Los pilares son las áreas de enfoque que nos llevan de la misión a la visión.
-Deben ser pocos (3-5) y consistentes en el tiempo.
-
-| Pilar | Descripción | Métricas de éxito |
-|-------|-------------|-------------------|
-| [Pilar 1: ej. Velocidad] | [Lo que significa para nuestro producto] | [KPIs] |
-| [Pilar 2: ej. Confiabilidad] | [Descripción] | [KPIs] |
-| [Pilar 3: ej. Escala] | [Descripción] | [KPIs] |
+**For** [target customer]
+**who** [has the need / faces the problem]
+**the** [product name]
+**is a** [product category]
+**that** [main benefit / reason to choose]
+**unlike** [competing alternative]
+**our product** [key differentiator].
 
 ---
 
-## Roadmap de alto nivel
+## Team mission
 
-> El roadmap muestra la evolución del producto en el tiempo.
-> Horizonte 1 (0-3 meses): alta certeza, detalle en HUs
-> Horizonte 2 (3-6 meses): media certeza, epics
-> Horizonte 3 (6-12 meses): baja certeza, áreas de enfoque
+> In 1-2 sentences: why does this team exist? What change in the world does it seek to achieve?
+
+---
+
+## Strategic pillars
+
+Pillars are the focus areas that take us from mission to vision.
+They should be few (3-5) and consistent over time.
+
+| Pillar | Description | Success metrics |
+|--------|-------------|----------------|
+| [Pillar 1: e.g. Speed] | [What it means for our product] | [KPIs] |
+| [Pillar 2: e.g. Reliability] | [Description] | [KPIs] |
+| [Pillar 3: e.g. Scale] | [Description] | [KPIs] |
+
+---
+
+## High-level roadmap
+
+> The roadmap shows how the product evolves over time.
+> Horizon 1 (0-3 months): high certainty, detail in HUs
+> Horizon 2 (3-6 months): medium certainty, epics
+> Horizon 3 (6-12 months): low certainty, focus areas
 
 ```
 Q1 2024 ──── Q2 2024 ──── Q3 2024 ──── Q4 2024
      │              │              │              │
-  [MVP]      [Feature A]    [Feature B]   [Escala]
-  Validar     Expandir       Profundizar   Crecer
-  hipótesis   el mercado     el valor
+  [MVP]      [Feature A]    [Feature B]   [Scale]
+  Validate    Expand         Deepen        Grow
+  hypothesis  the market     the value
 ```
 
-| Horizonte | Período | Objetivo | Epics / Features | Incertidumbre |
-|-----------|---------|---------|----------------|--------------|
-| H1 (Now) | [Q1] | [Objetivo] | [Épica 1, Épica 2] | Baja |
-| H2 (Next) | [Q2] | [Objetivo] | [Épica 3, Área X] | Media |
-| H3 (Later) | [Q3-Q4] | [Objetivo] | [Área Y, Área Z] | Alta |
+| Horizon | Period | Objective | Epics / Features | Uncertainty |
+|---------|--------|----------|----------------|-------------|
+| H1 (Now) | [Q1] | [Objective] | [Epic 1, Epic 2] | Low |
+| H2 (Next) | [Q2] | [Objective] | [Epic 3, Area X] | Medium |
+| H3 (Later) | [Q3-Q4] | [Objective] | [Area Y, Area Z] | High |
 
 ---
 
-## Principios de producto
+## Product principles
 
-Estos principios guían las decisiones de diseño y priorización cuando hay trade-offs.
+These principles guide design and prioritization decisions when there are trade-offs.
 
-1. **[Principio 1]:** [descripción. Ejemplo: "El usuario nuevo primero — toda nueva feature debe ser entendible en 2 minutos sin onboarding"]
+1. **[Principle 1]:** [description. Example: "New user first — every new feature must be understandable in 2 minutes without onboarding"]
 
-2. **[Principio 2]:** [descripción. Ejemplo: "Opinionado sobre lo que importa, flexible en lo secundario"]
+2. **[Principle 2]:** [description. Example: "Opinionated about what matters, flexible on the secondary"]
 
-3. **[Principio 3]:** [descripción]
-
----
-
-## Definition of "Done" del producto
-
-> El producto está "done" cuando logra estos OKRs:
-
-**Objective:** [Qué queremos lograr]
-
-| Key Result | Baseline | Target | Fecha |
-|------------|---------|--------|-------|
-| KR1: [métrica específica] | [valor actual] | [valor objetivo] | [fecha] |
-| KR2: [métrica] | [actual] | [objetivo] | [fecha] |
-| KR3: [métrica de negocio] | [actual] | [objetivo] | [fecha] |
+3. **[Principle 3]:** [description]
 
 ---
 
-## Correlaciones
+## Product Definition of Done
 
-- Problem framing (el porqué) → `03-product/problem-framing.md`
-- Backlog que implementa la visión → `04-requirements/user-stories.md`
-- KPIs en operaciones → `13-operations/README.md`
+> The product is "done" when it achieves these OKRs:
+
+**Objective:** [What we want to achieve]
+
+| Key Result | Baseline | Target | Date |
+|------------|---------|--------|------|
+| KR1: [specific metric] | [current value] | [target value] | [date] |
+| KR2: [metric] | [current] | [target] | [date] |
+| KR3: [business metric] | [current] | [target] | [date] |
+
+---
+
+## Correlations
+
+- Problem framing (the why) → `03-product/problem-framing.md`
+- Backlog that implements the vision → `04-requirements/user-stories.md`
+- KPIs in operations → `13-operations/README.md`

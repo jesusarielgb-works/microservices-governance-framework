@@ -1,53 +1,53 @@
 # Design System
 
-> El design system es el lenguaje visual compartido entre diseño y desarrollo.
-> Previene inconsistencias, acelera el diseño y reduce el re-trabajo.
-> **Regla:** Antes de crear un componente nuevo, busca aquí si ya existe.
+> The design system is the shared visual language between design and development.
+> It prevents inconsistencies, accelerates design, and reduces rework.
+> **Rule:** Before creating a new component, check here if it already exists.
 
 ---
 
-## Tokens de diseño
+## Design tokens
 
-Los tokens son las variables del design system. Un cambio de token cambia el sistema entero.
+Tokens are the design system's variables. Changing a token changes the entire system.
 
-### Colores
+### Colors
 
 ```css
-/* Paleta base */
---color-primary-50:  #[hex];   /* El más claro */
+/* Base palette */
+--color-primary-50:  #[hex];   /* Lightest */
 --color-primary-100: #[hex];
---color-primary-500: #[hex];   /* El default */
---color-primary-900: #[hex];   /* El más oscuro */
+--color-primary-500: #[hex];   /* Default */
+--color-primary-900: #[hex];   /* Darkest */
 
 --color-secondary-500: #[hex];
 --color-neutral-50:  #[hex];
 --color-neutral-900: #[hex];
 
-/* Colores semánticos */
---color-success:  #[hex];      /* Verde — éxito, confirmado */
---color-warning:  #[hex];      /* Amarillo — precaución, pendiente */
---color-error:    #[hex];      /* Rojo — error, cancelado */
---color-info:     #[hex];      /* Azul — información neutral */
+/* Semantic colors */
+--color-success:  #[hex];      /* Green — success, confirmed */
+--color-warning:  #[hex];      /* Yellow — caution, pending */
+--color-error:    #[hex];      /* Red — error, cancelled */
+--color-info:     #[hex];      /* Blue — neutral information */
 
-/* Texto */
+/* Text */
 --color-text-primary:   #[hex];
 --color-text-secondary: #[hex];
 --color-text-disabled:  #[hex];
 
-/* Fondos */
+/* Backgrounds */
 --color-bg-page:    #[hex];
 --color-bg-card:    #[hex];
 --color-bg-overlay: rgba([r],[g],[b], 0.5);
 ```
 
-### Tipografía
+### Typography
 
 ```css
-/* Familias */
---font-family-sans:  '[Nombre de fuente], sans-serif';
---font-family-mono:  '[Nombre de fuente mono], monospace';
+/* Families */
+--font-family-sans:  '[Font name], sans-serif';
+--font-family-mono:  '[Mono font name], monospace';
 
-/* Tamaños (escala modular 1.25) */
+/* Sizes (modular scale 1.25) */
 --font-size-xs:   0.75rem;   /* 12px */
 --font-size-sm:   0.875rem;  /* 14px */
 --font-size-base: 1rem;      /* 16px */
@@ -56,21 +56,21 @@ Los tokens son las variables del design system. Un cambio de token cambia el sis
 --font-size-2xl:  1.953rem;  /* 31px */
 --font-size-3xl:  2.441rem;  /* 39px */
 
-/* Pesos */
+/* Weights */
 --font-weight-regular: 400;
 --font-weight-medium:  500;
 --font-weight-bold:    700;
 
-/* Interlineado */
+/* Line height */
 --line-height-tight:  1.2;
 --line-height-normal: 1.5;
 --line-height-loose:  1.8;
 ```
 
-### Espaciado
+### Spacing
 
 ```css
-/* Sistema de 4px */
+/* 4px system */
 --space-1:  0.25rem;   /* 4px */
 --space-2:  0.5rem;    /* 8px */
 --space-3:  0.75rem;   /* 12px */
@@ -81,16 +81,16 @@ Los tokens son las variables del design system. Un cambio de token cambia el sis
 --space-16: 4rem;      /* 64px */
 ```
 
-### Bordes y sombras
+### Borders and shadows
 
 ```css
 /* Border radius */
 --radius-sm: 4px;
 --radius-md: 8px;
 --radius-lg: 16px;
---radius-full: 9999px;  /* Píldora */
+--radius-full: 9999px;  /* Pill */
 
-/* Sombras */
+/* Shadows */
 --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
 --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
 --shadow-lg: 0 10px 15px rgba(0,0,0,0.15);
@@ -98,107 +98,107 @@ Los tokens son las variables del design system. Un cambio de token cambia el sis
 
 ---
 
-## Componentes
+## Components
 
-### Botones
+### Buttons
 
-| Variante | Uso | Estado desactivado |
-|---------|-----|-------------------|
-| Primary | Acción principal de la página | `opacity: 0.5; cursor: not-allowed` |
-| Secondary | Acciones secundarias | idem |
-| Danger | Acciones destructivas (eliminar) | idem |
-| Ghost | Acciones terciarias, links | idem |
+| Variant | Use | Disabled state |
+|---------|-----|----------------|
+| Primary | Main action on the page | `opacity: 0.5; cursor: not-allowed` |
+| Secondary | Secondary actions | same |
+| Danger | Destructive actions (delete) | same |
+| Ghost | Tertiary actions, links | same |
 
-**Reglas de uso:**
-- Una sola acción Primary por vista
-- Danger solo con confirmación modal ("¿Estás seguro?")
-- Los botones tienen estado loading para operaciones async
+**Usage rules:**
+- Only one Primary action per view
+- Danger only with modal confirmation ("Are you sure?")
+- Buttons have a loading state for async operations
 
-### Formularios
+### Forms
 
-| Componente | Cuando usar |
+| Component | When to use |
 |-----------|-------------|
-| Input text | Texto libre de una línea |
-| Textarea | Texto libre de múltiples líneas |
-| Select | Lista fija de opciones (< 15 items) |
-| Combobox | Lista con búsqueda (> 15 items o carga dinámica) |
-| Checkbox | Opción binaria independiente |
-| Radio | Selección de una opción entre pocas (2-5) |
-| Toggle | Activar/desactivar una funcionalidad |
-| DatePicker | Selección de fecha |
+| Input text | Single-line free text |
+| Textarea | Multi-line free text |
+| Select | Fixed list of options (< 15 items) |
+| Combobox | List with search (> 15 items or dynamic loading) |
+| Checkbox | Independent binary option |
+| Radio | Select one option from a few (2-5) |
+| Toggle | Enable/disable a feature |
+| DatePicker | Date selection |
 
-**Mensajes de error en formularios:**
-- El mensaje aparece debajo del campo, en rojo
-- El borde del campo se pone rojo
-- El mensaje dice cómo corregir el error, no solo que hay error
+**Error messages in forms:**
+- The message appears below the field, in red
+- The field border turns red
+- The message says how to fix the error, not just that there is an error
 
 ```
-✓ "El email debe tener formato usuario@dominio.com"
-✗ "Email inválido"
+✓ "The email must have the format user@domain.com"
+✗ "Invalid email"
 ```
 
-### Retroalimentación
+### Feedback
 
-| Componente | Cuándo | Duración |
-|-----------|--------|---------|
-| Toast/Snackbar | Confirmaciones de acciones | 4 segundos |
-| Alert inline | Errores de formulario | Hasta que se corrija |
-| Modal | Confirmaciones destructivas, acciones irreversibles | Hasta que el usuario decida |
-| Loading spinner | Operaciones > 200ms | Hasta que termine |
-| Skeleton | Carga de contenido de lista / tarjetas | Hasta que carguen |
+| Component | When | Duration |
+|-----------|------|---------|
+| Toast/Snackbar | Action confirmations | 4 seconds |
+| Inline alert | Form errors | Until corrected |
+| Modal | Destructive confirmations, irreversible actions | Until the user decides |
+| Loading spinner | Operations > 200ms | Until finished |
+| Skeleton | Loading list content / cards | Until loaded |
 
-### Tabla de datos
+### Data table
 
-| Aspecto | Comportamiento |
-|---------|---------------|
-| Paginación | Máximo 20 filas por página (configurable por usuario) |
-| Ordenamiento | Click en columna, toggle asc/desc |
-| Filtros | Panel lateral o fila de filtros arriba de la tabla |
-| Selección | Checkbox en la primera columna |
-| Acciones | Columna final con menú de acciones (editar, eliminar, etc.) |
-| Estado vacío | Ilustración + mensaje + CTA de acción principal |
+| Aspect | Behavior |
+|--------|---------|
+| Pagination | Maximum 20 rows per page (user-configurable) |
+| Sorting | Click on column, toggle asc/desc |
+| Filters | Side panel or filter row above the table |
+| Selection | Checkbox in the first column |
+| Actions | Final column with actions menu (edit, delete, etc.) |
+| Empty state | Illustration + message + primary action CTA |
 
 ---
 
-## Patrones de UX
+## UX patterns
 
-### Principios
+### Principles
 
-1. **Confirmación antes de destruir:** Cualquier acción que borre o modifique datos permanentemente requiere un modal de confirmación.
+1. **Confirm before destroying:** Any action that permanently deletes or modifies data requires a confirmation modal.
 
-2. **Feedback inmediato:** Toda acción debe tener respuesta visual en < 100ms (aunque sea solo el estado loading).
+2. **Immediate feedback:** Every action must have a visual response in < 100ms (even if it is just the loading state).
 
-3. **Prevenir antes que corregir:** Validar en tiempo real en el formulario, no solo al submit.
+3. **Prevent rather than correct:** Validate in real time in the form, not only on submit.
 
-4. **Estado vacío como feature:** La pantalla sin datos es la primera impresión del usuario nuevo — guíalo a la primera acción.
+4. **Empty state as a feature:** The screen without data is the new user's first impression — guide them to the first action.
 
-### Manejo de errores
+### Error handling
 
-| Escenario | Qué mostrar |
+| Scenario | What to show |
 |----------|-------------|
-| Error de red | Toast "Sin conexión. Reintentando..." con retry automático |
-| Error 401 | Redirigir al login con mensaje "Tu sesión expiró" |
-| Error 403 | Pantalla "No tienes permisos para ver esto" con link a soporte |
-| Error 404 | Pantalla de 404 con navegación de regreso |
-| Error 500 | Toast de error + botón "Reintentar" |
-| Timeout | Toast "Esto está tardando más de lo normal" con opción cancelar |
+| Network error | Toast "No connection. Retrying..." with automatic retry |
+| 401 error | Redirect to login with message "Your session expired" |
+| 403 error | Screen "You do not have permission to view this" with link to support |
+| 404 error | 404 screen with back navigation |
+| 500 error | Error toast + "Retry" button |
+| Timeout | Toast "This is taking longer than normal" with cancel option |
 
 ---
 
-## Guía de accesibilidad (mínimos)
+## Accessibility guide (minimums)
 
-| Aspecto | Mínimo requerido |
-|---------|-----------------|
-| Contraste de texto | WCAG AA (4.5:1 para texto normal, 3:1 para texto grande) |
-| Navegación con teclado | Todos los elementos interactivos accesibles con Tab |
-| Labels de formularios | Todos los campos con label asociado (`for` / `aria-label`) |
-| Imágenes | Alt text descriptivo en todas las imágenes no decorativas |
-| Focus visible | Indicador de focus visible en todos los elementos interactivos |
+| Aspect | Minimum required |
+|--------|-----------------|
+| Text contrast | WCAG AA (4.5:1 for normal text, 3:1 for large text) |
+| Keyboard navigation | All interactive elements accessible with Tab |
+| Form labels | All fields with associated label (`for` / `aria-label`) |
+| Images | Descriptive alt text on all non-decorative images |
+| Visible focus | Visible focus indicator on all interactive elements |
 
 ---
 
-## Correlaciones
+## Correlations
 
-- Mapa de navegación → `12-ux-ui/navigation-map.md`
+- Navigation map → `12-ux-ui/navigation-map.md`
 - Wireframes → `12-ux-ui/wireframes.md`
-- Requisitos no funcionales de UX → `04-requirements/non-functional.md`
+- UX non-functional requirements → `04-requirements/non-functional.md`

@@ -1,117 +1,117 @@
-# 04 — Requisitos
+# 04 — Requirements
 
-> **¿Qué es esto?** La especificación formal de qué debe hacer el sistema.
-> Funcionales: qué hace. No-funcionales: con qué calidad lo hace.
+> **What is this?** The formal specification of what the system must do.
+> Functional: what it does. Non-functional: how well it does it.
 
-## Por qué existe esta sección
+## Why this section exists
 
-Los requisitos son el contrato entre el equipo y el cliente/stakeholder.
-Sin ellos:
-- No hay forma de verificar si el sistema está completo
-- Los cambios de alcance no tienen baseline de comparación
-- Las pruebas no tienen criterio de éxito
-
----
-
-## Tipos de requisitos
-
-### Funcionales (RF)
-Describen **qué hace** el sistema: funciones, comportamientos, transformaciones de datos.
-*Ejemplo: "El sistema debe permitir al usuario recuperar su contraseña mediante correo electrónico."*
-
-### No funcionales (RNF)
-Describen **cómo lo hace**: calidad, rendimiento, disponibilidad, seguridad.
-*Ejemplo: "El sistema debe responder en menos de 200ms para el 95% de las solicitudes."*
-
-Los RNF suelen ser más difíciles de cumplir que los RF y se ignoran con más frecuencia. **Son igual de importantes.**
+Requirements are the contract between the team and the client/stakeholder.
+Without them:
+- There is no way to verify whether the system is complete
+- Scope changes have no baseline for comparison
+- Tests have no success criterion
 
 ---
 
-## Qué hay aquí y cómo llenarlo
+## Types of requirements
+
+### Functional (FR)
+Describe **what the system does**: functions, behaviors, data transformations.
+*Example: "The system must allow the user to recover their password via email."*
+
+### Non-functional (NFR)
+Describe **how it does it**: quality, performance, availability, security.
+*Example: "The system must respond in less than 200ms for 95% of requests."*
+
+NFRs are usually harder to meet than FRs and are ignored more frequently. **They are equally important.**
+
+---
+
+## What is here and how to fill it in
 
 ### `functional.md` ⭐
-Lista de todos los requisitos funcionales del sistema.
-**Llena:** numerados, con el módulo/servicio al que pertenecen, fuente (HU que los origina), prioridad.
+List of all the system's functional requirements.
+**Fill in:** numbered, with the module/service they belong to, source (originating HU), priority.
 
-**Formato:**
+**Format:**
 ```markdown
-| ID | Módulo | Descripción | Fuente (HU) | Prioridad |
-|----|--------|-------------|-------------|-----------|
-| RF-001 | [Servicio] | El sistema debe [hacer algo] | HU-XXX-001 | Alta |
+| ID | Module | Description | Source (HU) | Priority |
+|----|--------|-------------|------------|---------|
+| FR-001 | [Service] | The system must [do something] | HU-XXX-001 | High |
 ```
 
 ### `non-functional.md` ⭐
-Requisitos de calidad, rendimiento y restricciones técnicas.
-**Llena:** por categoría (rendimiento, disponibilidad, seguridad, escalabilidad, etc.)
+Quality, performance, and technical constraint requirements.
+**Fill in:** by category (performance, availability, security, scalability, etc.)
 
-**Formato:**
+**Format:**
 ```markdown
-## Rendimiento
-| ID | Requisito | Métrica | Cómo verificar |
-|----|-----------|---------|----------------|
-| RNF-001 | Tiempo de respuesta | p95 < 200ms | Load test con K6 |
+## Performance
+| ID | Requirement | Metric | How to verify |
+|----|------------|--------|--------------|
+| NFR-001 | Response time | p95 < 200ms | Load test with K6 |
 
-## Disponibilidad
-| ID | Requisito | Métrica | Cómo verificar |
-|----|-----------|---------|----------------|
-| RNF-010 | Uptime | 99.9% mensual | Monitoreo en producción |
+## Availability
+| ID | Requirement | Metric | How to verify |
+|----|------------|--------|--------------|
+| NFR-010 | Uptime | 99.9% monthly | Production monitoring |
 
-## Seguridad
-| ID | Requisito | Descripción |
-|----|-----------|-------------|
-| RNF-020 | Autenticación | JWT con expiración de 1 hora |
+## Security
+| ID | Requirement | Description |
+|----|------------|-------------|
+| NFR-020 | Authentication | JWT with 1-hour expiration |
 ```
 
 ### `user-stories.md`
-Historias de usuario formalizadas (vienen del backlog de `03-product/`).
-**Llena:** con formato Como/Quiero/Para + criterios de aceptación verificables.
+Formalized user stories (coming from the `03-product/` backlog).
+**Fill in:** with As/I want/So that format + verifiable acceptance criteria.
 
 ### `traceability-matrix.md` ⭐
-Tabla que conecta: HU → Requisito → Caso de prueba.
-**Llena:** cuando tienes requisitos y pruebas definidas. Permite verificar cobertura.
+Table that connects: HU → Requirement → Test case.
+**Fill in:** when you have requirements and tests defined. Allows coverage verification.
 
-**Formato:**
+**Format:**
 ```markdown
-| HU | RF/RNF | Descripción | Caso de prueba | Estado |
-|----|--------|-------------|----------------|--------|
-| HU-IAM-001 | RF-001 | Login con email | TC-001 | ✅ |
+| HU | FR/NFR | Description | Test case | Status |
+|----|--------|-------------|----------|--------|
+| HU-IAM-001 | FR-001 | Login with email | TC-001 | ✅ |
 ```
 
 ### `_template-hu.md`
-Template para una Historia de Usuario completa con criterios de aceptación.
+Template for a complete User Story with acceptance criteria.
 
 ### `_template-nfr.md`
-Template para especificar requisitos no funcionales con sus métricas de verificación.
+Template for specifying non-functional requirements with their verification metrics.
 
 ---
 
-## Correlaciones con otras secciones
+## Correlations with other sections
 
-| Esta sección alimenta... | Por qué |
-|--------------------------|---------|
-| `05-architecture/` | Los RNF de rendimiento/disponibilidad guían decisiones de arquitectura |
-| `11-quality/testing-strategy.md` | Cada RF debe tener al menos un caso de prueba |
-| `09-microservices/` | Los RF se agrupan por servicio responsable |
-| `07-api/` | Los RF de integración → endpoints en los contratos API |
-| `15-project-control/risks.md` | RNF muy exigentes suelen generar riesgos técnicos |
-
----
-
-## Errores comunes a evitar
-
-❌ **"El sistema debe ser rápido"** → No medible. Mejor: "p95 < 200ms"
-
-❌ **"El sistema debe ser seguro"** → No verificable. Mejor: "Autenticación con JWT, tokens expiran en 1h"
-
-❌ Escribir requisitos que describen la solución en lugar del problema.
-
-✅ Un buen requisito es: **específico, medible, alcanzable, relevante y verificable**.
+| This section feeds... | Why |
+|-----------------------|-----|
+| `05-architecture/` | Performance/availability NFRs guide architectural decisions |
+| `11-quality/testing-strategy.md` | Each FR must have at least one test case |
+| `09-microservices/` | FRs are grouped by responsible service |
+| `07-api/` | Integration FRs → endpoints in API contracts |
+| `15-project-control/risks.md` | Very demanding NFRs usually generate technical risks |
 
 ---
 
-## Preguntas que esta sección debe responder
+## Common mistakes to avoid
 
-- ¿Qué debe hacer el sistema para cada tipo de usuario?
-- ¿Con qué velocidad, disponibilidad y seguridad?
-- ¿Qué requisito origina cada caso de prueba?
-- ¿Están todos los requisitos cubiertos por pruebas?
+❌ **"The system must be fast"** → Not measurable. Better: "p95 < 200ms"
+
+❌ **"The system must be secure"** → Not verifiable. Better: "Authentication with JWT, tokens expire in 1h"
+
+❌ Writing requirements that describe the solution instead of the problem.
+
+✅ A good requirement is: **specific, measurable, achievable, relevant, and verifiable**.
+
+---
+
+## Questions this section must answer
+
+- What must the system do for each type of user?
+- With what speed, availability, and security?
+- Which requirement originates each test case?
+- Are all requirements covered by tests?

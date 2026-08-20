@@ -1,124 +1,124 @@
-# 02 — Dominio del Problema
+# 02 — Problem Domain
 
-> **¿Qué es esto?** El modelo mental del negocio. No es tecnología — es entender el problema
-> que el sistema resuelve antes de escribir código. Esta sección viene de Domain-Driven Design (DDD).
+> **What is this?** The mental model of the business. It is not technology — it is understanding
+> the problem the system solves before writing code. This section comes from Domain-Driven Design (DDD).
 
-## Por qué existe esta sección
+## Why this section exists
 
-Los errores más costosos en software no son bugs — son malentendidos del dominio.
-Cuando los desarrolladores no entienden profundamente el negocio:
-- Crean abstracciones incorrectas que hay que reescribir
-- Los nombres en el código no coinciden con los del negocio → confusión permanente
-- Los límites entre microservicios quedan mal trazados
+The most costly mistakes in software are not bugs — they are domain misunderstandings.
+When developers do not deeply understand the business:
+- They create incorrect abstractions that have to be rewritten
+- Names in the code do not match the business's names → permanent confusion
+- Microservice boundaries are drawn incorrectly
 
-Esta sección captura el conocimiento del dominio **antes** de diseñar la arquitectura.
-
----
-
-## Conceptos clave que debes conocer
-
-**Entidad:** Objeto del dominio con identidad única (ej: un `Estudiante` identificado por su código).
-
-**Value Object:** Objeto sin identidad propia, se define por sus atributos (ej: `Dirección`, `Precio`).
-
-**Agregado (Aggregate):** Grupo de entidades que se tratan como una unidad. Solo el raíz del agregado
-puede ser referenciado desde afuera.
-
-**Evento de dominio:** Algo que ocurrió en el negocio y que otros partes del sistema deben saber
-(ej: `EstudianteMatriculado`, `PagoAprobado`). Son hechos, van en pasado.
-
-**Contexto delimitado (Bounded Context):** Área del sistema donde un modelo particular aplica.
-Cada microservicio generalmente corresponde a un bounded context.
+This section captures domain knowledge **before** designing the architecture.
 
 ---
 
-## Qué hay aquí y cómo llenarlo
+## Key concepts you must know
+
+**Entity:** Domain object with a unique identity (e.g.: a `Student` identified by their code).
+
+**Value Object:** Object with no identity of its own, defined by its attributes (e.g.: `Address`, `Price`).
+
+**Aggregate:** Group of entities treated as a unit. Only the aggregate root
+can be referenced from outside.
+
+**Domain Event:** Something that occurred in the business that other parts of the system must know
+(e.g.: `StudentEnrolled`, `PaymentApproved`). They are facts, stated in past tense.
+
+**Bounded Context:** Area of the system where a particular model applies.
+Each microservice generally corresponds to a bounded context.
+
+---
+
+## What is here and how to fill it in
 
 ### `domain-map.md` ⭐
-Mapa de todos los bounded contexts y cómo se relacionan.
-**Llena:** dibuja los contextos como rectángulos y las relaciones entre ellos
+Map of all bounded contexts and how they relate.
+**Fill in:** draw the contexts as rectangles and the relationships between them
 (upstream/downstream, shared kernel, anti-corruption layer).
 
-**Formato:**
+**Format:**
 ```markdown
 ## Bounded Contexts
 
-### [Nombre del Contexto]
-**Responsabilidad:** [qué maneja este contexto]
-**Entidades principales:** [lista]
-**Equipo dueño:** [equipo]
+### [Context Name]
+**Responsibility:** [what this context manages]
+**Main entities:** [list]
+**Owning team:** [team]
 
-## Mapa de relaciones
-[Diagrama ASCII o descripción de cómo se relacionan los contextos]
+## Relationship map
+[ASCII diagram or description of how the contexts relate]
 
-| Contexto A | Relación | Contexto B | Descripción |
-|------------|----------|------------|-------------|
-| [A] | downstream-of | [B] | [A] consume eventos de [B] |
+| Context A | Relationship | Context B | Description |
+|-----------|-------------|-----------|-------------|
+| [A] | downstream-of | [B] | [A] consumes events from [B] |
 ```
 
 ### `entities-and-rules.md` ⭐
-Catálogo de entidades, value objects y reglas de negocio.
-**Llena:** para cada entidad: nombre, atributos, invariantes (reglas que SIEMPRE deben cumplirse),
-comportamientos.
+Catalog of entities, value objects, and business rules.
+**Fill in:** for each entity: name, attributes, invariants (rules that MUST ALWAYS hold),
+behaviors.
 
-**Formato:**
+**Format:**
 ```markdown
-## Entidad: [NombreEntidad]
-**Pertenece a:** [Bounded Context]
-**Identificador:** [campo que la hace única]
+## Entity: [EntityName]
+**Belongs to:** [Bounded Context]
+**Identifier:** [field that makes it unique]
 
-### Atributos
-| Atributo | Tipo | Descripción | Restricciones |
-|----------|------|-------------|---------------|
+### Attributes
+| Attribute | Type | Description | Required | Rules |
+|-----------|------|-------------|---------|-------|
 
-### Reglas de negocio (invariantes)
-- [ ] [Una regla que siempre debe cumplirse]
+### Business rules (invariants)
+- [ ] [A rule that must always hold]
 
-### Comportamientos (métodos de dominio)
-- `[nombre()]`: [qué hace]
+### Behaviors (domain methods)
+- `[name()]`: [what it does]
 ```
 
 ### `domain-events.md` ⭐
-Lista de todos los eventos que ocurren en el dominio.
-**Llena:** nombre del evento (pasado), qué lo dispara, qué datos lleva, quién lo consume.
+List of all events that occur in the domain.
+**Fill in:** event name (past tense), what triggers it, what data it carries, who consumes it.
 
-**Formato:**
+**Format:**
 ```markdown
-| Evento | Disparado por | Datos | Consumidores | Bounded Context |
-|--------|--------------|-------|--------------|-----------------|
-| [NombreEnPasado] | [acción que lo causa] | [campos del evento] | [qué escucha esto] | [contexto] |
+| Event | Triggered by | Data | Consumers | Bounded Context |
+|-------|-------------|------|-----------|----------------|
+| [NameInPastTense] | [action that causes it] | [event fields] | [what listens to this] | [context] |
 ```
 
 ---
 
-## Correlaciones con otras secciones
+## Correlations with other sections
 
-| Esta sección alimenta... | Por qué |
-|--------------------------|---------|
-| `05-architecture/overview.md` | Los bounded contexts → microservicios |
-| `06-data/models.md` | Las entidades → tablas/colecciones de datos |
-| `07-api/contracts/` | Los eventos de dominio → eventos en APIs asíncronas |
-| `09-microservices/event-catalog.md` | Todos los eventos de dominio se registran ahí |
-| `04-requirements/user-stories.md` | Las reglas de negocio → criterios de aceptación |
-
----
-
-## Herramienta recomendada: Event Storming
-
-**Event Storming** es un taller de descubrimiento del dominio con post-its:
-1. 🟠 Naranja: Eventos de dominio (pasado)
-2. 🔵 Azul: Comandos (lo que dispara el evento)
-3. 🟡 Amarillo: Actores (quién ejecuta el comando)
-4. 🟣 Morado: Políticas (reacciones automáticas)
-5. 🟦 Celeste: Sistemas externos
-
-Hacer un Event Storming con el equipo antes de llenar esta sección ahorra semanas de rediseño.
+| This section feeds... | Why |
+|-----------------------|-----|
+| `05-architecture/overview.md` | Bounded contexts → microservices |
+| `06-data/models.md` | Entities → data tables/collections |
+| `07-api/contracts/` | Domain events → events in async APIs |
+| `09-microservices/event-catalog.md` | All domain events are registered there |
+| `04-requirements/user-stories.md` | Business rules → acceptance criteria |
 
 ---
 
-## Preguntas que esta sección debe responder
+## Recommended tool: Event Storming
 
-- ¿Cuáles son las entidades principales del negocio?
-- ¿Qué reglas NUNCA se pueden violar en el sistema?
-- ¿Qué eventos importantes ocurren en el dominio?
-- ¿Dónde están los límites naturales del sistema (para definir microservicios)?
+**Event Storming** is a domain discovery workshop with sticky notes:
+1. 🟠 Orange: Domain events (past tense)
+2. 🔵 Blue: Commands (what triggers the event)
+3. 🟡 Yellow: Actors (who executes the command)
+4. 🟣 Purple: Policies (automatic reactions)
+5. 🟦 Light blue: External systems
+
+Running an Event Storming session with the team before filling in this section saves weeks of redesign.
+
+---
+
+## Questions this section must answer
+
+- What are the main business entities?
+- What rules can NEVER be violated in the system?
+- What important events occur in the domain?
+- Where are the natural boundaries of the system (for defining microservices)?

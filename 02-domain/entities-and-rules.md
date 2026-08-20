@@ -1,11 +1,11 @@
-# Entidades, Value Objects y Reglas de Negocio
+# Entities, Value Objects, and Business Rules
 
-> **Qué llenar aquí:** Los bloques de construcción del dominio siguiendo el modelo táctico del DDD.
-> Este documento traduce el conocimiento del dominio (obtenido en Event Storming) a modelos de código.
+> **What to fill in here:** The building blocks of the domain following the DDD tactical model.
+> This document translates domain knowledge (obtained in Event Storming) into code models.
 
-> **Nota de stack:** Los conceptos de Entity, Value Object y Aggregate son independientes del lenguaje.
-> Los ejemplos de código (clases, interfaces, decoradores) están escritos en pseudo-TypeScript
-> para ilustrar la idea. Para ver la implementación en tu tecnología:
+> **Stack note:** The concepts of Entity, Value Object, and Aggregate are language-independent.
+> Code examples (classes, interfaces, decorators) are written in pseudo-TypeScript
+> to illustrate the idea. To see the implementation in your technology:
 > [`_stacks/node-typescript.md`](../_stacks/node-typescript.md) ·
 > [`_stacks/java-spring.md`](../_stacks/java-spring.md) ·
 > [`_stacks/python-fastapi.md`](../_stacks/python-fastapi.md) ·
@@ -13,159 +13,159 @@
 
 ---
 
-## Conceptos del DDD táctico
+## Tactical DDD concepts
 
-### Entidad (Entity)
-Una **Entidad** es un objeto definido por su identidad, no por sus atributos.
-Dos entidades son iguales si tienen el mismo ID, aunque todos sus demás atributos difieran.
+### Entity
+An **Entity** is an object defined by its identity, not its attributes.
+Two entities are equal if they have the same ID, even if all their other attributes differ.
 
 ```
-✓ Entidad: Usuario (dos usuarios con diferente email siguen siendo distintos por su ID)
-✓ Entidad: Pedido (cambia de estado pero sigue siendo el mismo pedido)
-✗ No es entidad: Dinero (10 USD == 10 USD independientemente de qué billete)
+✓ Entity: User (two users with different emails are still distinct by their ID)
+✓ Entity: Order (changes state but remains the same order)
+✗ Not an entity: Money (10 USD == 10 USD regardless of which bill)
 ```
 
 ### Value Object (VO)
-Un **Value Object** es un objeto definido por sus atributos, no tiene identidad propia.
-Es inmutable — si cambia un atributo, es un nuevo VO.
+A **Value Object** is an object defined by its attributes; it has no identity of its own.
+It is immutable — if an attribute changes, it is a new VO.
 
 ```
-✓ Value Object: Dirección (Calle 5 #10-20, Neiva, Huila)
-✓ Value Object: Dinero (USD 150.00)
-✓ Value Object: Email (usuario@ejemplo.com)
-✓ Value Object: RangoFecha (2024-01-01 → 2024-01-31)
+✓ Value Object: Address (5th Street #10-20, Neiva, Huila)
+✓ Value Object: Money (USD 150.00)
+✓ Value Object: Email (user@example.com)
+✓ Value Object: DateRange (2024-01-01 → 2024-01-31)
 ```
 
 ### Aggregate
-Un **Aggregate** es un cluster de entidades y VOs tratados como una unidad.
-Tiene un **Aggregate Root** que es el punto de entrada — solo se puede acceder a los
-objetos internos a través de la raíz.
+An **Aggregate** is a cluster of entities and VOs treated as a unit.
+It has an **Aggregate Root** which is the entry point — internal objects can only be
+accessed through the root.
 
 ```
-Pedido (Aggregate Root)
-  ├── ItemsPedido[] (Entidades dentro del aggregate)
-  ├── DireccionEntrega (Value Object)
-  └── TotalPedido (Value Object calculado)
+Order (Aggregate Root)
+  ├── OrderItems[] (Entities inside the aggregate)
+  ├── DeliveryAddress (Value Object)
+  └── OrderTotal (Calculated Value Object)
 ```
 
-**Regla de oro del Aggregate:** Las transacciones no cruzan fronteras de aggregates.
-Si necesitas modificar dos aggregates en una operación, usa un Evento de Dominio y una Saga.
+**Golden rule of the Aggregate:** Transactions do not cross aggregate boundaries.
+If you need to modify two aggregates in one operation, use a Domain Event and a Saga.
 
-### Reglas de Negocio
-Las **Reglas de Negocio** (invariantes) son las restricciones que el dominio siempre debe cumplir.
-Viven en el Aggregate Root y se validan en cada operación.
+### Business Rules
+**Business Rules** (invariants) are the constraints the domain must always satisfy.
+They live in the Aggregate Root and are validated on every operation.
 
 ---
 
-## Entidades del sistema
+## System entities
 
-### Entidad: [NombreEntidad]
+### Entity: [EntityName]
 
-**Contexto:** [Bounded Context al que pertenece]
+**Context:** [Bounded Context it belongs to]
 
-**Descripción:** [Qué representa en el negocio, en una oración]
+**Description:** [What it represents in the business, in one sentence]
 
-**Atributos:**
+**Attributes:**
 
-| Atributo | Tipo | Descripción | Obligatorio | Reglas |
-|----------|------|-------------|-------------|--------|
-| id | UUID | Identificador único | Sí | Generado automáticamente al crear |
-| [atributo] | [tipo] | [descripción] | [Sí/No] | [validaciones] |
-| createdAt | DateTime | Fecha de creación | Sí | Inmutable, asignado al crear |
-| updatedAt | DateTime | Última modificación | Sí | Actualizado automáticamente |
+| Attribute | Type | Description | Required | Rules |
+|-----------|------|-------------|---------|-------|
+| id | UUID | Unique identifier | Yes | Auto-generated on creation |
+| [attribute] | [type] | [description] | [Yes/No] | [validations] |
+| createdAt | DateTime | Creation date | Yes | Immutable, set on creation |
+| updatedAt | DateTime | Last modification | Yes | Updated automatically |
 
-**Ciclo de vida / Estados:**
-
-```
-[Estado A] ──(acción)──▶ [Estado B] ──(acción)──▶ [Estado C]
-                                │
-                          (acción)
-                                ▼
-                          [Estado D]
-```
-
-| Estado | Descripción | Transiciones permitidas |
-|--------|-------------|------------------------|
-| [BORRADOR] | Recién creado, no publicado | → ACTIVO, → CANCELADO |
-| [ACTIVO] | Disponible para uso | → INACTIVO, → CANCELADO |
-| [CANCELADO] | Finalizado sin completarse | Estado terminal |
-
-**Invariantes (Reglas de negocio que SIEMPRE deben cumplirse):**
+**Lifecycle / States:**
 
 ```
-INV-001: [Nombre de la regla]
-  - Regla: [El precio siempre debe ser mayor a 0]
-  - Violación: [No se puede guardar una entidad con precio <= 0]
-  - Implementación: Validar en el constructor y en el setter del atributo
-
-INV-002: [Nombre de la regla]
-  - Regla: [No se puede cambiar el dueño de una entidad una vez asignado]
-  - Violación: Se lanza DomainException si se intenta cambiar ownerID
-  - Implementación: El setter valida que ownerID aún sea null
+[State A] ──(action)──▶ [State B] ──(action)──▶ [State C]
+                               │
+                          (action)
+                               ▼
+                          [State D]
 ```
 
-**Ejemplo en código (TypeScript/Java):**
+| State | Description | Allowed transitions |
+|-------|-------------|---------------------|
+| [DRAFT] | Just created, not published | → ACTIVE, → CANCELLED |
+| [ACTIVE] | Available for use | → INACTIVE, → CANCELLED |
+| [CANCELLED] | Finished without completing | Terminal state |
+
+**Invariants (Business rules that MUST ALWAYS hold):**
+
+```
+INV-001: [Rule name]
+  - Rule: [Price must always be greater than 0]
+  - Violation: [An entity with price <= 0 cannot be saved]
+  - Implementation: Validate in the constructor and in the attribute setter
+
+INV-002: [Rule name]
+  - Rule: [The owner of an entity cannot be changed once assigned]
+  - Violation: DomainException is thrown if an attempt is made to change ownerID
+  - Implementation: The setter validates that ownerID is still null
+```
+
+**Code example (TypeScript/Java):**
 
 ```typescript
-// TypeScript — Entity con invariantes
-class Pedido {
+// TypeScript — Entity with invariants
+class Order {
   private constructor(
-    private readonly id: PedidoId,
-    private estado: EstadoPedido,
-    private items: ItemPedido[],
-    private total: Dinero,
+    private readonly id: OrderId,
+    private status: OrderStatus,
+    private items: OrderItem[],
+    private total: Money,
   ) {}
 
-  static crear(items: ItemPedido[]): Pedido {
+  static create(items: OrderItem[]): Order {
     if (items.length === 0) {
-      throw new DomainException('INV-001: Un pedido debe tener al menos un ítem');
+      throw new DomainException('INV-001: An order must have at least one item');
     }
-    const total = items.reduce((sum, item) => sum.sumar(item.subtotal), Dinero.cero('COP'));
-    return new Pedido(PedidoId.nuevo(), EstadoPedido.PENDIENTE, items, total);
+    const total = items.reduce((sum, item) => sum.add(item.subtotal), Money.zero('COP'));
+    return new Order(OrderId.new(), OrderStatus.PENDING, items, total);
   }
 
-  confirmar(): void {
-    if (this.estado !== EstadoPedido.PENDIENTE) {
-      throw new DomainException('INV-002: Solo se puede confirmar un pedido PENDIENTE');
+  confirm(): void {
+    if (this.status !== OrderStatus.PENDING) {
+      throw new DomainException('INV-002: Only a PENDING order can be confirmed');
     }
-    this.estado = EstadoPedido.CONFIRMADO;
-    // Registrar evento de dominio
-    this.addEvent(new PedidoConfirmadoEvent(this.id, this.total));
+    this.status = OrderStatus.CONFIRMED;
+    // Record domain event
+    this.addEvent(new OrderConfirmedEvent(this.id, this.total));
   }
 }
 ```
 
 ---
 
-## Value Objects del sistema
+## System Value Objects
 
-### Value Object: [NombreVO]
+### Value Object: [VOName]
 
-**Descripción:** [Qué representa]
+**Description:** [What it represents]
 
-**Atributos:**
+**Attributes:**
 
-| Atributo | Tipo | Descripción |
-|----------|------|-------------|
-| [campo1] | [tipo] | [descripción] |
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| [field1] | [type] | [description] |
 
-**Reglas de validación:**
+**Validation rules:**
 
 ```
-- [El email debe tener formato válido: texto@dominio.extensión]
-- [La extensión debe ser de al menos 2 caracteres]
+- [Email must have a valid format: text@domain.extension]
+- [The extension must be at least 2 characters]
 ```
 
-**Ejemplo:**
+**Example:**
 
 ```typescript
-// Value Object — Inmutable, validado en el constructor
+// Value Object — Immutable, validated in the constructor
 class Email {
   private readonly value: string;
 
   constructor(email: string) {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      throw new DomainException(`Email inválido: ${email}`);
+      throw new DomainException(`Invalid email: ${email}`);
     }
     this.value = email.toLowerCase();
   }
@@ -178,75 +178,75 @@ class Email {
 
 ---
 
-## Aggregates del sistema
+## System Aggregates
 
-### Aggregate: [NombreAggregate]
+### Aggregate: [AggregateName]
 
-**Aggregate Root:** [NombreEntidadRaíz]
+**Aggregate Root:** [RootEntityName]
 
-**Entidades internas:**
-- [EntidadInterna1] — [por qué está dentro del aggregate]
-- [EntidadInterna2] — [por qué está dentro del aggregate]
+**Internal entities:**
+- [InternalEntity1] — [why it is inside the aggregate]
+- [InternalEntity2] — [why it is inside the aggregate]
 
 **Value Objects:**
 - [VO1], [VO2]
 
-**Invariantes del Aggregate:**
+**Aggregate invariants:**
 
 ```
-AGGR-INV-001: La suma de items.subtotal debe igualar a aggregate.total
-AGGR-INV-002: No se puede agregar un item si el pedido está en estado CONFIRMADO
-AGGR-INV-003: No puede haber dos items con el mismo productoId
+AGGR-INV-001: The sum of items.subtotal must equal aggregate.total
+AGGR-INV-002: An item cannot be added if the order is in CONFIRMED status
+AGGR-INV-003: No two items can have the same productId
 ```
 
-**¿Por qué estos objetos forman un aggregate?**
-> [Explicación de por qué estos objetos deben mantenerse consistentes como una unidad.
-> Ej: "Un Pedido y sus Items deben ser consistentes siempre — no puede existir un Item
-> sin su Pedido, y el total del Pedido siempre debe reflejar la suma de los Items."]
+**Why do these objects form an aggregate?**
+> [Explanation of why these objects must be kept consistent as a unit.
+> E.g.: "An Order and its Items must always be consistent — an Item cannot exist
+> without its Order, and the Order total must always reflect the sum of the Items."]
 
 ---
 
-## Tabla resumen de bloques tácticos
+## Summary table of tactical building blocks
 
-| Nombre | Tipo | Bounded Context | Aggregate Root? |
-|--------|------|----------------|----------------|
-| [Entidad A] | Entity | [Contexto A] | Sí |
-| [Entidad B] | Entity | [Contexto A] | No (dentro de A) |
-| [VO: Email] | Value Object | Compartido | N/A |
-| [VO: Dinero] | Value Object | Compartido | N/A |
-| [Servicio X] | Domain Service | [Contexto B] | N/A |
+| Name | Type | Bounded Context | Aggregate Root? |
+|------|------|----------------|----------------|
+| [Entity A] | Entity | [Context A] | Yes |
+| [Entity B] | Entity | [Context A] | No (inside A) |
+| [VO: Email] | Value Object | Shared | N/A |
+| [VO: Money] | Value Object | Shared | N/A |
+| [Service X] | Domain Service | [Context B] | N/A |
 
 ---
 
 ## Domain Services
 
-Un **Domain Service** es lógica de negocio que no pertenece naturalmente a ninguna entidad.
-Úsalo cuando:
-- La operación involucra múltiples entidades o aggregates
-- Sería antinatural que la operación pertenezca a una sola entidad
-- La lógica no necesita un estado propio
+A **Domain Service** is business logic that does not naturally belong to any entity.
+Use it when:
+- The operation involves multiple entities or aggregates
+- It would be unnatural for the operation to belong to a single entity
+- The logic does not need its own state
 
 ```typescript
-// Domain Service — Sin estado, orquesta lógica entre entidades
-class ServicioCalculoPrecio {
-  calcularTotal(items: ItemPedido[], descuentos: Descuento[], impuestos: Impuesto[]): Dinero {
-    const subtotal = items.reduce((sum, item) => sum.sumar(item.subtotal), Dinero.cero('COP'));
-    const conDescuento = descuentos.reduce((total, d) => d.aplicar(total), subtotal);
-    const conImpuestos = impuestos.reduce((total, imp) => imp.aplicar(total), conDescuento);
-    return conImpuestos;
+// Domain Service — Stateless, orchestrates logic between entities
+class PriceCalculationService {
+  calculateTotal(items: OrderItem[], discounts: Discount[], taxes: Tax[]): Money {
+    const subtotal = items.reduce((sum, item) => sum.add(item.subtotal), Money.zero('COP'));
+    const withDiscount = discounts.reduce((total, d) => d.apply(total), subtotal);
+    const withTaxes = taxes.reduce((total, tax) => tax.apply(total), withDiscount);
+    return withTaxes;
   }
 }
 ```
 
 ---
 
-## Correlación con el código
+## Correlation with code
 
-| Artefacto de dominio | Paquete / folder en código | Archivo |
-|---------------------|---------------------------|---------|
-| Aggregate Root `Pedido` | `src/domain/pedido/` | `Pedido.ts` |
+| Domain artifact | Package / folder in code | File |
+|----------------|--------------------------|------|
+| Aggregate Root `Order` | `src/domain/order/` | `Order.ts` |
 | Value Object `Email` | `src/domain/shared/value-objects/` | `Email.ts` |
-| Domain Service `ServicioCalculoPrecio` | `src/domain/pedido/services/` | `ServicioCalculoPrecio.ts` |
-| Repositorio `PedidoRepository` | `src/domain/pedido/ports/` | `PedidoRepository.ts` |
+| Domain Service `PriceCalculationService` | `src/domain/order/services/` | `PriceCalculationService.ts` |
+| Repository `OrderRepository` | `src/domain/order/ports/` | `OrderRepository.ts` |
 
-> Ver estructura hexagonal en `05-architecture/hexagonal-architecture.md`
+> See hexagonal structure in `05-architecture/hexagonal-architecture.md`

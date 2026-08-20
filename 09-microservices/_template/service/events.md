@@ -1,59 +1,59 @@
-# Eventos — [Nombre del Servicio]
+# Events — [Service Name]
 
-> Los eventos son la forma en que los microservicios se comunican de manera asíncrona.
-> Documenta aquí todos los eventos que este servicio **publica** y **consume**.
+> Events are how microservices communicate asynchronously.
+> Document here all events that this service **publishes** and **consumes**.
 
 ---
 
-## Eventos que PUBLICA este servicio
+## Events this service PUBLISHES
 
-> Estos son los eventos que este servicio emite cuando algo importante ocurre.
-> Otros servicios pueden suscribirse a ellos.
+> These are the events this service emits when something important occurs.
+> Other services can subscribe to them.
 
-| Evento | Topic/Exchange | Cuándo se emite | Payload (campos clave) |
-|--------|---------------|-----------------|----------------------|
-| [NombreEnPasado] | [nombre.del.topic] | [condición que lo dispara] | `{campo1, campo2}` |
+| Event | Topic/Exchange | When it is emitted | Payload (key fields) |
+|-------|---------------|--------------------|---------------------|
+| [NameInPastTense] | [topic.name] | [condition that triggers it] | `{field1, field2}` |
 
-### Esquema de evento: [NombreEvento]
+### Event schema: [EventName]
 
 ```json
 {
   "eventId": "uuid",
-  "eventType": "[NombreEvento]",
+  "eventType": "[EventName]",
   "timestamp": "2024-01-01T12:00:00Z",
   "version": "1.0",
-  "source": "[nombre-servicio]",
+  "source": "[service-name]",
   "payload": {
-    "[campo1]": "[tipo y descripción]",
-    "[campo2]": "[tipo y descripción]"
+    "[field1]": "[type and description]",
+    "[field2]": "[type and description]"
   }
 }
 ```
 
 ---
 
-## Eventos que CONSUME este servicio
+## Events this service CONSUMES
 
-> Estos son los eventos de otros servicios a los que este servicio reacciona.
+> These are events from other services that this service reacts to.
 
-| Evento | Publicado por | Topic/Exchange | Qué hace este servicio al recibirlo |
-|--------|--------------|----------------|-------------------------------------|
-| [NombreEvento] | [servicio origen] | [topic] | [acción que toma] |
-
----
-
-## Garantías de entrega
-
-| Garantía | Valor | Implicación |
-|----------|-------|-------------|
-| Al menos una vez (at-least-once) | [Sí/No] | Los consumidores deben ser idempotentes |
-| Como máximo una vez (at-most-once) | [Sí/No] | Puede perderse algún evento |
-| Exactamente una vez (exactly-once) | [Sí/No] | Más costoso, más confiable |
+| Event | Published by | Topic/Exchange | What this service does when it receives it |
+|-------|-------------|----------------|-------------------------------------------|
+| [EventName] | [source service] | [topic] | [action taken] |
 
 ---
 
-## Manejo de errores
+## Delivery guarantees
 
-- **Dead Letter Queue:** [nombre de la DLQ donde van los eventos fallidos]
-- **Reintentos:** [N reintentos con backoff exponencial]
-- **Alertas:** [cuándo se alerta al equipo de un evento en DLQ]
+| Guarantee | Value | Implication |
+|-----------|-------|-------------|
+| At-least-once | [Yes/No] | Consumers must be idempotent |
+| At-most-once | [Yes/No] | Some events may be lost |
+| Exactly-once | [Yes/No] | More expensive, more reliable |
+
+---
+
+## Error handling
+
+- **Dead Letter Queue:** [name of the DLQ where failed events go]
+- **Retries:** [N retries with exponential backoff]
+- **Alerts:** [when the team is alerted of an event in the DLQ]

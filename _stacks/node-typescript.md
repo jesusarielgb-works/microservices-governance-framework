@@ -1,14 +1,14 @@
 # Stack: Node.js + TypeScript
 
-> Esta guía es para equipos que construyen microservicios con **Node.js** y **TypeScript**.
-> Frameworks típicos: Express, Fastify, NestJS.
+> This guide is for teams building microservices with **Node.js** and **TypeScript**.
+> Typical frameworks: Express, Fastify, NestJS.
 
 ---
 
-## Herramientas y versiones mínimas
+## Tools and minimum versions
 
-| Herramienta | Versión | Verificar con |
-|-------------|---------|--------------|
+| Tool | Version | Verify with |
+|------|---------|------------|
 | Node.js | 20 LTS | `node --version` |
 | npm | 10+ | `npm --version` |
 | TypeScript | 5.x | `npx tsc --version` |
@@ -17,74 +17,74 @@
 
 ---
 
-## Estructura de carpetas del microservicio (Hexagonal)
+## Microservice folder structure (Hexagonal)
 
 ```
 src/
-├── domain/                     # Sin dependencias externas — el corazón del sistema
-│   ├── entities/               # Entidades y Aggregates
+├── domain/                     # No external dependencies — the heart of the system
+│   ├── entities/               # Entities and Aggregates
 │   │   └── MyEntity.ts
-│   ├── value-objects/          # Value Objects inmutables
+│   ├── value-objects/          # Immutable Value Objects
 │   │   └── MyValueObject.ts
-│   ├── events/                 # Domain Events (interfaces o clases simples)
+│   ├── events/                 # Domain Events (interfaces or simple classes)
 │   │   └── MyEntityCreated.ts
-│   ├── ports/                  # Interfaces que el dominio define
-│   │   ├── in/                 # Ports primarios (casos de uso)
+│   ├── ports/                  # Interfaces defined by the domain
+│   │   ├── in/                 # Primary ports (use cases)
 │   │   │   └── ICreateMyEntityUseCase.ts
-│   │   └── out/                # Ports secundarios (repositorios, servicios externos)
+│   │   └── out/                # Secondary ports (repositories, external services)
 │   │       ├── IMyEntityRepository.ts
 │   │       └── IEventPublisher.ts
-│   └── services/               # Domain Services (lógica que no cabe en una entidad)
+│   └── services/               # Domain Services (logic that doesn't fit in one entity)
 │
-├── application/                # Orquesta el dominio — solo depende de domain/
+├── application/                # Orchestrates the domain — only depends on domain/
 │   └── use-cases/
 │       └── CreateMyEntityUseCase.ts
 │
-├── infrastructure/             # Adapters — depende de application/ y domain/
-│   ├── http/                   # Adapter primario: HTTP
+├── infrastructure/             # Adapters — depends on application/ and domain/
+│   ├── http/                   # Primary adapter: HTTP
 │   │   ├── controllers/
 │   │   │   └── MyEntityController.ts
 │   │   └── routes/
 │   │       └── myEntity.routes.ts
-│   ├── persistence/            # Adapter secundario: Base de datos
+│   ├── persistence/            # Secondary adapter: Database
 │   │   └── MyEntityRepository.ts  # implements IMyEntityRepository
-│   ├── messaging/              # Adapter secundario: Broker de mensajes
+│   ├── messaging/              # Secondary adapter: Message broker
 │   │   └── KafkaEventPublisher.ts # implements IEventPublisher
-│   └── external/               # Adapter secundario: APIs externas
+│   └── external/               # Secondary adapter: External APIs
 │
-└── main.ts                     # Bootstrap: wiring de dependencias (DI manual o container)
+└── main.ts                     # Bootstrap: dependency wiring (manual DI or container)
 ```
 
-**Regla de dependencias:** `infrastructure → application → domain`. El dominio no importa nada de fuera.
+**Dependency rule:** `infrastructure → application → domain`. The domain does not import anything from outside.
 
 ---
 
-## Dependencias por capa
+## Dependencies by layer
 
 ```json
-// package.json — dependencias de producción
+// package.json — production dependencies
 {
   "dependencies": {
-    // Infraestructura HTTP
-    "express": "^4.x",          // o "fastify": "^4.x"
+    // HTTP infrastructure
+    "express": "^4.x",          // or "fastify": "^4.x"
     "@types/express": "^4.x",
 
-    // Infraestructura de datos (elegir uno)
+    // Data infrastructure (choose one)
     "typeorm": "^0.3.x",        // ORM
-    "pg": "^8.x",               // Driver PostgreSQL
-    // "mongoose": "^8.x",       // Si usas MongoDB
-    // "ioredis": "^5.x",        // Si usas Redis
+    "pg": "^8.x",               // PostgreSQL driver
+    // "mongoose": "^8.x",       // If you use MongoDB
+    // "ioredis": "^5.x",        // If you use Redis
 
-    // Infraestructura de mensajería (si aplica)
+    // Messaging infrastructure (if applicable)
     // "kafkajs": "^2.x",
     // "amqplib": "^0.10.x",
 
-    // Validación (adapter primario)
-    "zod": "^3.x",              // o "class-validator": "^0.14.x"
+    // Validation (primary adapter)
+    "zod": "^3.x",              // or "class-validator": "^0.14.x"
 
-    // Observabilidad
+    // Observability
     "@opentelemetry/sdk-node": "^0.x",
-    "pino": "^8.x"              // Logger estructurado
+    "pino": "^8.x"              // Structured logger
   },
   "devDependencies": {
     // TypeScript
@@ -96,8 +96,8 @@ src/
     "jest": "^29.x",
     "ts-jest": "^29.x",
     "@types/jest": "^29.x",
-    "supertest": "^6.x",        // Tests de integración HTTP
-    "testcontainers": "^10.x",  // Tests de integración con DB real
+    "supertest": "^6.x",        // HTTP integration tests
+    "testcontainers": "^10.x",  // Integration tests with real DB
 
     // Linting
     "eslint": "^8.x",
@@ -108,7 +108,7 @@ src/
 
 ---
 
-## Ejemplo: Port de entrada (Use Case Interface)
+## Example: Input port (Use Case Interface)
 
 ```typescript
 // src/domain/ports/in/ICreateAppointmentUseCase.ts
@@ -120,11 +120,11 @@ export interface CreateAppointmentCommand {
 }
 
 export interface ICreateAppointmentUseCase {
-  execute(command: CreateAppointmentCommand): Promise<string>; // retorna el ID
+  execute(command: CreateAppointmentCommand): Promise<string>; // returns the ID
 }
 ```
 
-## Ejemplo: Port de salida (Repository Interface)
+## Example: Output port (Repository Interface)
 
 ```typescript
 // src/domain/ports/out/IAppointmentRepository.ts
@@ -138,7 +138,7 @@ export interface IAppointmentRepository {
 }
 ```
 
-## Ejemplo: Use Case (Application layer)
+## Example: Use Case (Application layer)
 
 ```typescript
 // src/application/use-cases/CreateAppointmentUseCase.ts
@@ -151,7 +151,7 @@ export class CreateAppointmentUseCase implements ICreateAppointmentUseCase {
   constructor(private readonly repository: IAppointmentRepository) {}
 
   async execute(command: CreateAppointmentCommand): Promise<string> {
-    const appointment = Appointment.create(command); // invariantes en el factory
+    const appointment = Appointment.create(command); // invariants in the factory
     await this.repository.save(appointment);
     return appointment.id;
   }
@@ -160,7 +160,7 @@ export class CreateAppointmentUseCase implements ICreateAppointmentUseCase {
 
 ---
 
-## Test unitario de dominio (Jest)
+## Domain unit test (Jest)
 
 ```typescript
 // src/domain/entities/__tests__/Appointment.test.ts
@@ -170,12 +170,12 @@ describe('Appointment', () => {
     const yesterday = new Date(Date.now() - 86400000);
     expect(() =>
       Appointment.create({ patientId: 'p1', doctorId: 'd1', scheduledAt: yesterday })
-    ).toThrow('La fecha no puede ser en el pasado');
+    ).toThrow('The date cannot be in the past');
   });
 });
 ```
 
-## Test de Use Case con Fake (sin BD real)
+## Use Case test with Fake (no real DB)
 
 ```typescript
 // src/application/use-cases/__tests__/CreateAppointmentUseCase.test.ts
@@ -200,13 +200,13 @@ describe('CreateAppointmentUseCase', () => {
 
 ---
 
-## Comandos del proyecto
+## Project commands
 
 ```bash
-# Instalar dependencias
+# Install dependencies
 npm install
 
-# Desarrollo con hot-reload
+# Development with hot-reload
 npm run dev          # ts-node-dev src/main.ts
 
 # Tests
@@ -214,7 +214,7 @@ npm test             # jest
 npm run test:watch   # jest --watch
 npm run test:cov     # jest --coverage
 
-# Build para producción
+# Build for production
 npm run build        # tsc --project tsconfig.build.json
 
 # Lint
@@ -223,22 +223,22 @@ npm run lint         # eslint src/**/*.ts
 
 ---
 
-## Convenciones de nombres (TypeScript)
+## Naming conventions (TypeScript)
 
-| Artefacto | Convención | Ejemplo |
-|-----------|-----------|---------|
-| Interfaces | `PascalCase` con prefijo `I` | `IAppointmentRepository` |
-| Clases | `PascalCase` | `CreateAppointmentUseCase` |
-| Archivos | `PascalCase.ts` para clases, `kebab-case.ts` para módulos | `Appointment.ts`, `appointment.routes.ts` |
-| Variables y funciones | `camelCase` | `scheduledAt`, `findById` |
-| Constantes globales | `SCREAMING_SNAKE_CASE` | `MAX_APPOINTMENTS_PER_DAY` |
-| Enums | `PascalCase` con valores `SCREAMING_SNAKE_CASE` | `AppointmentStatus.CONFIRMED` |
+| Artifact | Convention | Example |
+|----------|-----------|---------|
+| Interfaces | `PascalCase` with `I` prefix | `IAppointmentRepository` |
+| Classes | `PascalCase` | `CreateAppointmentUseCase` |
+| Files | `PascalCase.ts` for classes, `kebab-case.ts` for modules | `Appointment.ts`, `appointment.routes.ts` |
+| Variables and functions | `camelCase` | `scheduledAt`, `findById` |
+| Global constants | `SCREAMING_SNAKE_CASE` | `MAX_APPOINTMENTS_PER_DAY` |
+| Enums | `PascalCase` with `SCREAMING_SNAKE_CASE` values | `AppointmentStatus.CONFIRMED` |
 
 ---
 
-## Correlaciones con documentos del scaffold
+## Correlations with scaffold documents
 
-- Conceptos de hexagonal → `05-architecture/hexagonal-architecture.md`
-- TDD y test doubles → `11-quality/tdd-guide.md`
-- Guía de patrones (conceptos) → `05-architecture/pattern-guide.md`
-- Setup local → `10-devops/local-setup.md`
+- Hexagonal concepts → `05-architecture/hexagonal-architecture.md`
+- TDD and test doubles → `11-quality/tdd-guide.md`
+- Pattern guide (concepts) → `05-architecture/pattern-guide.md`
+- Local setup → `10-devops/local-setup.md`

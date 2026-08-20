@@ -1,50 +1,50 @@
 # Definition of Done (DoD)
 
-> Una Historia de Usuario está **TERMINADA** cuando cumple TODOS los criterios de esta lista.
-> Si falta uno solo, la HU NO está done — regresa al In Progress.
+> A User Story is **DONE** when it meets ALL criteria on this checklist.
+> If even one is missing, the story is NOT done — it goes back to In Progress.
 
-## Checklist obligatorio
+## Mandatory checklist
 
-### Código
-- [ ] El código implementa todos los criterios de aceptación de la HU
-- [ ] El código fue revisado y aprobado por al menos 1 miembro del equipo (PR review)
-- [ ] El código sigue los estándares del proyecto (linting y formato pasan en CI)
-- [ ] No hay deuda técnica introducida sin registrar en `15-project-control/technical-backlog.md`
+### Code
+- [ ] Code implements all acceptance criteria of the user story
+- [ ] Code was reviewed and approved by at least 1 team member (PR review)
+- [ ] Code follows project standards (linting and formatting pass in CI)
+- [ ] No technical debt introduced without registering it in `15-project-control/technical-backlog.md`
 
-### Pruebas
-- [ ] Pruebas unitarias escritas para la lógica de negocio nueva
-- [ ] Cobertura de pruebas no disminuye respecto al baseline del proyecto
-- [ ] Todos los tests pasan localmente y en CI
-- [ ] Criterios de aceptación verificados (manual o automatizado)
+### Tests
+- [ ] Unit tests written for new business logic
+- [ ] Test coverage does not decrease from the project baseline
+- [ ] All tests pass locally and in CI
+- [ ] Acceptance criteria verified (manual or automated)
 
-### Integración
-- [ ] Los cambios no rompen otros servicios (pruebas de integración pasan)
-- [ ] Si hay cambios en la API: contrato OpenAPI actualizado en `07-api/contracts/`
-- [ ] Si hay cambios en el modelo de datos: `data-model.md` del servicio actualizado
-- [ ] Si hay eventos nuevos/modificados: `event-catalog.md` actualizado
+### Integration
+- [ ] Changes do not break other services (integration tests pass)
+- [ ] If API changes: OpenAPI contract updated in `07-api/contracts/`
+- [ ] If data model changes: service `data-model.md` updated
+- [ ] If new/modified events: `event-catalog.md` updated
 
-### Despliegue
-- [ ] El código está mergeable a `dev` (sin conflictos)
-- [ ] CI/CD verde en la rama
-- [ ] Desplegado en ambiente de staging
-- [ ] Smoke test básico en staging pasando
+### Deployment
+- [ ] Code is mergeable to `dev` (no conflicts)
+- [ ] CI/CD green on the branch
+- [ ] Deployed to staging environment
+- [ ] Basic smoke test passing on staging
 
-### Documentación
-- [ ] `README.md` del servicio actualizado si cambió la interfaz pública
-- [ ] Si fue una decisión técnica significativa: ADR creado o actualizado
-
----
-
-## Excepciones permitidas
-
-Las siguientes excepciones deben ser acordadas explícitamente por el Tech Lead:
-- Pruebas E2E omitidas por limitación de ambiente (documentar el riesgo)
-- Documentación diferida por entrega urgente (crear ticket de deuda técnica)
+### Documentation
+- [ ] Service `README.md` updated if the public interface changed
+- [ ] If a significant technical decision was made: ADR created or updated
 
 ---
 
-## ¿Qué NO es un criterio de Done?
+## Allowed exceptions
 
-- "El código está en mi máquina" — debe estar en el repositorio
-- "Funciona en mi ambiente local" — debe funcionar en staging
-- "El PM/PO lo aprobó" — eso es la Definition of Done del producto, no del código
+The following exceptions must be explicitly agreed to by the Tech Lead:
+- E2E tests omitted due to environment limitations (document the risk)
+- Documentation deferred for urgent delivery (create a tech-debt ticket)
+
+---
+
+## What is NOT a Done criterion
+
+- "The code is on my machine" — it must be in the repository
+- "It works on my local environment" — it must work on staging
+- "The PM/PO approved it" — that is the product Definition of Done, not the code's

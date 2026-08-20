@@ -1,50 +1,50 @@
-# Descripción General del Sistema
+# System Overview
 
-> **Instrucciones:** Reemplaza este contenido con la descripción de tu proyecto.
-> Esta es la primera página que lee alguien nuevo. Debe poder entender el sistema en 5 minutos.
-> Elimina estas instrucciones cuando el documento esté completo.
+> **Instructions:** Replace this content with your project's description.
+> This is the first page someone new reads. They must be able to understand the system in 5 minutes.
+> Remove these instructions when the document is complete.
 
 ---
 
-## ¿Qué es [Nombre del Sistema]?
+## What is [System Name]?
 
-[2-3 oraciones que describen qué es el sistema y qué problema resuelve.
-Sin jerga técnica — debe entenderlo alguien de negocio.]
+[2-3 sentences describing what the system is and what problem it solves.
+No technical jargon — it must be understandable by someone from the business side.]
 
-## Problema que resuelve
+## Problem it solves
 
-**Antes del sistema:** [Cómo se manejaba el proceso sin el sistema. Qué dolores tenían los usuarios.]
+**Before the system:** [How the process was handled without the system. What pain the users had.]
 
-**Con el sistema:** [Cómo mejora el proceso. Qué valor entrega.]
+**With the system:** [How the process improves. What value it delivers.]
 
-## Usuarios principales
+## Main users
 
-| Rol | Descripción | Qué hace en el sistema |
-|-----|-------------|----------------------|
-| [Rol 1] | [Quién es] | [Acciones principales] |
-| [Rol 2] | [Quién es] | [Acciones principales] |
+| Role | Description | What they do in the system |
+|------|-------------|--------------------------|
+| [Role 1] | [Who they are] | [Main actions] |
+| [Role 2] | [Who they are] | [Main actions] |
 
-## Stack tecnológico
+## Technology stack
 
-| Capa | Tecnología | Justificación |
-|------|-----------|---------------|
-| Frontend | [React / Angular / Vue] | [por qué] |
-| Backend | [Spring Boot / Node / Django] | [por qué] |
-| Base de datos | [PostgreSQL / MongoDB] | [por qué] |
-| Message broker | [RabbitMQ / Kafka] | [por qué] |
-| Infraestructura | [Docker + K8s / AWS / etc.] | [por qué] |
+| Layer | Technology | Justification |
+|-------|-----------|---------------|
+| Frontend | [React / Angular / Vue] | [why] |
+| Backend | [Spring Boot / Node / Django] | [why] |
+| Database | [PostgreSQL / MongoDB] | [why] |
+| Message broker | [RabbitMQ / Kafka] | [why] |
+| Infrastructure | [Docker + K8s / AWS / etc.] | [why] |
 
-## Estado actual
+## Current status
 
-- **Fase:** [En desarrollo / En producción / Legacy]
-- **Versión actual:** [v0.1.0]
-- **Último release:** [fecha]
-- **Próximo milestone:** [descripción y fecha]
+- **Phase:** [In development / In production / Legacy]
+- **Current version:** [v0.1.0]
+- **Last release:** [date]
+- **Next milestone:** [description and date]
 
-## Contactos del proyecto
+## Project contacts
 
-| Rol | Nombre | Contacto |
-|-----|--------|----------|
-| Tech Lead | [Nombre] | [email/Slack] |
-| Product Owner | [Nombre] | [email/Slack] |
-| DevOps | [Nombre] | [email/Slack] |
+| Role | Name | Contact |
+|------|------|---------|
+| Tech Lead | [Name] | [email/Slack] |
+| Product Owner | [Name] | [email/Slack] |
+| DevOps | [Name] | [email/Slack] |

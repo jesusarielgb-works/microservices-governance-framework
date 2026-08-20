@@ -1,48 +1,61 @@
 # Stack-Specific Implementation Guides
 
-> Este cascarón de documentación es **agnóstico de tecnología**: los conceptos de DDD,
-> hexagonal, TDD y patrones funcionan igual en Java, Python, Go o Node.js.
+> This documentation scaffold is **technology-agnostic**: the concepts of DDD,
+> hexagonal architecture, TDD, and patterns work the same in Java, Python, Go, or Node.js.
 >
-> Esta carpeta contiene las guías de implementación **específicas por stack**: estructura
-> de carpetas real, comandos concretos, librerías recomendadas y ejemplos de código.
-> Los documentos principales te dicen el **qué y el porqué**; tu guía de stack te dice el **cómo concreto**.
+> This folder contains **stack-specific implementation guides**: real folder structure,
+> concrete commands, recommended libraries, and code examples.
+> The main documents tell you the **what and why**; your stack guide tells you the **concrete how**.
 
 ---
 
-## Guías disponibles
+## Available guides
 
-| Stack | Archivo | Cuándo usarlo |
-|-------|---------|---------------|
-| Node.js + TypeScript | [node-typescript.md](./node-typescript.md) | Backend en Express/Fastify/NestJS con TypeScript |
-| Java + Spring Boot | [java-spring.md](./java-spring.md) | Backend en Spring Boot 3.x con Maven o Gradle |
-| Python + FastAPI | [python-fastapi.md](./python-fastapi.md) | Backend en FastAPI/Django con Python 3.10+ |
-| Go | [go.md](./go.md) | Backend en Go con net/http o Gin/Echo |
-
----
-
-## Cómo usar estas guías
-
-1. Elige el stack de tu proyecto
-2. Lee la guía de tu stack — te dará la estructura de carpetas exacta para ese lenguaje
-3. Usa esa estructura cuando llenes `09-microservices/services/NN-tu-servicio/`
-4. Los ejemplos de código en los documentos principales (hexagonal, TDD, patrones) son
-   conceptuales; tradúcelos a tu stack usando las convenciones de esta guía
+| Stack | File | When to use it |
+|-------|------|----------------|
+| Node.js + TypeScript | [node-typescript.md](./node-typescript.md) | Backend in Express/Fastify/NestJS with TypeScript |
+| Java + Spring Boot | [java-spring.md](./java-spring.md) | Backend in Spring Boot 3.x with Maven or Gradle |
+| Python + FastAPI | [python-fastapi.md](./python-fastapi.md) | Backend in FastAPI/Django with Python 3.10+ |
+| Go | [go.md](./go.md) | Backend in Go with net/http or Gin/Echo |
 
 ---
 
-## ¿No ves tu stack?
+## How to use these guides
 
-Si tu proyecto usa una tecnología no listada (Ruby on Rails, .NET, Kotlin, Rust, etc.),
-usa `node-typescript.md` como referencia estructural y adapta los conceptos a las
-convenciones de tu lenguaje. La lógica de capas hexagonales es la misma en todos.
+1. Choose your project's stack
+2. Read your stack guide — it will give you the exact folder structure for that language
+3. Use that structure when filling in `09-microservices/services/NN-your-service/`
+4. The code examples in the main documents (hexagonal, TDD, patterns) are
+   conceptual; translate them to your stack using the conventions in this guide
 
 ---
 
-## Qué contiene cada guía de stack
+## Why all examples use the same domain
 
-- **Estructura de carpetas** del microservicio en ese lenguaje
-- **Dependencias** principales por capa (dominio, aplicación, infraestructura)
-- **Comandos** de desarrollo, test y build
-- **Ejemplo de código** de un Port, un Adapter y un Use Case en ese lenguaje
-- **Convenciones de nombres** del lenguaje (camelCase, snake_case, PascalCase)
-- **Setup del test runner** y ejemplos de test unitario y de integración
+All 4 stack guides use the same example domain: **medical appointments system**
+(entity `Appointment`, `Patient`, `Doctor`). This is intentional: it allows comparing
+how the same logic is implemented in Java, Python, Go, and Node.js without the difference
+in domain confusing the comparison.
+
+**Your team must adapt the concepts to your specific domain.** If you are building an
+inventory, billing, or logistics system, the patterns are identical — only the entity
+names and their business invariants change.
+
+---
+
+## Don't see your stack?
+
+If your project uses an unlisted technology (Ruby on Rails, .NET, Kotlin, Rust, etc.),
+use `node-typescript.md` as a structural reference and adapt the concepts to your
+language's conventions. The hexagonal layer logic is the same across all of them.
+
+---
+
+## What each stack guide contains
+
+- **Folder structure** of the microservice in that language
+- **Dependencies** per layer (domain, application, infrastructure)
+- **Commands** for development, testing, and build
+- **Code example** of a Port, an Adapter, and a Use Case in that language
+- **Naming conventions** of the language (camelCase, snake_case, PascalCase)
+- **Test runner setup** and unit/integration test examples

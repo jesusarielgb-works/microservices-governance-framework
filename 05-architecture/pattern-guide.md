@@ -1,12 +1,12 @@
-# Guía de Patrones de Diseño y Microservicios
+# Design Patterns and Microservices Guide
 
-> Este documento es el catálogo de patrones del proyecto.
-> Para cada patrón: cuándo usarlo, cuándo NO, y ejemplo de implementación.
-> Los patrones no son recetas — son herramientas. Úsalos cuando el problema lo requiere.
+> This document is the project's pattern catalog.
+> For each pattern: when to use it, when NOT to, and an implementation example.
+> Patterns are not recipes — they are tools. Use them when the problem requires it.
 
-> **Nota de stack:** Las descripciones y diagramas son agnósticos de tecnología.
-> Los fragmentos de código ilustrativos usan pseudo-TypeScript como lenguaje de referencia
-> por su cercanía a la sintaxis de pseudocódigo. Para ver la implementación concreta en tu stack:
+> **Stack note:** Descriptions and diagrams are technology-agnostic.
+> Illustrative code snippets use pseudo-TypeScript as a reference language
+> for its proximity to pseudocode syntax. To see the concrete implementation in your stack:
 > [`_stacks/node-typescript.md`](../_stacks/node-typescript.md) ·
 > [`_stacks/java-spring.md`](../_stacks/java-spring.md) ·
 > [`_stacks/python-fastapi.md`](../_stacks/python-fastapi.md) ·
@@ -14,46 +14,46 @@
 
 ---
 
-## Índice
+## Index
 
-**Patrones de diseño (GoF y SOLID)**
-1. [Patrones Creacionales](#creacionales)
-2. [Patrones Estructurales](#estructurales)
-3. [Patrones de Comportamiento](#comportamiento)
+**Design patterns (GoF and SOLID)**
+1. [Creational patterns](#creational)
+2. [Structural patterns](#structural)
+3. [Behavioral patterns](#behavioral)
 
-**Patrones de microservicios**
-4. [Decomposición del sistema](#descomposicion)
-5. [Comunicación entre servicios](#comunicacion)
-6. [Resiliencia](#resiliencia)
-7. [Datos y consistencia](#datos)
-8. [Observabilidad](#observabilidad)
+**Microservices patterns**
+4. [System decomposition](#decomposition)
+5. [Inter-service communication](#communication)
+6. [Resilience](#resilience)
+7. [Data and consistency](#data)
+8. [Observability](#observability)
 
 ---
 
-## Patrones de diseño (GoF) {#creacionales}
+## Design patterns (GoF) {#creational}
 
 ### 1. Factory Method
 
-**Problema:** Quieres crear objetos sin exponer la lógica de creación ni acoplar el código al tipo concreto.
+**Problem:** You want to create objects without exposing the creation logic or coupling code to the concrete type.
 
-**Cuándo usarlo:**
-- Cuando el tipo exacto del objeto a crear no se conoce hasta runtime
-- Cuando la creación tiene lógica compleja (validaciones, configuración)
+**When to use it:**
+- When the exact type of object to create is not known until runtime
+- When creation has complex logic (validations, configuration)
 
-**Ejemplo en dominio:**
+**Domain example:**
 
 ```typescript
-// Factory Method — dentro del Aggregate Root
-class Pedido {
-  // En vez de new Pedido(...), usamos un factory method
-  static crear(clienteId: ClienteId, items: ItemPedido[]): Pedido {
+// Factory Method — inside the Aggregate Root
+class Order {
+  // Instead of new Order(...), we use a factory method
+  static create(customerId: CustomerId, items: OrderItem[]): Order {
     if (items.length === 0) throw new DomainException('INV-001');
-    return new Pedido(PedidoId.nuevo(), clienteId, items, EstadoPedido.PENDIENTE);
+    return new Order(OrderId.new(), customerId, items, OrderStatus.PENDING);
   }
 
-  static reconstituir(data: PedidoData): Pedido {
-    // Para reconstruir desde la base de datos
-    return new Pedido(new PedidoId(data.id), new ClienteId(data.clienteId), ...);
+  static reconstitute(data: OrderData): Order {
+    // To reconstruct from the database
+    return new Order(new OrderId(data.id), new CustomerId(data.customerId), ...);
   }
 }
 ```
@@ -62,64 +62,64 @@ class Pedido {
 
 ### 2. Builder
 
-**Problema:** Un objeto tiene muchos parámetros opcionales y la construcción se vuelve ilegible.
+**Problem:** An object has many optional parameters and construction becomes unreadable.
 
-**Cuándo usarlo:** Objetos de configuración complejos, test data builders.
+**When to use it:** Complex configuration objects, test data builders.
 
 ```typescript
-// Builder — especialmente útil para tests
-const pedido = new PedidoBuilder()
-  .conCliente('cliente-id-123')
-  .conItem(producto1, cantidad: 2)
-  .conItem(producto2, cantidad: 1)
-  .conDireccion('Calle 5 #10-20, Neiva')
-  .enEstado(EstadoPedido.CONFIRMADO)
+// Builder — especially useful for tests
+const order = new OrderBuilder()
+  .withCustomer('customer-id-123')
+  .withItem(product1, quantity: 2)
+  .withItem(product2, quantity: 1)
+  .withAddress('5th Street #10-20, Neiva')
+  .inStatus(OrderStatus.CONFIRMED)
   .build();
 ```
 
 ---
 
-### 3. Singleton (con precaución)
+### 3. Singleton (with caution)
 
-**Problema:** Una clase debe tener exactamente una instancia.
+**Problem:** A class must have exactly one instance.
 
-**Cuándo usarlo:** Conexiones a BD, registros de configuración.
+**When to use it:** DB connections, configuration registries.
 
-**ADVERTENCIA:** El Singleton dificulta las pruebas. Preferir inyección de dependencias.
+**WARNING:** Singleton makes testing difficult. Prefer dependency injection.
 
 ```typescript
-// ✓ Mejor: Singleton gestionado por el contenedor DI, no por la clase misma
-// En el contenedor (NestJS, tsyringe, etc.):
+// ✓ Better: Singleton managed by the DI container, not by the class itself
+// In the container (NestJS, tsyringe, etc.):
 container.registerSingleton(DatabaseConnection, DatabaseConnectionImpl);
 ```
 
 ---
 
-### 4. Adapter (Patrón estructural)
+### 4. Adapter (Structural pattern) {#structural}
 
-**Problema:** Quieres usar una clase existente pero su interfaz no coincide con la que necesitas.
+**Problem:** You want to use an existing class but its interface does not match the one you need.
 
-**Cuándo usarlo:** Integración con APIs externas, librerías de terceros.
+**When to use it:** Integration with external APIs, third-party libraries.
 
 ```typescript
-// El dominio define la interface que necesita
+// The domain defines the interface it needs
 interface PaymentGatewayPort {
-  cobrar(monto: Dinero, tarjeta: DatosToken): Promise<ResultadoCobro>;
+  charge(amount: Money, card: TokenData): Promise<ChargeResult>;
 }
 
-// El adaptador traduce al API externa
+// The adapter translates to the external API
 class StripePaymentAdapter implements PaymentGatewayPort {
   constructor(private stripe: Stripe) {}
 
-  async cobrar(monto: Dinero, tarjeta: DatosToken): Promise<ResultadoCobro> {
-    // Traduce el modelo del dominio → modelo de Stripe
+  async charge(amount: Money, card: TokenData): Promise<ChargeResult> {
+    // Translate domain model → Stripe model
     const charge = await this.stripe.charges.create({
-      amount: monto.toCentavos(),
-      currency: monto.currency,
-      source: tarjeta.token,
+      amount: amount.toCents(),
+      currency: amount.currency,
+      source: card.token,
     });
-    // Traduce el resultado de Stripe → modelo del dominio
-    return new ResultadoCobro(charge.id, charge.status === 'succeeded');
+    // Translate Stripe result → domain model
+    return new ChargeResult(charge.id, charge.status === 'succeeded');
   }
 }
 ```
@@ -128,45 +128,45 @@ class StripePaymentAdapter implements PaymentGatewayPort {
 
 ### 5. Decorator
 
-**Problema:** Quieres agregar comportamiento a un objeto sin modificarlo ni heredar de él.
+**Problem:** You want to add behavior to an object without modifying it or inheriting from it.
 
-**Cuándo usarlo:** Logging, caching, validación, rate limiting alrededor de casos de uso.
+**When to use it:** Logging, caching, validation, rate limiting around use cases.
 
 ```typescript
-// Decorator de caché alrededor del repositorio
-class CachedPedidoRepository implements PedidoRepositoryPort {
+// Cache decorator around the repository
+class CachedOrderRepository implements OrderRepositoryPort {
   constructor(
-    private readonly repo: PedidoRepositoryPort,
+    private readonly repo: OrderRepositoryPort,
     private readonly cache: CachePort,
   ) {}
 
-  async buscarPorId(id: PedidoId): Promise<Pedido | null> {
-    const cached = await this.cache.get(`pedido:${id.value}`);
-    if (cached) return PedidoMapper.toDomain(cached);
+  async findById(id: OrderId): Promise<Order | null> {
+    const cached = await this.cache.get(`order:${id.value}`);
+    if (cached) return OrderMapper.toDomain(cached);
 
-    const pedido = await this.repo.buscarPorId(id);
-    if (pedido) await this.cache.set(`pedido:${id.value}`, pedido, TTL_5_MINUTES);
-    return pedido;
+    const order = await this.repo.findById(id);
+    if (order) await this.cache.set(`order:${id.value}`, order, TTL_5_MINUTES);
+    return order;
   }
 }
 ```
 
 ---
 
-### 6. Observer / Event Bus interno
+### 6. Observer / Internal Event Bus {#behavioral}
 
-**Problema:** Un objeto necesita notificar a otros sin conocerlos directamente.
+**Problem:** An object needs to notify others without knowing them directly.
 
-**Cuándo usarlo:** Para publicar eventos de dominio después de persistir el aggregate.
+**When to use it:** To publish domain events after persisting the aggregate.
 
 ```typescript
-// El Aggregate acumula eventos — el UseCase los publica
-class Pedido {
+// The Aggregate accumulates events — the UseCase publishes them
+class Order {
   private readonly _events: DomainEvent[] = [];
 
-  confirmar(): void {
-    // ... lógica de negocio ...
-    this._events.push(new PedidoConfirmado(this.id));
+  confirm(): void {
+    // ... business logic ...
+    this._events.push(new OrderConfirmed(this.id));
   }
 
   get domainEvents(): DomainEvent[] {
@@ -183,24 +183,24 @@ class Pedido {
 
 ### 7. Strategy
 
-**Problema:** Quieres intercambiar algoritmos en tiempo de ejecución.
+**Problem:** You want to swap algorithms at runtime.
 
-**Cuándo usarlo:** Estrategias de descuento, algoritmos de cálculo, métodos de pago.
+**When to use it:** Discount strategies, calculation algorithms, payment methods.
 
 ```typescript
-interface EstrategiaDescuento {
-  calcular(subtotal: Dinero, usuario: Usuario): Dinero;
+interface DiscountStrategy {
+  calculate(subtotal: Money, user: User): Money;
 }
 
-class DescuentoEstudiante implements EstrategiaDescuento {
-  calcular(subtotal: Dinero, usuario: Usuario): Dinero {
-    return subtotal.multiplicar(0.15); // 15% descuento
+class StudentDiscount implements DiscountStrategy {
+  calculate(subtotal: Money, user: User): Money {
+    return subtotal.multiply(0.15); // 15% discount
   }
 }
 
-class DescuentoEmpresarial implements EstrategiaDescuento {
-  calcular(subtotal: Dinero, usuario: Usuario): Dinero {
-    return subtotal.multiplicar(0.20); // 20% descuento
+class CorporateDiscount implements DiscountStrategy {
+  calculate(subtotal: Money, user: User): Money {
+    return subtotal.multiply(0.20); // 20% discount
   }
 }
 ```
@@ -209,47 +209,47 @@ class DescuentoEmpresarial implements EstrategiaDescuento {
 
 ### 8. Template Method
 
-**Problema:** Un algoritmo tiene una estructura fija pero algunos pasos varían.
+**Problem:** An algorithm has a fixed structure but some steps vary.
 
-**Cuándo usarlo:** Flujos de proceso con variaciones (exportar a CSV, Excel, PDF).
+**When to use it:** Process flows with variations (export to CSV, Excel, PDF).
 
 ```typescript
-abstract class ExportadorReporte {
-  // Template Method — estructura fija
-  async exportar(datos: DatosReporte): Promise<Buffer> {
-    const validados = await this.validar(datos);
-    const transformados = await this.transformar(validados);
-    const buffer = await this.generar(transformados);
-    await this.registrarExportacion(datos.usuarioId);
+abstract class ReportExporter {
+  // Template Method — fixed structure
+  async export(data: ReportData): Promise<Buffer> {
+    const validated = await this.validate(data);
+    const transformed = await this.transform(validated);
+    const buffer = await this.generate(transformed);
+    await this.recordExport(data.userId);
     return buffer;
   }
 
-  protected abstract transformar(datos: DatosReporte): Promise<DatosTransformados>;
-  protected abstract generar(datos: DatosTransformados): Promise<Buffer>;
+  protected abstract transform(data: ReportData): Promise<TransformedData>;
+  protected abstract generate(data: TransformedData): Promise<Buffer>;
   
-  // Pasos con implementación por defecto (pueden sobrescribirse)
-  protected async validar(datos: DatosReporte): Promise<DatosReporte> { return datos; }
-  protected async registrarExportacion(userId: UserId): Promise<void> {}
+  // Steps with default implementation (can be overridden)
+  protected async validate(data: ReportData): Promise<ReportData> { return data; }
+  protected async recordExport(userId: UserId): Promise<void> {}
 }
 ```
 
 ---
 
-## Patrones de Microservicios
+## Microservices Patterns
 
-### Descomposición {#descomposicion}
+### Decomposition {#decomposition}
 
 #### API Gateway
 
-**Problema:** Los clientes necesitan llamar a múltiples servicios para obtener una respuesta.
+**Problem:** Clients need to call multiple services to get a response.
 
 ```
                     ┌─────────────────┐
-Móvil ──────────▶  │                 │ ──▶ [Servicio A]
-Web ────────────▶  │   API Gateway   │ ──▶ [Servicio B]
-IoT ────────────▶  │                 │ ──▶ [Servicio C]
+Mobile ──────────▶  │                 │ ──▶ [Service A]
+Web ────────────▶  │   API Gateway   │ ──▶ [Service B]
+IoT ────────────▶  │                 │ ──▶ [Service C]
                     └─────────────────┘
-                         Hace:
+                         Does:
                     - Routing
                     - Auth/AuthZ
                     - Rate limiting
@@ -257,119 +257,119 @@ IoT ────────────▶  │                 │ ──▶ [
                     - Request aggregation
 ```
 
-**Cuándo usarlo:** Siempre, en arquitecturas de microservicios es esencial.
+**When to use it:** Always, in microservices architectures it is essential.
 
-**Herramientas:** Kong, AWS API Gateway, NGINX, Traefik, Spring Cloud Gateway.
+**Tools:** Kong, AWS API Gateway, NGINX, Traefik, Spring Cloud Gateway.
 
 ---
 
 #### Backend for Frontend (BFF)
 
-**Problema:** El móvil y el web necesitan datos con formato muy diferente pero comparten el mismo API.
+**Problem:** Mobile and web need data in very different formats but share the same API.
 
 ```
-Mobile ──▶ [BFF Mobile]  ──▶ Servicios internos
-Web    ──▶ [BFF Web]     ──▶ Servicios internos
-Alexa  ──▶ [BFF Voice]   ──▶ Servicios internos
+Mobile ──▶ [BFF Mobile]  ──▶ Internal services
+Web    ──▶ [BFF Web]     ──▶ Internal services
+Alexa  ──▶ [BFF Voice]   ──▶ Internal services
 ```
 
-**Cuándo usarlo:** Cuando los clientes tienen necesidades muy diferentes. Con moderación — cada BFF es una API que mantener.
+**When to use it:** When clients have very different needs. Use sparingly — each BFF is an API to maintain.
 
 ---
 
-#### Strangler Fig (Migración incremental)
+#### Strangler Fig (Incremental migration)
 
-**Problema:** Necesitas migrar un monolito a microservicios sin reescribirlo de golpe.
+**Problem:** You need to migrate a monolith to microservices without rewriting it all at once.
 
 ```
-Fase 1:  Cliente → Monolito (100% tráfico)
-Fase 2:  Cliente → API Gateway → Monolito (70%) + Nuevo Servicio (30%)
-Fase 3:  Cliente → API Gateway → Nuevo Servicio (100%) — monolito retirado
+Phase 1:  Client → Monolith (100% traffic)
+Phase 2:  Client → API Gateway → Monolith (70%) + New Service (30%)
+Phase 3:  Client → API Gateway → New Service (100%) — monolith retired
 ```
 
-**Cómo:** El API Gateway desvía tráfico gradualmente al nuevo servicio mientras el monolito sigue funcionando.
+**How:** The API Gateway gradually routes traffic to the new service while the monolith keeps running.
 
 ---
 
-### Comunicación entre servicios {#comunicacion}
+### Inter-service communication {#communication}
 
-#### Síncronoː REST / gRPC
+#### Synchronous: REST / gRPC
 
-| Aspecto | REST | gRPC |
-|---------|------|------|
-| Protocolo | HTTP/1.1 o HTTP/2 | HTTP/2 |
-| Serialización | JSON (legible) | Protocol Buffers (eficiente) |
-| Tipado | Manual con OpenAPI | Automático con .proto |
-| Streaming | No nativo | Sí (unidireccional y bidireccional) |
-| Uso recomendado | APIs públicas, comunicación externa | Comunicación interna entre servicios |
+| Aspect | REST | gRPC |
+|--------|------|------|
+| Protocol | HTTP/1.1 or HTTP/2 | HTTP/2 |
+| Serialization | JSON (human-readable) | Protocol Buffers (efficient) |
+| Typing | Manual with OpenAPI | Automatic with .proto |
+| Streaming | Not native | Yes (unidirectional and bidirectional) |
+| Recommended use | Public APIs, external communication | Internal service-to-service communication |
 
-**Cuándo usar comunicación síncrona:**
-- Cuando necesitas la respuesta inmediatamente (consultas, UI)
-- Operaciones de baja latencia que el usuario espera
-
----
-
-#### Asíncronoː Message Broker (Kafka / RabbitMQ)
-
-```
-[Servicio A] ──publica──▶ [Topic/Queue] ──consume──▶ [Servicio B]
-                                                       [Servicio C]
-```
-
-**Cuándo usar comunicación asíncrona:**
-- Cuando la operación no requiere respuesta inmediata
-- Cuando quieres desacoplar productores de consumidores
-- Para procesar en background (emails, notificaciones, reportes)
-- Para garantizar entrega (la BD del broker es durable)
+**When to use synchronous communication:**
+- When you need the response immediately (queries, UI)
+- Low-latency operations the user is waiting for
 
 ---
 
-### Resiliencia {#resiliencia}
+#### Asynchronous: Message Broker (Kafka / RabbitMQ)
+
+```
+[Service A] ──publishes──▶ [Topic/Queue] ──consumes──▶ [Service B]
+                                                        [Service C]
+```
+
+**When to use asynchronous communication:**
+- When the operation does not require an immediate response
+- When you want to decouple producers from consumers
+- For background processing (emails, notifications, reports)
+- To guarantee delivery (the broker's DB is durable)
+
+---
+
+### Resilience {#resilience}
 
 #### Circuit Breaker
 
-**Problema:** Un servicio lento o fallando hace que el tuyo también falle (cascada de fallos).
+**Problem:** A slow or failing service causes yours to fail too (failure cascade).
 
 ```
-Estado CLOSED (normal):
-  Llamadas pasan → si N fallos consecutivos → pasar a OPEN
+CLOSED state (normal):
+  Calls pass through → if N consecutive failures → switch to OPEN
 
-Estado OPEN (cortocircuito):
-  Llamadas bloqueadas inmediatamente (fail fast) → después de T segundos → HALF-OPEN
+OPEN state (circuit breaker):
+  Calls blocked immediately (fail fast) → after T seconds → HALF-OPEN
 
-Estado HALF-OPEN (prueba):
-  Permite 1 llamada → si falla: volver a OPEN | si pasa: volver a CLOSED
+HALF-OPEN state (testing):
+  Allows 1 call → if it fails: back to OPEN | if it passes: back to CLOSED
 ```
 
 ```typescript
-// Con opossum o resilience4j
-const circuit = new CircuitBreaker(servicioExterno.llamar, {
-  timeout: 3000,           // Timeout por llamada
-  errorThresholdPercentage: 50, // % de errores para abrir
-  resetTimeout: 30000,     // Tiempo en OPEN antes de intentar HALF-OPEN
+// With opossum or resilience4j
+const circuit = new CircuitBreaker(externalService.call, {
+  timeout: 3000,                    // Timeout per call
+  errorThresholdPercentage: 50,     // % of errors to open
+  resetTimeout: 30000,              // Time in OPEN before trying HALF-OPEN
 });
 
-circuit.fallback(() => ({ cached: true, data: ultimoCacheConfiable }));
+circuit.fallback(() => ({ cached: true, data: lastReliableCache }));
 ```
 
 ---
 
-#### Retry con Backoff Exponencial
+#### Retry with Exponential Backoff
 
-**Problema:** Fallos transitorios (red inestable, servicio reiniciando).
+**Problem:** Transient failures (unstable network, service restarting).
 
 ```typescript
-async function conRetry<T>(
+async function withRetry<T>(
   fn: () => Promise<T>,
-  opciones = { intentos: 3, backoffBase: 1000 }
+  options = { attempts: 3, backoffBase: 1000 }
 ): Promise<T> {
-  for (let intento = 1; intento <= opciones.intentos; intento++) {
+  for (let attempt = 1; attempt <= options.attempts; attempt++) {
     try {
       return await fn();
     } catch (err) {
-      if (intento === opciones.intentos) throw err;
-      const delay = opciones.backoffBase * Math.pow(2, intento - 1); // 1s, 2s, 4s
-      await sleep(delay + Math.random() * 100); // Jitter para evitar thundering herd
+      if (attempt === options.attempts) throw err;
+      const delay = options.backoffBase * Math.pow(2, attempt - 1); // 1s, 2s, 4s
+      await sleep(delay + Math.random() * 100); // Jitter to avoid thundering herd
     }
   }
 }
@@ -377,105 +377,104 @@ async function conRetry<T>(
 
 ---
 
-### Datos y consistencia {#datos}
+### Data and consistency {#data}
 
 #### Database per Service
 
-**Regla:** Cada microservicio tiene su propia base de datos. Ningún servicio accede directamente
-a la base de datos de otro.
+**Rule:** Each microservice has its own database. No service directly accesses another service's database.
 
 ```
-✓ Correcto:
-  Servicio A → Base de datos A
-  Servicio B → Base de datos B
+✓ Correct:
+  Service A → Database A
+  Service B → Database B
 
-✗ Incorrecto:
-  Servicio A → Base de datos B (JOIN directo)
+✗ Incorrect:
+  Service A → Database B (direct JOIN)
 ```
 
-**¿Cómo comparto datos entonces?** Con APIs o eventos, nunca con SQL directo.
+**How do I share data then?** With APIs or events, never with direct SQL.
 
 ---
 
-#### Saga (Transacciones distribuidas)
+#### Saga (Distributed transactions)
 
-**Problema:** Una transacción de negocio abarca múltiples servicios y no puedes usar una transacción ACID distribuida.
-
-```
-Saga Coreografiada (via eventos):
-
-  [Pedidos]                [Inventario]           [Pagos]
-     │ PedidoCreado            │                     │
-     │ ─────────────────────▶  │                     │
-     │                    StockReservado             │
-     │ ◀─────────────────────  │                     │
-     │ PedidoStockConfirmado                         │
-     │ ─────────────────────────────────────────▶   │
-     │                                         PagoAprobado
-     │ ◀─────────────────────────────────────────   │
-```
-
-**Compensaciones:** Si un paso falla, ejecuta transacciones compensadoras en orden inverso.
+**Problem:** A business transaction spans multiple services and you cannot use a distributed ACID transaction.
 
 ```
-Paso 1: Reservar stock         → Compensación: Liberar stock
-Paso 2: Debitar pago           → Compensación: Reembolsar
-Paso 3: Confirmar pedido       → Compensación: Cancelar pedido
+Choreographed Saga (via events):
+
+  [Orders]                  [Inventory]            [Payments]
+     │ OrderCreated              │                     │
+     │ ─────────────────────▶   │                     │
+     │                     StockReserved              │
+     │ ◀─────────────────────   │                     │
+     │ OrderStockConfirmed                            │
+     │ ─────────────────────────────────────────▶    │
+     │                                          PaymentApproved
+     │ ◀─────────────────────────────────────────    │
+```
+
+**Compensations:** If a step fails, execute compensating transactions in reverse order.
+
+```
+Step 1: Reserve stock         → Compensation: Release stock
+Step 2: Debit payment         → Compensation: Refund
+Step 3: Confirm order         → Compensation: Cancel order
 ```
 
 ---
 
 #### CQRS (Command Query Responsibility Segregation)
 
-**Problema:** La lógica para escribir datos es muy diferente de la lógica para leerlos.
-Un modelo único fuerza compromisos subóptimos para ambos.
+**Problem:** The logic for writing data is very different from the logic for reading it.
+A single model forces suboptimal compromises for both.
 
 ```
-Escritura (Commands):                    Lectura (Queries):
-  POST /pedidos                            GET /pedidos?clienteId=X
+Write (Commands):                        Read (Queries):
+  POST /orders                             GET /orders?customerId=X
        │                                         │
        ▼                                         ▼
   [Command Handler]                       [Query Handler]
        │                                         │
        ▼                                         ▼
   [Aggregate]                            [Read Model / Projection]
-       │                                 (desnormalizado, optimizado para lectura)
+       │                                 (denormalized, optimized for reading)
        ▼
   [Event Store / Write DB]
        │
-       ▼ (actualiza la lectura via eventos)
+       ▼ (updates the read side via events)
   [Read DB]
 ```
 
-**Cuándo usarlo:** Cuando el volumen de lecturas es mucho mayor que el de escrituras, o cuando las consultas son muy complejas de hacer sobre el modelo de escritura.
+**When to use it:** When read volume is much higher than write volume, or when queries are very complex to perform on the write model.
 
-**Precaución:** Aumenta la complejidad. No siempre vale la pena.
+**Caution:** Increases complexity. Not always worth it.
 
 ---
 
-#### Outbox Pattern (Transaccional)
+#### Outbox Pattern (Transactional)
 
-**Problema:** Necesitas garantizar que cuando guardas en la base de datos, también publicas el evento — sin riesgo de publicarlo dos veces o no publicarlo si hay un fallo.
+**Problem:** You need to guarantee that when you save to the database, you also publish the event — without risk of publishing it twice or not publishing it if there is a failure.
 
 ```
-❌ Sin Outbox (puede perder eventos):
+❌ Without Outbox (may lose events):
   BEGIN TRANSACTION
-    INSERT INTO pedidos ...
+    INSERT INTO orders ...
   COMMIT
-  // Si el sistema cae aquí, el evento se pierde
-  publishEvent(PedidoCreado)
+  // If the system crashes here, the event is lost
+  publishEvent(OrderCreated)
 
-✓ Con Outbox (atómico):
+✓ With Outbox (atomic):
   BEGIN TRANSACTION
-    INSERT INTO pedidos ...
-    INSERT INTO outbox (event_type, payload, published) VALUES ('PedidoCreado', '...', false)
+    INSERT INTO orders ...
+    INSERT INTO outbox (event_type, payload, published) VALUES ('OrderCreated', '...', false)
   COMMIT
-  // Proceso separado lee outbox y publica
-  // Si falla la publicación, el outbox sigue teniendo el evento
+  // Separate process reads outbox and publishes
+  // If publishing fails, the outbox still has the event
 ```
 
 ```sql
--- Tabla outbox
+-- Outbox table
 CREATE TABLE outbox (
   id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   event_type  VARCHAR(100) NOT NULL,
@@ -485,7 +484,7 @@ CREATE TABLE outbox (
   published   BOOLEAN DEFAULT false
 );
 
--- Índice para el Relay (proceso que publica eventos pendientes)
+-- Index for the Relay (process that publishes pending events)
 CREATE INDEX idx_outbox_unpublished ON outbox (created_at) WHERE published = false;
 ```
 
@@ -493,73 +492,73 @@ CREATE INDEX idx_outbox_unpublished ON outbox (created_at) WHERE published = fal
 
 #### Event Sourcing
 
-**Problema:** Necesitas auditoría completa, reproducir el estado del sistema en cualquier punto del tiempo, o reconstruir proyecciones.
+**Problem:** You need full audit, reproducing system state at any point in time, or rebuilding projections.
 
 ```
-Tradicional:   BD guarda estado actual → "Un pedido vale $150"
-Event Sourcing: BD guarda eventos       → "PedidoCreado($100) + DescuentoAplicado($-30) + ItemAgregado($80)"
+Traditional:    DB stores current state → "An order is worth $150"
+Event Sourcing: DB stores events        → "OrderCreated($100) + DiscountApplied($-30) + ItemAdded($80)"
 
-Para saber el estado actual: reproduces todos los eventos en orden.
+To know the current state: you replay all events in order.
 ```
 
-**Cuándo usarlo:** Auditoría financiera, debugging avanzado, sistemas donde el historial importa.
+**When to use it:** Financial auditing, advanced debugging, systems where history matters.
 
-**Cuándo NO usarlo:** La mayoría de casos. Agrega complejidad significativa. No es la solución por defecto.
+**When NOT to use it:** Most cases. It adds significant complexity. It is not the default solution.
 
 ---
 
-### Observabilidad {#observabilidad}
+### Observability {#observability}
 
 #### Sidecar Pattern
 
-**Problema:** Quieres agregar capacidades de observabilidad, configuración, o red a un servicio sin modificar su código.
+**Problem:** You want to add observability, configuration, or network capabilities to a service without modifying its code.
 
 ```
-Pod de Kubernetes:
+Kubernetes Pod:
   ┌──────────────────────────────┐
-  │  [Servicio A]               │
-  │  [Sidecar: Envoy/Istio]    │  ← Maneja TLS, métricas, service mesh
-  │  [Sidecar: Filebeat]       │  ← Recolecta logs
+  │  [Service A]                │
+  │  [Sidecar: Envoy/Istio]    │  ← Handles TLS, metrics, service mesh
+  │  [Sidecar: Filebeat]       │  ← Collects logs
   └──────────────────────────────┘
 ```
 
 ---
 
-## Cuándo NO usar cada patrón
+## When NOT to use each pattern
 
-| Patrón | No usarlo cuando... |
-|--------|---------------------|
-| CQRS | El modelo de lectura y escritura son similares. Solo agrega complejidad. |
-| Event Sourcing | No necesitas historial completo. Es difícil de implementar y mantener. |
-| Saga | La transacción cabe en un solo servicio. Usa una transacción ACID simple. |
-| Circuit Breaker | La llamada es interna al mismo servicio. No vale el overhead. |
-| BFF | Los clientes tienen necesidades similares. Un API Gateway estándar es suficiente. |
-
----
-
-## Patrones adoptados en este proyecto
-
-> **Llenar con las decisiones de tu proyecto específico.**
-> Para cada patrón: decide si se adopta, documenta el ADR que justifica la decisión,
-> y enlaza la sección de este mismo documento donde aprendiste cuándo usarlo.
-
-| Patrón | ¿Adoptado? | Justificación / ADR |
-|--------|------------|---------------------|
-| API Gateway | [Sí / No — ver ADR-NNN] | [Razón breve] |
-| Database per Service | [Sí / No — ver ADR-NNN] | [Razón breve] |
-| Circuit Breaker | [Sí / No — ver ADR-NNN] | [Razón breve] |
-| Saga (coreografiada) | [Sí / No — ver ADR-NNN] | [Razón breve] |
-| Outbox Pattern | [Sí / No — ver ADR-NNN] | [Razón breve] |
-| CQRS | [Sí / No — ver ADR-NNN] | [Razón breve] |
-| Event Sourcing | [Sí / No — ver ADR-NNN] | [Razón breve] |
-| BFF | [Sí / No — ver ADR-NNN] | [Razón breve] |
+| Pattern | Do not use it when... |
+|---------|----------------------|
+| CQRS | The read and write models are similar. It only adds complexity. |
+| Event Sourcing | You do not need complete history. It is hard to implement and maintain. |
+| Saga | The transaction fits in a single service. Use a simple ACID transaction. |
+| Circuit Breaker | The call is internal to the same service. The overhead is not worth it. |
+| BFF | Clients have similar needs. A standard API Gateway is sufficient. |
 
 ---
 
-## Correlaciones
+## Patterns adopted in this project
+
+> **Fill in with your specific project's decisions.**
+> For each pattern: decide whether it is adopted, document the ADR that justifies the decision,
+> and link to the section in this document where you learned when to use it.
+
+| Pattern | Adopted? | Justification / ADR |
+|---------|---------|---------------------|
+| API Gateway | [Yes / No — see ADR-NNN] | [Brief reason] |
+| Database per Service | [Yes / No — see ADR-NNN] | [Brief reason] |
+| Circuit Breaker | [Yes / No — see ADR-NNN] | [Brief reason] |
+| Saga (choreographed) | [Yes / No — see ADR-NNN] | [Brief reason] |
+| Outbox Pattern | [Yes / No — see ADR-NNN] | [Brief reason] |
+| CQRS | [Yes / No — see ADR-NNN] | [Brief reason] |
+| Event Sourcing | [Yes / No — see ADR-NNN] | [Brief reason] |
+| BFF | [Yes / No — see ADR-NNN] | [Brief reason] |
+
+---
+
+## Correlations
 
 - Hexagonal Architecture → `05-architecture/hexagonal-architecture.md`
-- ADR de decisiones de patrones → `05-architecture/decisions/`
-- Implementación de Saga → `09-microservices/services/XX/events.md`
-- Runbook de Circuit Breaker → `09-microservices/services/XX/runbook.md`
-- Outbox en el modelo de datos → `06-data/models.md`
+- ADR for pattern decisions → `05-architecture/decisions/`
+- Saga implementation → `09-microservices/services/XX/events.md`
+- Circuit Breaker runbook → `09-microservices/services/XX/runbook.md`
+- Outbox in the data model → `06-data/models.md`

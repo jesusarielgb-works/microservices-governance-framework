@@ -1,28 +1,28 @@
-# Decisiones de Diseño — [Nombre del Servicio]
+# Design Decisions — [Service Name]
 
-> Decisiones técnicas específicas de este servicio (no arquitecturales globales — esas van en `05-architecture/decisions/`).
-> Documenta aquí las cosas que no son obvias: por qué esta librería, por qué este patrón, por qué esta estructura.
-
----
-
-## [DEC-001] [Título de la decisión]
-
-**Fecha:** YYYY-MM-DD
-**Estado:** Vigente | Reemplazada
-
-**Contexto:**
-[¿Por qué tuvieron que tomar esta decisión? ¿Qué problema resuelve?]
-
-**Decisión:**
-[¿Qué decidieron exactamente?]
-
-**Alternativas consideradas:**
-- [Opción B]: [por qué no]
-
-**Consecuencias:**
-- ✅ [Ventaja]
-- ⚠️ [Trade-off o limitación]
+> Technical decisions specific to this service (not global architectural ones — those go in `05-architecture/decisions/`).
+> Document here things that are not obvious: why this library, why this pattern, why this structure.
 
 ---
 
-> Agrega más decisiones copiando el bloque anterior con el siguiente número (DEC-002, DEC-003...)
+## [DEC-001] [Decision title]
+
+**Date:** YYYY-MM-DD
+**Status:** Active | Superseded
+
+**Context:**
+[Why did you have to make this decision? What problem does it solve?]
+
+**Decision:**
+[What exactly was decided?]
+
+**Alternatives considered:**
+- [Option B]: [why not]
+
+**Consequences:**
+- ✅ [Advantage]
+- ⚠️ [Trade-off or limitation]
+
+---
+
+> Add more decisions by copying the block above with the next number (DEC-002, DEC-003...)

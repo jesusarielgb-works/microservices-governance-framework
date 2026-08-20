@@ -1,55 +1,55 @@
-# Modelo de Datos — [Nombre del Servicio]
+# Data Model — [Service Name]
 
-> Este servicio es el **dueño autoritativo** de los datos descritos aquí.
-> Ningún otro servicio debe leer directamente estas tablas/colecciones.
-
----
-
-## Motor de base de datos
-
-**Motor:** [PostgreSQL / MongoDB / Redis / etc.]
-**Justificación:** [por qué este motor es el adecuado para este servicio]
+> This service is the **authoritative owner** of the data described here.
+> No other service should read these tables/collections directly.
 
 ---
 
-## Esquema
+## Database engine
 
-### Tabla/Colección: [nombre_tabla]
-
-**Propósito:** [qué representa esta tabla]
-
-| Campo | Tipo | Nullable | Descripción | Restricciones |
-|-------|------|----------|-------------|---------------|
-| id | UUID | No | Identificador único | PK, generado automáticamente |
-| [campo] | [VARCHAR(255) / INT / BOOL / etc.] | [Sí/No] | [descripción] | [FK/Unique/Check/etc.] |
-| created_at | TIMESTAMP | No | Fecha de creación | Default: NOW() |
-| updated_at | TIMESTAMP | No | Última modificación | Actualizar en cada UPDATE |
-| deleted_at | TIMESTAMP | Sí | Soft delete | NULL = activo |
-
-**Relaciones:**
-- `[campo_id]` → FK a `[tabla].[campo]` en [este servicio / servicio X via evento]
-
-### Índices
-
-| Nombre | Campos | Tipo | Justificación |
-|--------|--------|------|---------------|
-| idx_[tabla]_[campo] | [campo] | BTREE | Búsquedas frecuentes por [campo] |
+**Engine:** [PostgreSQL / MongoDB / Redis / etc.]
+**Justification:** [why this engine is appropriate for this service]
 
 ---
 
-## Decisiones de modelado
+## Schema
 
-> Documenta aquí las decisiones que no son obvias — desnormalizaciones, campos que parecen redundantes, etc.
+### Table/Collection: [table_name]
 
-- **[Decisión]:** [por qué se hizo así]
+**Purpose:** [what this table represents]
+
+| Field | Type | Nullable | Description | Constraints |
+|-------|------|----------|-------------|-------------|
+| id | UUID | No | Unique identifier | PK, auto-generated |
+| [field] | [VARCHAR(255) / INT / BOOL / etc.] | [Yes/No] | [description] | [FK/Unique/Check/etc.] |
+| created_at | TIMESTAMP | No | Creation date | Default: NOW() |
+| updated_at | TIMESTAMP | No | Last modification | Update on each UPDATE |
+| deleted_at | TIMESTAMP | Yes | Soft delete | NULL = active |
+
+**Relationships:**
+- `[field_id]` → FK to `[table].[field]` in [this service / service X via event]
+
+### Indexes
+
+| Name | Fields | Type | Justification |
+|------|--------|------|---------------|
+| idx_[table]_[field] | [field] | BTREE | Frequent searches by [field] |
 
 ---
 
-## Migración de esquema
+## Modeling decisions
 
-**Herramienta:** [Flyway / Liquibase / Alembic / knex]
-**Ubicación de scripts:** `src/migrations/`
-**Convención de nombres:** `V[NNN]__[descripcion].sql`
+> Document here decisions that are not obvious — denormalizations, fields that seem redundant, etc.
 
-**Política de rollback:**
-- [¿Se soporta rollback de migraciones? ¿Cómo?]
+- **[Decision]:** [why it was done this way]
+
+---
+
+## Schema migration
+
+**Tool:** [Flyway / Liquibase / Alembic / knex]
+**Script location:** `src/migrations/`
+**Naming convention:** `V[NNN]__[description].sql`
+
+**Rollback policy:**
+- [Is migration rollback supported? How?]

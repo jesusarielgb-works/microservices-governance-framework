@@ -1,157 +1,186 @@
-# Mapa de Dominio — Bounded Contexts
+# Domain Map — Bounded Contexts
 
-> **Qué llenar aquí:** El mapa de dominio es el artefacto central del DDD (Domain-Driven Design).
-> Define los límites del sistema y cómo se relacionan entre sí.
-> Construirlo primero con el equipo y los expertos del dominio en una sesión de Event Storming.
+> **What to fill in here:** The domain map is the central DDD (Domain-Driven Design) artifact.
+> It defines the system's boundaries and how they relate to each other.
+> Build it first with the team and domain experts in an Event Storming session.
+
+## Before filling in this document: Event Storming
+
+**Event Storming** is a collaborative workshop for modeling the domain before writing code.
+It lasts 2–4 hours with the whole team (dev + PO + business expert).
+
+**Materials:** Long wall, 4-color sticky notes, markers.
+
+**Standard colors:**
+| Color | Represents | Example |
+|-------|-----------|---------|
+| 🟠 Orange | **Domain events** (something that happened, past tense) | `AppointmentScheduled`, `PaymentReceived` |
+| 🔵 Blue | **Commands** (action that triggers the event) | `ScheduleAppointment`, `ProcessPayment` |
+| 🟡 Yellow | **Actors** (who executes the command) | `Patient`, `Doctor`, `Admin` |
+| 🩷 Pink | **External systems** or integration points | `Payment Gateway`, `Email SMTP` |
+
+**Session steps:**
+1. (30 min) Post all events that occur in the business, in chronological order, on the wall
+2. (30 min) Identify which command or actor triggers each event
+3. (45 min) Group related events — each group is a candidate Bounded Context
+4. (30 min) Draw relationships between Bounded Contexts (who depends on whom)
+5. (30 min) Discuss the resulting map and agree on names
+
+**Result:** The session output directly feeds the 3 documents in `02-domain/`:
+- Identified events → `domain-events.md`
+- Entities and their rules → `entities-and-rules.md`
+- Bounded Contexts and their map → this document
 
 ---
 
-## 1. Visión general del dominio
+---
 
-> Un párrafo de contexto sobre el negocio y qué problema resuelve el sistema.
-> Escríbelo sin términos técnicos — debe poder leerlo un experto del negocio.
+## 1. Domain overview
+
+> One paragraph of context about the business and what problem the system solves.
+> Write it without technical terms — it must be readable by a business expert.
 
 ```
-[Describe el dominio del negocio aquí. Ej: "El sistema gestiona el ciclo completo de
-reservas de [X], desde la solicitud del cliente hasta la confirmación y facturación."]
+[Describe the business domain here. E.g.: "The system manages the complete cycle of
+[X] reservations, from the customer's request through to confirmation and billing."]
 ```
 
 ---
 
-## 2. Bounded Contexts identificados
+## 2. Identified Bounded Contexts
 
-Un **Bounded Context** es el límite explícito dentro del cual un modelo de dominio particular
-tiene significado consistente. Cada bounded context tiene su propio lenguaje ubicuo (Ubiquitous Language).
+A **Bounded Context** is the explicit boundary within which a particular domain model
+has consistent meaning. Each bounded context has its own Ubiquitous Language.
 
-> **Señal de que tienes un buen bounded context:**
-> - Tiene un equipo responsable claro
-> - Tiene su propia base de datos
-> - Puede desplegarse independientemente
-> - El mismo término en dos contextos diferentes puede significar cosas distintas
+> **Signs of a good bounded context:**
+> - Has a clear responsible team
+> - Has its own database
+> - Can be deployed independently
+> - The same term in two different contexts can mean different things
 
-### Bounded Context: [Nombre — ej: Gestión de Usuarios]
+### Bounded Context: [Name — e.g.: User Management]
 
-| Campo | Valor |
+| Field | Value |
 |-------|-------|
-| **Nombre** | [NombreDelContexto] |
-| **Responsabilidad** | [Qué captura este contexto en una oración] |
-| **Equipo dueño** | [Equipo o persona responsable] |
-| **Microservicio(s)** | [service-name, service2-name] |
-| **Base de datos** | [PostgreSQL / MongoDB / Redis / etc.] |
-| **Lenguaje ubicuo** | [Términos clave del negocio en este contexto] |
+| **Name** | [ContextName] |
+| **Responsibility** | [What this context captures in one sentence] |
+| **Owning team** | [Responsible team or person] |
+| **Microservice(s)** | [service-name, service2-name] |
+| **Database** | [PostgreSQL / MongoDB / Redis / etc.] |
+| **Ubiquitous Language** | [Key business terms in this context] |
 
-**Términos propios del contexto (Ubiquitous Language):**
+**Context-specific terms (Ubiquitous Language):**
 
-| Término | Significado en ESTE contexto | ¿Diferente en otro contexto? |
-|---------|------------------------------|------------------------------|
-| [Usuario] | [Persona con cuenta activa] | [Sí — en Facturación es "Cliente"] |
-| [Cuenta] | [Conjunto de credenciales] | [No] |
+| Term | Meaning in THIS context | Different in another context? |
+|------|------------------------|-------------------------------|
+| [User] | [Person with an active account] | [Yes — in Billing it's "Client"] |
+| [Account] | [Set of credentials] | [No] |
 
 ---
 
-### Bounded Context: [Nombre — ej: Gestión de Pedidos]
+### Bounded Context: [Name — e.g.: Order Management]
 
-| Campo | Valor |
+| Field | Value |
 |-------|-------|
-| **Nombre** | [NombreDelContexto] |
-| **Responsabilidad** | |
-| **Equipo dueño** | |
-| **Microservicio(s)** | |
-| **Base de datos** | |
-| **Lenguaje ubicuo** | |
+| **Name** | [ContextName] |
+| **Responsibility** | |
+| **Owning team** | |
+| **Microservice(s)** | |
+| **Database** | |
+| **Ubiquitous Language** | |
 
 ---
 
-## 3. Mapa de contextos (Context Map)
+## 3. Context Map
 
-El Context Map muestra las relaciones entre bounded contexts. Las relaciones definen
-cómo se comunican los contextos y quién tiene el "poder" en la integración.
+The Context Map shows relationships between bounded contexts. Relationships define
+how contexts communicate and who holds the "power" in the integration.
 
 ```
 ┌─────────────────────┐        ┌──────────────────────┐
-│  [Contexto A]       │        │  [Contexto B]        │
+│  [Context A]        │        │  [Context B]         │
 │                     │──────▶│                      │
-│  Dominio:           │  D→C  │  Dominio:            │
-│  [responsabilidad]  │       │  [responsabilidad]   │
+│  Domain:            │  D→C  │  Domain:             │
+│  [responsibility]   │       │  [responsibility]    │
 └─────────────────────┘       └──────────────────────┘
                                         │
                                D→C      │
                                         ▼
                               ┌──────────────────────┐
-                              │  [Contexto C]        │
+                              │  [Context C]         │
                               │                      │
-                              │  [responsabilidad]   │
+                              │  [responsibility]    │
                               └──────────────────────┘
 ```
 
-### Tipos de relaciones entre contextos
+### Context relationship types
 
-| Tipo | Símbolo | Descripción | Ejemplo |
-|------|---------|-------------|---------|
-| **Upstream → Downstream** | `U → D` | U provee, D consume. D depende de U. | Auth → Orders |
-| **Shared Kernel** | `SK` | Dos equipos comparten parte del modelo | Shared User ID |
-| **Customer/Supplier** | `C/S` | Supplier (U) negocia con Customer (D) | Inventory → Sales |
-| **Conformist** | `CONF` | D adopta el modelo de U sin negociar | Legacy integration |
-| **Anti-Corruption Layer** | `ACL` | D traduce el modelo de U para protegerse | Gateway → External API |
-| **Open Host Service** | `OHS` | U publica un protocolo publicado | Event Bus, REST API |
-| **Published Language** | `PL` | Lenguaje compartido explícito | OpenAPI spec, events |
+| Type | Symbol | Description | Example |
+|------|--------|-------------|---------|
+| **Upstream → Downstream** | `U → D` | U provides, D consumes. D depends on U. | Auth → Orders |
+| **Shared Kernel** | `SK` | Two teams share part of the model | Shared User ID |
+| **Customer/Supplier** | `C/S` | Supplier (U) negotiates with Customer (D) | Inventory → Sales |
+| **Conformist** | `CONF` | D adopts U's model without negotiating | Legacy integration |
+| **Anti-Corruption Layer** | `ACL` | D translates U's model to protect itself | Gateway → External API |
+| **Open Host Service** | `OHS` | U publishes a published protocol | Event Bus, REST API |
+| **Published Language** | `PL` | Explicit shared language | OpenAPI spec, events |
 
-### Tabla de relaciones
+### Relationships table
 
-| Contexto A | Relación | Contexto B | Canal de comunicación | Contrato |
-|-----------|----------|------------|----------------------|---------|
-| [Contexto A] | U → D | [Contexto B] | REST / Evento | OpenAPI / AsyncAPI |
-| [Contexto B] | ACL | [Contexto C] | Adaptador | Interfaz interna |
+| Context A | Relationship | Context B | Communication channel | Contract |
+|-----------|-------------|-----------|----------------------|---------|
+| [Context A] | U → D | [Context B] | REST / Event | OpenAPI / AsyncAPI |
+| [Context B] | ACL | [Context C] | Adapter | Internal interface |
 
 ---
 
 ## 4. Core Domain, Supporting, Generic
 
-El DDD clasifica los subdominios por su valor estratégico:
+DDD classifies subdomains by their strategic value:
 
-| Tipo | Descripción | Inversión | Ejemplo |
+| Type | Description | Investment | Example |
 |------|-------------|-----------|---------|
-| **Core Domain** | Donde está la ventaja competitiva del negocio. Lo que nos diferencia. | MÁXIMA — construir, no comprar | Algoritmo de matching |
-| **Supporting Subdomain** | Necesario para el core pero no diferenciador. Puede tercerizarse. | MEDIA | Gestión de órdenes |
-| **Generic Subdomain** | Commodity. Existe solución off-the-shelf. | MÍNIMA — comprar/usar OSS | Autenticación, emails |
+| **Core Domain** | Where the business competitive advantage lies. What differentiates us. | MAXIMUM — build, don't buy | Matching algorithm |
+| **Supporting Subdomain** | Necessary for the core but not differentiating. Can be outsourced. | MEDIUM | Order management |
+| **Generic Subdomain** | Commodity. Off-the-shelf solution exists. | MINIMUM — buy/use OSS | Authentication, emails |
 
-### Clasificación de los bounded contexts de este proyecto
+### Classification of this project's bounded contexts
 
-| Bounded Context | Tipo | Justificación |
+| Bounded Context | Type | Justification |
 |----------------|------|---------------|
-| [Contexto A] | Core | [por qué es el corazón del negocio] |
-| [Contexto B] | Supporting | [por qué apoya sin ser diferenciador] |
-| [Contexto C] | Generic | [solución estándar disponible] |
+| [Context A] | Core | [why it is the heart of the business] |
+| [Context B] | Supporting | [why it supports without being differentiating] |
+| [Context C] | Generic | [standard solution available] |
 
 ---
 
-## 5. Decisiones de modelado
+## 5. Modeling decisions
 
-### ¿Cómo se tomaron estas decisiones?
+### How were these decisions made?
 
-> Documenta la sesión de Event Storming o el proceso que usaste para llegar al mapa.
-> Si cambiaste el mapa, explica por qué.
+> Document the Event Storming session or the process you used to arrive at the map.
+> If you changed the map, explain why.
 
-- **Sesión de Event Storming:** [fecha], [participantes]
-- **Herramienta usada:** [Miro / Lucidchart / pizarra física]
-- **Iteraciones del mapa:** v1 (fecha), v2 (fecha)
+- **Event Storming session:** [date], [participants]
+- **Tool used:** [Miro / Lucidchart / physical whiteboard]
+- **Map iterations:** v1 (date), v2 (date)
 
-### Decisiones clave y alternativas descartadas
+### Key decisions and discarded alternatives
 
-| Decisión | Alternativa descartada | Razón |
-|----------|----------------------|-------|
-| [Separar Contexto A y B] | [Tenerlos en uno solo] | [La lógica de negocio es diferente y evolucionan a ritmos distintos] |
+| Decision | Discarded alternative | Reason |
+|----------|----------------------|--------|
+| [Separate Context A and B] | [Have them in one] | [Business logic is different and they evolve at different rates] |
 
 ---
 
-## 6. Cómo actualizar este mapa
+## 6. How to update this map
 
-1. Antes de agregar un nuevo microservicio, verifica si pertenece a un bounded context existente.
-2. Si el lenguaje ubicuo de un contexto está cambiando, revisa si el contexto debe dividirse.
-3. Haz una sesión de Event Storming cada vez que el dominio cambie significativamente.
-4. El mapa de contextos DEBE estar sincronizado con el diagrama C4 nivel sistema (`05-architecture/overview.md`).
+1. Before adding a new microservice, verify whether it belongs to an existing bounded context.
+2. If a context's ubiquitous language is changing, review whether the context should be split.
+3. Run an Event Storming session every time the domain changes significantly.
+4. The context map MUST be synchronized with the C4 system-level diagram (`05-architecture/overview.md`).
 
-> **Correlación importante:** Los bounded contexts en este documento →
-> Microservicios en `09-microservices/service-catalog.md` →
-> Diagramas C4 en `08-uml/` →
-> ADRs de separación de servicios en `05-architecture/decisions/`
+> **Important correlation:** The bounded contexts in this document →
+> Microservices in `09-microservices/service-catalog.md` →
+> C4 diagrams in `08-uml/` →
+> Service separation ADRs in `05-architecture/decisions/`

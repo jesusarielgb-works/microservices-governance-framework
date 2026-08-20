@@ -1,75 +1,75 @@
-# Índice de Diagramas
+# Diagram Index
 
-> **Qué llenar aquí:** El registro de todos los diagramas del sistema.
-> Los diagramas van en `08-uml/diagrams/source/` como archivos PlantUML o Mermaid.
-> Los renders exportados van en `08-uml/diagrams/rendered/`.
-
----
-
-## ¿Cuándo crear un diagrama?
-
-```
-✓ Cuando el flujo involucra 3+ servicios o actores
-✓ Cuando la arquitectura necesita ser comunicada a un stakeholder no técnico
-✓ Cuando el modelado de datos es complejo (diagrama ER)
-✓ Cuando un bug tardó más de 2 horas en entenderse (diagrama de secuencia retroactivo)
-
-✗ Para flujos simples de 2 elementos — el código los describe mejor
-✗ Para "documentar por documentar" — un diagrama desactualizado es peor que ninguno
-```
+> **What to fill in here:** The registry of all system diagrams.
+> Diagrams go in `08-uml/diagrams/source/` as PlantUML or Mermaid files.
+> Exported renders go in `08-uml/diagrams/rendered/`.
 
 ---
 
-## Nomenclatura de archivos
+## When to create a diagram?
 
 ```
-[nivel-c4]-[nombre-descriptivo].[puml|mmd]
+✓ When the flow involves 3+ services or actors
+✓ When the architecture needs to be communicated to a non-technical stakeholder
+✓ When data modeling is complex (ER diagram)
+✓ When a bug took more than 2 hours to understand (retroactive sequence diagram)
 
-Ejemplos:
+✗ For simple 2-element flows — code describes them better
+✗ To "document for documentation's sake" — an outdated diagram is worse than none
+```
+
+---
+
+## File naming
+
+```
+[c4-level]-[descriptive-name].[puml|mmd]
+
+Examples:
   c1-system-context.puml
   c2-container-diagram.puml
   c3-auth-service.puml
-  seq-crear-pedido.puml
-  erd-pedidos-service.mmd
-  state-pedido-lifecycle.puml
+  seq-create-order.puml
+  erd-orders-service.mmd
+  state-order-lifecycle.puml
 ```
 
 ---
 
-## Registro de diagramas
+## Diagram registry
 
-### Diagramas de arquitectura (C4)
+### Architecture diagrams (C4)
 
-| ID | Nombre | Tipo | Herramienta | Archivo fuente | Descripción |
-|----|--------|------|-------------|----------------|-------------|
-| C4-01 | System Context | C4 L1 | PlantUML | `source/c1-system-context.puml` | El sistema y sus actores externos |
-| C4-02 | Container Diagram | C4 L2 | PlantUML | `source/c2-container-diagram.puml` | Todos los servicios y BDs |
-| C4-03 | [Servicio A] Components | C4 L3 | PlantUML | `source/c3-servicio-a.puml` | Componentes internos del servicio |
+| ID | Name | Type | Tool | Source file | Description |
+|----|------|------|------|-------------|-------------|
+| C4-01 | System Context | C4 L1 | PlantUML | `source/c1-system-context.puml` | The system and its external actors |
+| C4-02 | Container Diagram | C4 L2 | PlantUML | `source/c2-container-diagram.puml` | All services and DBs |
+| C4-03 | [Service A] Components | C4 L3 | PlantUML | `source/c3-service-a.puml` | Internal components of the service |
 
-### Diagramas de secuencia
+### Sequence diagrams
 
-| ID | Nombre | Herramienta | Archivo fuente | Descripción |
-|----|--------|-------------|----------------|-------------|
-| SEQ-01 | Flujo de login | PlantUML | `source/seq-login.puml` | Registro → Login → JWT |
-| SEQ-02 | [Flujo principal] | PlantUML | `source/seq-[nombre].puml` | [Descripción] |
-| SEQ-03 | [Flujo de error] | PlantUML | `source/seq-[nombre]-error.puml` | [Escenario de error] |
+| ID | Name | Tool | Source file | Description |
+|----|------|------|-------------|-------------|
+| SEQ-01 | Login flow | PlantUML | `source/seq-login.puml` | Registration → Login → JWT |
+| SEQ-02 | [Main flow] | PlantUML | `source/seq-[name].puml` | [Description] |
+| SEQ-03 | [Error flow] | PlantUML | `source/seq-[name]-error.puml` | [Error scenario] |
 
-### Diagramas de estado
+### State diagrams
 
-| ID | Nombre | Herramienta | Archivo fuente | Descripción |
-|----|--------|-------------|----------------|-------------|
-| ST-01 | Ciclo de vida de Pedido | PlantUML | `source/state-pedido.puml` | Estados y transiciones de Pedido |
+| ID | Name | Tool | Source file | Description |
+|----|------|------|-------------|-------------|
+| ST-01 | Order lifecycle | PlantUML | `source/state-order.puml` | Order states and transitions |
 
-### Diagramas ER (datos)
+### ER diagrams (data)
 
-| ID | Nombre | Herramienta | Archivo fuente | Servicio |
-|----|--------|-------------|----------------|---------|
-| ERD-01 | BD Pedidos | Mermaid | `source/erd-pedidos.mmd` | pedido-service |
-| ERD-02 | BD Auth | Mermaid | `source/erd-auth.mmd` | auth-service |
+| ID | Name | Tool | Source file | Service |
+|----|------|------|-------------|---------|
+| ERD-01 | Orders DB | Mermaid | `source/erd-orders.mmd` | order-service |
+| ERD-02 | Auth DB | Mermaid | `source/erd-auth.mmd` | auth-service |
 
 ---
 
-## Plantillas de diagramas
+## Diagram templates
 
 ### C4 L1 — Context (PlantUML)
 
@@ -77,39 +77,39 @@ Ejemplos:
 @startuml C4-Context
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
 
-title System Context — [Nombre del Sistema]
+title System Context — [System Name]
 
-Person(usuario, "Usuario", "Descripción del usuario")
-Person_Ext(admin, "Administrador", "Administra el sistema")
+Person(user, "User", "Description of the user")
+Person_Ext(admin, "Administrator", "Manages the system")
 
-System(sistema, "[Nombre del Sistema]", "Descripción de lo que hace")
+System(system, "[System Name]", "Description of what it does")
 
-System_Ext(sistemaExterno, "[Sistema Externo]", "Descripción del sistema externo")
+System_Ext(externalSystem, "[External System]", "Description of the external system")
 
-Rel(usuario, sistema, "Usa", "HTTPS")
-Rel(admin, sistema, "Administra", "HTTPS")
-Rel(sistema, sistemaExterno, "Envía datos a", "REST API")
+Rel(user, system, "Uses", "HTTPS")
+Rel(admin, system, "Administers", "HTTPS")
+Rel(system, externalSystem, "Sends data to", "REST API")
 
 @enduml
 ```
 
-### Diagrama de secuencia (PlantUML)
+### Sequence diagram (PlantUML)
 
 ```plantuml
-@startuml seq-ejemplo
+@startuml seq-example
 
-title Flujo: [Nombre del flujo]
+title Flow: [Flow name]
 
-actor "Usuario" as U
+actor "User" as U
 participant "API Gateway" as GW
 participant "Auth Service" as AUTH
-participant "Servicio A" as SA
-database "BD Servicio A" as DBA
+participant "Service A" as SA
+database "Service A DB" as DBA
 
-U -> GW: POST /recurso\n{payload}
-GW -> AUTH: Validar JWT
+U -> GW: POST /resource\n{payload}
+GW -> AUTH: Validate JWT
 AUTH --> GW: 200 OK {claims}
-GW -> SA: POST /recurso (con claims)
+GW -> SA: POST /resource (with claims)
 SA -> DBA: INSERT ...
 DBA --> SA: OK
 SA --> GW: 201 Created {id}
@@ -118,70 +118,70 @@ GW --> U: 201 Created {id}
 @enduml
 ```
 
-### Diagrama de estado (PlantUML)
+### State diagram (PlantUML)
 
 ```plantuml
-@startuml state-ejemplo
+@startuml state-example
 
-title Ciclo de vida: [Nombre del recurso]
+title Lifecycle: [Resource name]
 
-[*] --> BORRADOR : crear()
+[*] --> DRAFT : create()
 
-BORRADOR --> ACTIVO : publicar()
-BORRADOR --> CANCELADO : cancelar()
+DRAFT --> ACTIVE : publish()
+DRAFT --> CANCELLED : cancel()
 
-ACTIVO --> INACTIVO : suspender()
-ACTIVO --> CANCELADO : cancelar()
+ACTIVE --> INACTIVE : suspend()
+ACTIVE --> CANCELLED : cancel()
 
-INACTIVO --> ACTIVO : reactivar()
+INACTIVE --> ACTIVE : reactivate()
 
-CANCELADO --> [*]
+CANCELLED --> [*]
 
 @enduml
 ```
 
-### Diagrama ER (Mermaid)
+### ER diagram (Mermaid)
 
 ```mermaid
 erDiagram
-    ENTIDAD_A ||--o{ ENTIDAD_B : "tiene"
-    ENTIDAD_A {
+    ENTITY_A ||--o{ ENTITY_B : "has"
+    ENTITY_A {
         uuid id PK
-        varchar nombre
+        varchar name
         timestamptz created_at
     }
-    ENTIDAD_B {
+    ENTITY_B {
         uuid id PK
-        uuid entidad_a_id FK
-        decimal valor
+        uuid entity_a_id FK
+        decimal value
     }
 ```
 
 ---
 
-## Herramientas y renderizado
+## Tools and rendering
 
-| Herramienta | Para qué | Cómo usar |
-|-------------|---------|-----------|
-| PlantUML | Diagramas C4, secuencia, estado, clase | `plantuml -tsvg archivo.puml` |
-| Mermaid | Diagramas simples en Markdown | Soporte nativo en GitHub y GitLab |
-| draw.io (diagrams.net) | Diagramas visuales complejos | Exportar como XML + imagen |
-| Structurizr | C4 model con DSL | Para proyectos que adopten el DSL de C4 |
+| Tool | For what | How to use |
+|------|---------|------------|
+| PlantUML | C4, sequence, state, class diagrams | `plantuml -tsvg file.puml` |
+| Mermaid | Simple diagrams in Markdown | Native support on GitHub and GitLab |
+| draw.io (diagrams.net) | Complex visual diagrams | Export as XML + image |
+| Structurizr | C4 model with DSL | For projects that adopt the C4 DSL |
 
-**Pipeline de renderizado:**
+**Rendering pipeline:**
 ```bash
-# Renderizar todos los diagramas PlantUML
+# Render all PlantUML diagrams
 find 08-uml/diagrams/source -name "*.puml" -exec plantuml -tsvg -o ../rendered {} \;
 
-# O con Docker (sin instalar PlantUML localmente)
+# Or with Docker (without installing PlantUML locally)
 docker run --rm -v $(pwd):/data ghcr.io/plantuml/plantuml:latest \
   -tsvg -o /data/08-uml/diagrams/rendered /data/08-uml/diagrams/source/*.puml
 ```
 
 ---
 
-## Correlaciones
+## Correlations
 
-- Vista de arquitectura → `05-architecture/overview.md`
-- Bounded contexts del dominio → `02-domain/domain-map.md`
-- Modelos ER de cada servicio → `09-microservices/services/NN/data-model.md`
+- Architecture view → `05-architecture/overview.md`
+- Domain bounded contexts → `02-domain/domain-map.md`
+- ER models per service → `09-microservices/services/NN/data-model.md`

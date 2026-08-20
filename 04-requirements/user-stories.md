@@ -1,172 +1,172 @@
-# Historias de Usuario — Backlog
+# User Stories — Backlog
 
-> **Qué llenar aquí:** El backlog de Historias de Usuario del producto.
-> Cada HU tiene el formato estándar con Criterios de Aceptación en Given/When/Then.
-> Las HUs refinadas (Ready) van al sprint. Las no refinadas son epics o ideas.
-
----
-
-## Estado del backlog
-
-| Corte | Sprint | Total HUs | Refinadas | En progreso | Completadas |
-|-------|--------|-----------|-----------|-------------|-------------|
-| Corte 1 | Sprint 1-2 | [N] | [N] | [N] | [N] |
-| Corte 2 | Sprint 3-4 | [N] | [N] | [N] | [N] |
+> **What to fill in here:** The product's User Story backlog.
+> Each HU uses the standard format with Acceptance Criteria in Given/When/Then.
+> Refined (Ready) HUs go to the sprint. Unrefined ones are epics or ideas.
 
 ---
 
-## Épicas
+## Backlog status
 
-| ID | Épica | Descripción |
-|----|-------|-------------|
-| EP-001 | [Nombre de la épica] | [Descripción breve del objetivo de la épica] |
-| EP-002 | [Nombre] | [Descripción] |
+| Cut | Sprint | Total HUs | Refined | In progress | Completed |
+|-----|--------|-----------|---------|-------------|-----------|
+| Cut 1 | Sprint 1-2 | [N] | [N] | [N] | [N] |
+| Cut 2 | Sprint 3-4 | [N] | [N] | [N] | [N] |
 
 ---
 
-## Historias de Usuario
+## Epics
 
-### HU-001 — [Nombre descriptivo] {#HU-001}
+| ID | Epic | Description |
+|----|------|-------------|
+| EP-001 | [Epic name] | [Brief description of the epic's objective] |
+| EP-002 | [Name] | [Description] |
 
-**Épica:** EP-00X
+---
 
-> **Como** [rol del usuario]
-> **quiero** [acción / funcionalidad]
-> **para** [beneficio / valor que obtiene]
+## User Stories
 
-**Criterios de Aceptación:**
+### HU-001 — [Descriptive name] {#HU-001}
+
+**Epic:** EP-00X
+
+> **As** [user role]
+> **I want** [action / feature]
+> **so that** [benefit / value received]
+
+**Acceptance Criteria:**
 
 ```gherkin
-Escenario 1: [Nombre del escenario — camino feliz]
-  Given [contexto inicial]
-  When  [acción del usuario]
-  Then  [resultado esperado]
-  And   [condición adicional si aplica]
+Scenario 1: [Scenario name — happy path]
+  Given [initial context]
+  When  [user action]
+  Then  [expected result]
+  And   [additional condition if applicable]
 
-Escenario 2: [Nombre del escenario — edge case / error]
-  Given [contexto]
-  When  [acción]
-  Then  [resultado de error, ej: se muestra mensaje de validación]
+Scenario 2: [Scenario name — edge case / error]
+  Given [context]
+  When  [action]
+  Then  [error result, e.g.: validation message is shown]
 ```
 
 **Definition of Done:**
-- [ ] Código revisado y aprobado
-- [ ] Tests unitarios escritos
-- [ ] Criterios de aceptación verificados (manual o automatizado)
-- [ ] API contract actualizado si aplica
-- [ ] Desplegado en staging
+- [ ] Code reviewed and approved
+- [ ] Unit tests written
+- [ ] Acceptance criteria verified (manual or automated)
+- [ ] API contract updated if applicable
+- [ ] Deployed to staging
 
-| Campo | Valor |
+| Field | Value |
 |-------|-------|
 | Story Points | [1 / 2 / 3 / 5 / 8 / 13] |
-| Prioridad | [Must Have / Should Have / Could Have] |
-| Sprint objetivo | Sprint [N] |
-| Asignada a | [Nombre] |
-| Estado | [Backlog / Ready / In Progress / Done] |
-| Dependencias | [HU-00X, HU-00Y] |
-| Servicio(s) afectado(s) | [nombre-servicio] |
+| Priority | [Must Have / Should Have / Could Have] |
+| Target sprint | Sprint [N] |
+| Assigned to | [Name] |
+| Status | [Backlog / Ready / In Progress / Done] |
+| Dependencies | [HU-00X, HU-00Y] |
+| Affected service(s) | [service-name] |
 
 ---
 
-### HU-002 — [Nombre descriptivo] {#HU-002}
+### HU-002 — [Descriptive name] {#HU-002}
 
-**Épica:** EP-00X
+**Epic:** EP-00X
 
-> **Como** [rol]
-> **quiero** [acción]
-> **para** [beneficio]
+> **As** [role]
+> **I want** [action]
+> **so that** [benefit]
 
-**Criterios de Aceptación:**
+**Acceptance Criteria:**
 
 ```gherkin
-Escenario 1: [Camino feliz]
-  Given [contexto]
-  When  [acción]
-  Then  [resultado]
+Scenario 1: [Happy path]
+  Given [context]
+  When  [action]
+  Then  [result]
 
-Escenario 2: [Caso de error]
-  Given [contexto]
-  When  [acción inválida]
-  Then  se muestra error "[código de error]" con mensaje "[mensaje]"
+Scenario 2: [Error case]
+  Given [context]
+  When  [invalid action]
+  Then  error "[error code]" is shown with message "[message]"
 ```
 
-| Campo | Valor |
+| Field | Value |
 |-------|-------|
 | Story Points | [N] |
-| Prioridad | [Must Have] |
-| Sprint objetivo | Sprint [N] |
-| Estado | [Backlog] |
+| Priority | [Must Have] |
+| Target sprint | Sprint [N] |
+| Status | [Backlog] |
 
 ---
 
-## Reglas de escritura de HUs
+## Rules for writing HUs
 
-### 1. El rol importa
-No escribas "Como usuario" — eso no dice nada. Usa el rol específico:
+### 1. The role matters
+Do not write "As a user" — that says nothing. Use the specific role:
 ```
-✓ Como administrador del sistema
-✓ Como cliente registrado
-✓ Como operador de inventario
-✗ Como usuario
-✗ Como persona
-```
-
-### 2. El beneficio justifica el trabajo
-El "para" debe describir un beneficio de negocio, no describir la acción de nuevo:
-```
-✓ para poder gestionar mis pedidos sin llamar a soporte
-✗ para poder ver mis pedidos (esto solo describe la funcionalidad)
+✓ As a system administrator
+✓ As a registered customer
+✓ As an inventory operator
+✗ As a user
+✗ As a person
 ```
 
-### 3. Los ACs son verificables
-Cada AC debe poder ser verificado manualmente o automatizarse como test:
+### 2. The benefit justifies the work
+The "so that" must describe a business benefit, not redescribe the action:
 ```
-✓ Then el sistema muestra un mensaje "Pedido #123 confirmado"
-✓ Then el email de confirmación llega en menos de 30 segundos
-✗ Then el sistema funciona bien (no verificable)
-✗ Then el usuario está satisfecho (no verificable)
+✓ so that I can manage my orders without calling support
+✗ so that I can see my orders (this only describes the feature)
 ```
 
-### 4. Una HU = una unidad de valor
-Si la HU tiene 15 ACs, probablemente son 3 HUs.
-El equipo debe poder completarla en un sprint (máximo 2 semanas).
+### 3. ACs are verifiable
+Each AC must be verifiable manually or automatable as a test:
+```
+✓ Then the system shows a message "Order #123 confirmed"
+✓ Then the confirmation email arrives in less than 30 seconds
+✗ Then the system works well (not verifiable)
+✗ Then the user is satisfied (not verifiable)
+```
+
+### 4. One HU = one unit of value
+If the HU has 15 ACs, it is probably 3 HUs.
+The team must be able to complete it in one sprint (maximum 2 weeks).
 
 ---
 
-## Plantilla de HU lista para copiar
+## Ready-to-copy HU template
 
 ```markdown
-### HU-00X — [Nombre] {#HU-00X}
+### HU-00X — [Name] {#HU-00X}
 
-**Épica:** EP-00X
+**Epic:** EP-00X
 
-> **Como** [rol]
-> **quiero** [acción]
-> **para** [beneficio]
+> **As** [role]
+> **I want** [action]
+> **so that** [benefit]
 
-**Criterios de Aceptación:**
+**Acceptance Criteria:**
 
 \```gherkin
-Escenario 1: [nombre]
-  Given [contexto]
-  When  [acción]
-  Then  [resultado]
+Scenario 1: [name]
+  Given [context]
+  When  [action]
+  Then  [result]
 \```
 
-| Campo | Valor |
+| Field | Value |
 |-------|-------|
 | Story Points | |
-| Prioridad | |
-| Sprint objetivo | |
-| Estado | Backlog |
-| Dependencias | |
+| Priority | |
+| Target sprint | |
+| Status | Backlog |
+| Dependencies | |
 ```
 
 ---
 
-## Correlaciones
+## Correlations
 
-- Template completo con DoD checklist → `04-requirements/_template-hu.md`
-- Requisitos no funcionales → `04-requirements/non-functional.md`
-- Matriz de trazabilidad → `04-requirements/traceability-matrix.md`
-- Contratos API derivados de estas HUs → `07-api/contracts/openapi/`
+- Full template with DoD checklist → `04-requirements/_template-hu.md`
+- Non-functional requirements → `04-requirements/non-functional.md`
+- Traceability matrix → `04-requirements/traceability-matrix.md`
+- API contracts derived from these HUs → `07-api/contracts/openapi/`

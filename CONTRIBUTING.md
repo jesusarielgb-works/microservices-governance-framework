@@ -1,111 +1,111 @@
-# Guía de contribución
+# Contributing Guide
 
-> Bienvenido al equipo. Esta guía explica cómo hacer tu primera contribución
-> y las reglas que aplican a todos los cambios en este repositorio.
-
----
-
-## Antes de empezar
-
-1. Lee `00-governance/README.md` — las reglas del equipo
-2. Lee `00-governance/git-conventions.md` — cómo trabajar con Git
-3. Verifica que tienes el ambiente local configurado: `10-devops/local-setup.md`
-4. Entiende el dominio del sistema: `02-domain/domain-map.md`
+> Welcome to the team. This guide explains how to make your first contribution
+> and the rules that apply to all changes in this repository.
 
 ---
 
-## Flujo de trabajo
+## Before you start
+
+1. Read `00-governance/README.md` — team rules
+2. Read `00-governance/git-conventions.md` — how to work with Git
+3. Make sure your local environment is set up: `10-devops/local-setup.md`
+4. Understand the system domain: `02-domain/domain-map.md`
+
+---
+
+## Workflow
 
 ```
-1. Elige una HU del sprint (estado: Ready)
-2. Crea tu rama desde develop
-3. Implementa con TDD (Red → Green → Refactor)
-4. Actualiza la documentación afectada
-5. Abre un Pull Request usando el template
-6. El PR es revisado y mergeado por el Tech Lead
+1. Pick a User Story from the sprint (status: Ready)
+2. Create your branch from develop
+3. Implement using TDD (Red → Green → Refactor)
+4. Update affected documentation
+5. Open a Pull Request using the template
+6. PR is reviewed and merged by the Tech Lead
 ```
 
-### Nomenclatura de ramas
+### Branch naming
 
 ```
-feat/HU-[servicio]-[número]-descripcion-corta
-fix/HU-[servicio]-[número]-descripcion-corta
-chore/descripcion-corta
-docs/descripcion-corta
+feat/HU-[service]-[number]-short-description
+fix/HU-[service]-[number]-short-description
+chore/short-description
+docs/short-description
 ```
 
-Ejemplos:
+Examples:
 ```
-feat/HU-AUTH-001-login-con-jwt
-fix/HU-SCHEDULING-003-solapamiento-horarios
-docs/adr-002-motor-de-bd
+feat/HU-AUTH-001-jwt-login
+fix/HU-SCHEDULING-003-schedule-overlap
+docs/adr-002-database-engine
 ```
 
 ---
 
-## Proceso de Pull Request
+## Pull Request process
 
-1. **Abre el PR** contra la rama `develop` (nunca contra `main` directamente)
-2. **Llena el template** del PR completo (`/.github/pull_request_template.md`)
-3. **Asigna revisores:** mínimo 1 (preferiblemente el Tech Lead o el dueño del servicio)
-4. **El CI debe estar verde** — no pedir review con pipeline fallido
-5. **No hagas force-push** a una rama cuyo PR ya tiene comentarios — crea commits nuevos
+1. **Open the PR** against `develop` (never directly against `main`)
+2. **Fill in the PR template** completely (`/.github/pull_request_template.md`)
+3. **Assign reviewers:** at least 1 (preferably the Tech Lead or service owner)
+4. **CI must be green** — do not request review with a failing pipeline
+5. **Do not force-push** to a branch whose PR already has comments — create new commits
 
-### Qué bloquea el merge
+### What blocks a merge
 
-- Pipeline CI fallido (lint, tests, build)
-- Menos de 1 aprobación
-- Documentación no actualizada (API, modelo de datos, dominio)
-- Cobertura de tests por debajo del mínimo (ver `11-quality/tdd-guide.md`)
+- Failing CI pipeline (lint, tests, build)
+- Fewer than 1 approval
+- Documentation not updated (API, data model, domain)
+- Test coverage below the project minimum (see `11-quality/tdd-guide.md`)
 
 ---
 
-## Estilo de código
+## Code style
 
-- Seguir la configuración de ESLint/Prettier del repo (no modificar sin ADR)
-- Conventional Commits obligatorio: `tipo(scope): descripción`
-- Un commit = una unidad lógica de cambio. No commitear "wip" o "arreglando cosas"
+- Follow the linting and formatting conventions defined in your stack guide (`_stacks/[your-stack].md`). Do not modify linter configuration without an ADR.
+- Conventional Commits are mandatory: `type(scope): description`
+- One commit = one logical unit of change. Do not commit "wip" or "fixing stuff"
 
-### Tipos de commit
+### Commit types
 
-| Tipo | Cuándo usarlo |
-|------|---------------|
-| `feat` | Nueva funcionalidad |
-| `fix` | Corrección de bug |
-| `refactor` | Mejora de código sin cambio de comportamiento |
-| `test` | Agregar o mejorar tests |
-| `docs` | Documentación únicamente |
-| `chore` | Build, CI, dependencias, config |
-| `perf` | Mejora de rendimiento |
+| Type | When to use |
+|------|-------------|
+| `feat` | New functionality |
+| `fix` | Bug fix |
+| `refactor` | Code improvement without behavior change |
+| `test` | Add or improve tests |
+| `docs` | Documentation only |
+| `chore` | Build, CI, dependencies, config |
+| `perf` | Performance improvement |
 
 ---
 
 ## TDD — Test-Driven Development
 
-**Regla del equipo:** Las HUs se implementan en modo TDD. No hay excepciones.
+**Team rule:** User Stories are implemented using TDD. No exceptions.
 
 ```
-1. Escribe el test que describe el comportamiento (RED — falla)
-2. Escribe el código mínimo para pasar el test (GREEN — pasa)
-3. Refactoriza sin romper los tests (REFACTOR)
+1. Write the test that describes the behavior (RED — fails)
+2. Write the minimum code to pass the test (GREEN — passes)
+3. Refactor without breaking tests (REFACTOR)
 ```
 
-Ver guía completa: `11-quality/tdd-guide.md`
+See full guide: `11-quality/tdd-guide.md`
 
 ---
 
-## Documentación
+## Documentation
 
-Si tu cambio:
-- Agrega/modifica un endpoint → actualiza el contrato OpenAPI
-- Cambia el modelo de datos → actualiza `data-model.md` del servicio
-- Toma una decisión de arquitectura → escribe un ADR
-- Agrega un nuevo microservicio → actualiza `service-catalog.md`
+If your change:
+- Adds/modifies an endpoint → update the OpenAPI contract
+- Changes a data model → update the service's `data-model.md`
+- Makes an architecture decision → write an ADR
+- Adds a new microservice → update `service-catalog.md`
 
 ---
 
-## ¿Preguntas?
+## Questions?
 
-- Revisa la documentación en este repo — probablemente ya está respondida
-- Pregunta en el daily o en el canal del equipo
-- Si crees que algo falta en la documentación, documéntalo tú mismo (ese es el espíritu del proyecto)
+- Check the documentation in this repo — it's probably already answered there
+- Ask in the daily stand-up or in the team channel
+- If you think something is missing from the documentation, document it yourself (that is the spirit of this project)

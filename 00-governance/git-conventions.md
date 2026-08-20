@@ -1,100 +1,100 @@
-# Convenciones de Git
+# Git Conventions
 
-> **Lee este documento antes de hacer tu primer commit en el proyecto.**
+> **Read this document before making your first commit on the project.**
 
-## Estrategia de ramas
+## Branch strategy
 
 ```
-main        ← Producción. Solo merges de release. Siempre estable.
-  └── dev   ← Integración continua. Merges de features.
-        └── feat/[descripcion]   ← Una rama por feature/HU
-        └── fix/[descripcion]    ← Una rama por bugfix
-        └── chore/[descripcion]  ← Cambios de infra, docs, dependencias
-        └── hotfix/[descripcion] ← Correcciones urgentes a main
+main        ← Production. Merge from release only. Always stable.
+  └── dev   ← Continuous integration. Merge from features.
+        └── feat/[description]    ← One branch per feature/user story
+        └── fix/[description]     ← One branch per bugfix
+        └── chore/[description]   ← Infrastructure, docs, dependency changes
+        └── hotfix/[description]  ← Urgent fixes directly to main
 ```
 
-**Reglas:**
-- Nadie hace commit directamente a `main` ni a `dev`
-- Toda tarea = una rama + un Pull Request
-- Una rama = una tarea (no mezclar features diferentes)
-- Las ramas se eliminan después del merge
+**Rules:**
+- Nobody commits directly to `main` or `dev`
+- Every task = one branch + one Pull Request
+- One branch = one task (do not mix different features)
+- Branches are deleted after merge
 
 ---
 
-## Formato de nombre de rama
+## Branch naming format
 
 ```
-[tipo]/[descripcion-en-kebab-case]
+[type]/[description-in-kebab-case]
 
-Ejemplos:
-feat/login-oauth2
-fix/calculo-horario-solapamiento
-chore/actualizar-dependencias-spring
-hotfix/token-expiracion-nula
+Examples:
+feat/oauth2-login
+fix/schedule-overlap-calculation
+chore/update-spring-dependencies
+hotfix/null-token-expiration
 ```
 
 ---
 
-## Formato de commits (Conventional Commits)
+## Commit format (Conventional Commits)
 
 ```
-[tipo]([alcance]): [descripcion en minúsculas, imperativo, sin punto final]
+[type]([scope]): [lowercase description, imperative mood, no trailing period]
 
-[cuerpo opcional - explicar el POR QUÉ, no el qué]
+[optional body — explain WHY, not what]
 
-[footer opcional - referencias a issues/HUs]
+[optional footer — issue/user story references]
 ```
 
-**Tipos:**
-| Tipo | Cuándo usarlo |
-|------|--------------|
-| `feat` | Nueva funcionalidad |
-| `fix` | Corrección de bug |
-| `docs` | Solo documentación |
-| `style` | Formato, espacios (no lógica) |
-| `refactor` | Refactoring sin cambio de comportamiento |
-| `test` | Agregar o modificar pruebas |
-| `chore` | Herramientas, dependencias, CI |
-| `perf` | Mejora de rendimiento |
+**Types:**
+| Type | When to use |
+|------|-------------|
+| `feat` | New functionality |
+| `fix` | Bug fix |
+| `docs` | Documentation only |
+| `style` | Formatting, whitespace (no logic change) |
+| `refactor` | Code refactoring without behavior change |
+| `test` | Add or modify tests |
+| `chore` | Tooling, dependencies, CI |
+| `perf` | Performance improvement |
 
-**Ejemplos:**
+**Examples:**
 ```
-feat(iam): implementar login con JWT
+feat(iam): implement JWT login
 
-fix(scheduling): corregir validación de solapamiento de horarios
+fix(scheduling): correct schedule overlap validation
 Closes #42
 
-docs(api): actualizar contrato OpenAPI del servicio de actores
+docs(api): update actor service OpenAPI contract
 
-chore(deps): actualizar Spring Boot a 3.2.0
+chore(deps): upgrade Spring Boot to 3.2.0
 ```
 
 ---
 
-## Política de Pull Requests
+## Pull Request policy
 
-- **Tamaño:** máximo 400 líneas de código (sin contar tests). Si es mayor, dividir.
-- **Revisores:** mínimo 1 aprobación antes de mergear
-- **Tiempo de revisión:** el revisor tiene máximo 24 horas hábiles
-- **Template:** usa el template en `.github/pull_request_template.md`
-- **CI verde:** el merge solo procede si todos los checks del pipeline pasan
-
----
-
-## Política de merge
-
-- Usar **Squash and Merge** para features (mantiene `dev` limpio)
-- Usar **Merge Commit** para releases a `main` (preserva el historial)
-- **No** usar Rebase & Merge (genera confusión en el historial compartido)
+- **Size:** maximum 400 lines of code (excluding tests). If larger, split it.
+- **Reviewers:** minimum 1 approval before merging
+- **Review time:** reviewer has a maximum of 24 business hours
+- **Template:** use the template at `.github/pull_request_template.md`
+- **Green CI:** merge only proceeds if all pipeline checks pass
 
 ---
 
-## Tags y versiones
+## Merge policy
 
-Seguimos [SemVer](https://semver.org/): `MAJOR.MINOR.PATCH`
+- Use **Squash and Merge** for features (keeps `dev` history clean)
+- Use **Merge Commit** for releases to `main` (preserves full history)
+- **Do not** use Rebase & Merge (creates confusion in shared history)
+
+---
+
+## Tags and versioning
+
+Follow [SemVer](https://semver.org/): `MAJOR.MINOR.PATCH`
 
 ```bash
-# Al hacer release a producción
-git tag -a v1.2.0 -m "Release v1.2.0: agregar módulo de reportes"
+# When releasing to production
+git tag -a v1.2.0 -m "Release v1.2.0: add reports module"
 git push origin v1.2.0
 ```

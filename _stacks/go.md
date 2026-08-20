@@ -1,99 +1,99 @@
 # Stack: Go
 
-> Esta guía es para equipos que construyen microservicios con **Go 1.21+**.
-> Build tool: `go` (nativo). Frameworks HTTP comunes: `net/http` nativo, Gin, Echo, Chi.
+> This guide is for teams building microservices with **Go 1.21+**.
+> Build tool: `go` (native). Common HTTP frameworks: native `net/http`, Gin, Echo, Chi.
 
 ---
 
-## Herramientas y versiones mínimas
+## Tools and minimum versions
 
-| Herramienta | Versión | Verificar con |
-|-------------|---------|--------------|
+| Tool | Version | Verify with |
+|------|---------|------------|
 | Go | 1.21+ | `go version` |
 | Docker | 24+ | `docker --version` |
 | Docker Compose | 2.20+ | `docker compose version` |
 
 ---
 
-## Estructura de carpetas del microservicio (Hexagonal)
+## Microservice folder structure (Hexagonal)
 
 ```
-nombre-servicio/
-├── internal/                        # Código interno — no exportable como librería
-│   ├── domain/                      # Sin dependencias externas — solo stdlib de Go
-│   │   ├── entity.go                # Entidades y Aggregates (structs con métodos)
-│   │   ├── value_object.go          # Value Objects (structs inmutables)
-│   │   ├── event.go                 # Domain Events (structs simples)
+service-name/
+├── internal/                        # Internal code — not exportable as a library
+│   ├── domain/                      # No external dependencies — only Go stdlib
+│   │   ├── entity.go                # Entities and Aggregates (structs with methods)
+│   │   ├── value_object.go          # Value Objects (immutable structs)
+│   │   ├── event.go                 # Domain Events (simple structs)
 │   │   └── port/
-│   │       ├── in.go                # Interfaces de Use Cases (ports primarios)
-│   │       └── out.go               # Interfaces de repositorios/servicios (ports secundarios)
+│   │       ├── in.go                # Use Case interfaces (primary ports)
+│   │       └── out.go               # Repository/service interfaces (secondary ports)
 │   │
-│   ├── application/                 # Orquesta el dominio
+│   ├── application/                 # Orchestrates the domain
 │   │   └── usecase/
-│   │       └── create_appointment.go   # implements el interface del port in
+│   │       └── create_appointment.go   # implements the port in interface
 │   │
-│   └── infrastructure/              # Adapters — aquí viven gin, pgx, kafka-go
-│       ├── http/                    # Adapter primario: HTTP
+│   └── infrastructure/              # Adapters — gin, pgx, kafka-go live here
+│       ├── http/                    # Primary adapter: HTTP
 │       │   ├── handler/
 │       │   │   └── appointment_handler.go
 │       │   └── dto/
 │       │       └── appointment_dto.go
-│       ├── postgres/                # Adapter secundario: PostgreSQL
+│       ├── postgres/                # Secondary adapter: PostgreSQL
 │       │   └── appointment_repository.go   # implements port/out.AppointmentRepository
-│       ├── kafka/                   # Adapter secundario: Kafka (si aplica)
+│       ├── kafka/                   # Secondary adapter: Kafka (if applicable)
 │       │   └── event_publisher.go
 │       └── config/
-│           └── wire.go              # Wiring manual de dependencias
+│           └── wire.go              # Manual dependency wiring
 │
 ├── cmd/
 │   └── server/
-│       └── main.go                  # Punto de entrada: configura e inicia el servidor
+│       └── main.go                  # Entry point: configures and starts the server
 │
-├── migrations/                      # Scripts SQL de migración (con golang-migrate)
+├── migrations/                      # SQL migration scripts (with golang-migrate)
 │   ├── 000001_create_appointments.up.sql
 │   └── 000001_create_appointments.down.sql
 │
 ├── go.mod
 ├── go.sum
-└── Makefile                         # Comandos de uso frecuente
+└── Makefile                         # Frequently used commands
 ```
 
-**Regla de dependencias:** El paquete `internal/domain` no importa nada de `internal/infrastructure`. La dependencia es siempre hacia adentro.
+**Dependency rule:** The `internal/domain` package does not import anything from `internal/infrastructure`. The dependency always points inward.
 
 ---
 
-## Dependencias principales (go.mod)
+## Main dependencies (go.mod)
 
 ```go
-module github.com/empresa/nombre-servicio
+module github.com/company/service-name
 
 go 1.21
 
 require (
-    // HTTP (elegir uno)
+    // HTTP (choose one)
     github.com/gin-gonic/gin v1.9.x
     // github.com/labstack/echo/v4 v4.x
     // github.com/go-chi/chi/v5 v5.x
 
-    // Validación en adapters HTTP
+    // Validation in HTTP adapters
     github.com/go-playground/validator/v10 v10.x
 
-    // Persistencia (elegir el driver del motor del proyecto)
+    // Persistence (choose the driver for the project's engine)
     github.com/jackc/pgx/v5 v5.x            // PostgreSQL
     // go.mongodb.org/mongo-driver v1.x      // MongoDB
 
-    // Migraciones
+    // Migrations
     github.com/golang-migrate/migrate/v4 v4.x
 
-    // Observabilidad
+    // Observability
     go.opentelemetry.io/otel v1.x
-    go.uber.org/zap v1.x                    // Logger estructurado
+    go.uber.org/zap v1.x                    // Structured logger
 )
 ```
 
 ---
 
-## Ejemplo: Interfaces del dominio (ports)
+## Example: Domain interfaces (ports)
 
 ```go
 // internal/domain/port/in.go
@@ -110,7 +110,7 @@ type CreateAppointmentCommand struct {
     ScheduledAt time.Time
 }
 
-// Port primario — lo implementa el Use Case
+// Primary port — implemented by the Use Case
 type AppointmentCreator interface {
     Create(ctx context.Context, cmd CreateAppointmentCommand) (string, error)
 }
@@ -122,17 +122,17 @@ package port
 
 import (
     "context"
-    "github.com/empresa/nombre-servicio/internal/domain"
+    "github.com/company/service-name/internal/domain"
 )
 
-// Port secundario — lo implementa el adapter de infraestructura
+// Secondary port — implemented by the infrastructure adapter
 type AppointmentRepository interface {
     Save(ctx context.Context, a domain.Appointment) error
     FindByID(ctx context.Context, id string) (*domain.Appointment, error)
 }
 ```
 
-## Ejemplo: Use Case (Application layer)
+## Example: Use Case (Application layer)
 
 ```go
 // internal/application/usecase/create_appointment.go
@@ -140,15 +140,15 @@ package usecase
 
 import (
     "context"
-    "github.com/empresa/nombre-servicio/internal/domain"
-    "github.com/empresa/nombre-servicio/internal/domain/port"
+    "github.com/company/service-name/internal/domain"
+    "github.com/company/service-name/internal/domain/port"
 )
 
 type createAppointmentUseCase struct {
     repo port.AppointmentRepository
 }
 
-// Constructor — recibe interfaces, no implementaciones concretas
+// Constructor — receives interfaces, not concrete implementations
 func NewCreateAppointment(repo port.AppointmentRepository) port.AppointmentCreator {
     return &createAppointmentUseCase{repo: repo}
 }
@@ -167,7 +167,7 @@ func (uc *createAppointmentUseCase) Create(ctx context.Context, cmd port.CreateA
 
 ---
 
-## Test unitario de dominio (testing nativo de Go)
+## Domain unit test (native Go testing)
 
 ```go
 // internal/domain/appointment_test.go
@@ -176,19 +176,19 @@ package domain_test
 import (
     "testing"
     "time"
-    "github.com/empresa/nombre-servicio/internal/domain"
+    "github.com/company/service-name/internal/domain"
 )
 
 func TestAppointment_RejectsPastDate(t *testing.T) {
     yesterday := time.Now().AddDate(0, 0, -1)
     _, err := domain.NewAppointment("p1", "d1", yesterday)
     if err == nil {
-        t.Fatal("se esperaba error para fecha pasada")
+        t.Fatal("expected error for past date")
     }
 }
 ```
 
-## Test de Use Case con fake repository
+## Use Case test with fake repository
 
 ```go
 // internal/application/usecase/create_appointment_test.go
@@ -198,9 +198,9 @@ import (
     "context"
     "testing"
     "time"
-    "github.com/empresa/nombre-servicio/internal/application/usecase"
-    "github.com/empresa/nombre-servicio/internal/domain/port"
-    "github.com/empresa/nombre-servicio/internal/testutil"
+    "github.com/company/service-name/internal/application/usecase"
+    "github.com/company/service-name/internal/domain/port"
+    "github.com/company/service-name/internal/testutil"
 )
 
 func TestCreateAppointment(t *testing.T) {
@@ -214,17 +214,17 @@ func TestCreateAppointment(t *testing.T) {
     })
 
     if err != nil {
-        t.Fatalf("no se esperaba error: %v", err)
+        t.Fatalf("unexpected error: %v", err)
     }
     if _, err := repo.FindByID(context.Background(), id); err != nil {
-        t.Fatalf("cita no encontrada en repositorio: %v", err)
+        t.Fatalf("appointment not found in repository: %v", err)
     }
 }
 ```
 
 ---
 
-## Makefile con comandos frecuentes
+## Makefile with frequent commands
 
 ```makefile
 .PHONY: dev test build lint migrate
@@ -257,22 +257,22 @@ migrate-down:
 
 ---
 
-## Convenciones de nombres (Go)
+## Naming conventions (Go)
 
-| Artefacto | Convención | Ejemplo |
-|-----------|-----------|---------|
-| Interfaces | `PascalCase` (sin prefijo I) | `AppointmentRepository` |
+| Artifact | Convention | Example |
+|----------|-----------|---------|
+| Interfaces | `PascalCase` (no I prefix) | `AppointmentRepository` |
 | Structs | `PascalCase` | `CreateAppointmentCommand` |
-| Archivos | `snake_case.go` | `appointment_repository.go` |
-| Variables y funciones | `camelCase` | `scheduledAt`, `findByID` |
-| Constantes | `PascalCase` (si exportadas) o `camelCase` (privadas) | `MaxAppointmentsPerDay` |
-| Paquetes | `lowercase` sin guiones | `usecase`, `persistence` |
+| Files | `snake_case.go` | `appointment_repository.go` |
+| Variables and functions | `camelCase` | `scheduledAt`, `findByID` |
+| Constants | `PascalCase` (if exported) or `camelCase` (private) | `MaxAppointmentsPerDay` |
+| Packages | `lowercase` without hyphens | `usecase`, `persistence` |
 
 ---
 
-## Correlaciones con documentos del scaffold
+## Correlations with scaffold documents
 
-- Conceptos de hexagonal → `05-architecture/hexagonal-architecture.md`
-- TDD y test doubles → `11-quality/tdd-guide.md`
-- Guía de patrones (conceptos) → `05-architecture/pattern-guide.md`
-- Setup local → `10-devops/local-setup.md`
+- Hexagonal concepts → `05-architecture/hexagonal-architecture.md`
+- TDD and test doubles → `11-quality/tdd-guide.md`
+- Pattern guide (concepts) → `05-architecture/pattern-guide.md`
+- Local setup → `10-devops/local-setup.md`

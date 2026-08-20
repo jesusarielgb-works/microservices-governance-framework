@@ -1,104 +1,104 @@
-# 08 — Diagramas UML
+# 08 — UML Diagrams
 
-> **¿Qué es esto?** Representaciones visuales del sistema. Los diagramas comunican en segundos
-> lo que tomaría páginas de texto.
+> **What is this?** Visual representations of the system. Diagrams communicate in seconds
+> what would take pages of text.
 
-## Regla de los diagramas
+## The diagram rule
 
-> **Un diagrama desactualizado es peor que ningún diagrama** — genera confianza falsa.
+> **An outdated diagram is worse than no diagram** — it generates false confidence.
 >
-> Mantén solo los diagramas que el equipo actualiza regularmente. Mejor 3 diagramas actuales
-> que 10 diagramas obsoletos.
+> Keep only the diagrams the team updates regularly. Better 3 current diagrams
+> than 10 obsolete ones.
 
 ---
 
-## Tipos de diagramas por propósito
+## Types of diagrams by purpose
 
-### Para arquitectura (recomendados)
-- **C4 — System Context (Nivel 1):** el sistema en relación con el mundo exterior
-- **C4 — Container (Nivel 2):** los microservicios, BDs y frontends del sistema
-- **C4 — Component (Nivel 3):** los componentes internos de un servicio específico
+### For architecture (recommended)
+- **C4 — System Context (Level 1):** the system in relation to the outside world
+- **C4 — Container (Level 2):** the microservices, DBs, and frontends of the system
+- **C4 — Component (Level 3):** the internal components of a specific service
 
-### Para datos
-- **ER (Entidad-Relación):** tablas y sus relaciones — uno por servicio o uno global
+### For data
+- **ER (Entity-Relationship):** tables and their relationships — one per service or one global
 
-### Para comportamiento
-- **Secuencia:** flujo temporal de una operación que cruza múltiples servicios
-- **Estado:** ciclo de vida de una entidad (ej: estados de un pedido)
-- **Actividad:** flujo de un proceso de negocio complejo
+### For behavior
+- **Sequence:** temporal flow of an operation that crosses multiple services
+- **State:** lifecycle of an entity (e.g.: states of an order)
+- **Activity:** flow of a complex business process
 
 ---
 
-## Herramientas recomendadas
+## Recommended tools
 
-### PlantUML (para diagramas en código)
+### PlantUML (for diagrams in code)
 ```plantuml
 @startuml
-actor Usuario
+actor User
 participant "API Gateway" as GW
 participant "IAM Service" as IAM
 participant "Orders Service" as Orders
 
-Usuario -> GW: POST /orders
-GW -> IAM: Validar token
-IAM --> GW: Token válido
-GW -> Orders: Crear orden
+User -> GW: POST /orders
+GW -> IAM: Validate token
+IAM --> GW: Valid token
+GW -> Orders: Create order
 Orders --> GW: 201 Created
-GW --> Usuario: 201 Created
+GW --> User: 201 Created
 @enduml
 ```
 
-### Mermaid (soportado en GitHub/GitLab)
+### Mermaid (supported on GitHub/GitLab)
 ```mermaid
 sequenceDiagram
-    Usuario->>Gateway: POST /orders
-    Gateway->>IAM: Validar token
+    User->>Gateway: POST /orders
+    Gateway->>IAM: Validate token
     IAM-->>Gateway: 200 OK
-    Gateway->>Orders: Crear orden
+    Gateway->>Orders: Create order
     Orders-->>Gateway: 201 Created
-    Gateway-->>Usuario: 201 Created
+    Gateway-->>User: 201 Created
 ```
 
 ### Draw.io / Lucidchart
-Para diagramas más complejos que requieren libre colocación. Exportar como SVG a `diagrams/exports/`.
+For more complex diagrams requiring free placement. Export as SVG to `diagrams/exports/`.
 
 ---
 
-## Estructura de carpetas
+## Folder structure
 
 ```
 08-uml/
-├── diagram-index.md          ← Registro de todos los diagramas
+├── diagram-index.md          ← Registry of all diagrams
 ├── diagrams/
-│   ├── source/               ← Archivos fuente (.puml, .drawio, .mmd)
-│   └── exports/              ← Imágenes exportadas (.svg, .png)
+│   ├── source/               ← Source files (.puml, .drawio, .mmd)
+│   └── exports/              ← Exported images (.svg, .png)
 ```
 
-**Convención de nombres:**
-- `c4-context.puml` — Diagrama C4 Nivel 1
-- `c4-containers.puml` — Diagrama C4 Nivel 2
-- `seq-login.puml` — Diagrama de secuencia del flujo de login
-- `er-iam-service.puml` — Diagrama ER del servicio IAM
-- `state-order.puml` — Diagrama de estados de una orden
+**Naming convention:**
+- `c4-context.puml` — C4 Level 1 diagram
+- `c4-containers.puml` — C4 Level 2 diagram
+- `seq-login.puml` — Sequence diagram for the login flow
+- `er-iam-service.puml` — ER diagram for the IAM service
+- `state-order.puml` — States diagram for an order
 
 ### `diagram-index.md`
-Registro de todos los diagramas con su propósito y ubicación.
+Registry of all diagrams with their purpose and location.
 
-**Formato:**
+**Format:**
 ```markdown
-| Diagrama | Tipo | Archivo fuente | Última actualización | Quién lo mantiene |
-|---------|------|----------------|---------------------|------------------|
-| Arquitectura global | C4-L2 | c4-containers.puml | 2024-03-01 | [nombre] |
-| Flujo de login | Secuencia | seq-login.puml | 2024-03-01 | [nombre] |
+| Diagram | Type | Source file | Last updated | Maintained by |
+|---------|------|-------------|--------------|--------------|
+| Global architecture | C4-L2 | c4-containers.puml | 2024-03-01 | [name] |
+| Login flow | Sequence | seq-login.puml | 2024-03-01 | [name] |
 ```
 
 ---
 
-## Correlaciones con otras secciones
+## Correlations with other sections
 
-| Se alimenta de... | Qué diagrama crear |
-|------------------|--------------------|
-| `05-architecture/overview.md` | Diagrama C4 Nivel 1 y 2 |
-| `06-data/models.md` | Diagramas ER por servicio |
-| `09-microservices/communication-patterns.md` | Diagramas de secuencia de flujos |
-| `02-domain/domain-map.md` | Diagrama de bounded contexts |
+| Fed by... | What diagram to create |
+|-----------|----------------------|
+| `05-architecture/overview.md` | C4 Level 1 and 2 diagrams |
+| `06-data/models.md` | ER diagrams per service |
+| `09-microservices/communication-patterns.md` | Sequence diagrams for flows |
+| `02-domain/domain-map.md` | Bounded contexts diagram |

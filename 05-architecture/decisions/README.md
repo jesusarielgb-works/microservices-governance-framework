@@ -1,25 +1,25 @@
 # ADRs — Architecture Decision Records
 
-Los ADRs documentan decisiones arquitectónicas importantes. Cada archivo = una decisión.
+ADRs document important architectural decisions. Each file = one decision.
 
-## Cómo crear un ADR
+## How to create an ADR
 
-1. Copia `_template-adr.md`
-2. Nómbralo `ADR-NNN-titulo-corto.md` (ej: `ADR-001-message-broker.md`)
-3. Llénalo completamente — especialmente las alternativas evaluadas
-4. Una vez aceptado, el estado es **permanente** (no se borra, se "Reemplaza" con otro ADR)
+1. Copy `_template-adr.md`
+2. Name it `ADR-NNN-short-title.md` (e.g.: `ADR-001-message-broker.md`)
+3. Fill it in completely — especially the evaluated alternatives
+4. Once accepted, the status is **permanent** (it is not deleted, it is "Superseded" by another ADR)
 
-## Estados posibles
+## Possible statuses
 
-- `Propuesto` — en discusión
-- `Aceptado` — aprobado por el equipo
-- `Rechazado` — evaluado y descartado (documentar por qué)
-- `Reemplazado` — reemplazado por ADR-NNN (indicar cuál)
+- `Proposed` — under discussion
+- `Accepted` — approved by the team
+- `Rejected` — evaluated and discarded (document why)
+- `Superseded` — superseded by ADR-NNN (indicate which one)
 
-## Registro de ADRs
+## ADR register
 
-| # | Título | Estado | Fecha |
-|---|--------|--------|-------|
-| Ninguno todavía | — | — | — |
+| # | Title | Status | Date |
+|---|-------|--------|------|
+| None yet | — | — | — |
 
-> Agrega filas aquí a medida que crees ADRs en `records/`
+> Add rows here as you create ADRs in `records/`

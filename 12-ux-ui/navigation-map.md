@@ -1,108 +1,108 @@
-# Mapa de Navegación
+# Navigation Map
 
-> Define la estructura de pantallas del sistema, cómo se conectan entre sí y qué rutas
-> existen. Es la referencia cuando frontend y backend discuten qué endpoints existen
-> o cómo llegar a una funcionalidad.
+> Defines the screen structure of the system, how screens connect to each other, and what routes
+> exist. It is the reference when frontend and backend discuss what endpoints exist
+> or how to reach a feature.
 
 ---
 
-## Estructura de rutas del frontend
+## Frontend route structure
 
-> **Instrucción:** Llena este árbol con las rutas reales de tu aplicación.
-> Usa el formato `[método] /ruta` para endpoints de API cuando corresponda.
+> **Instruction:** Fill this tree with your application's real routes.
+> Use the `[method] /route` format for API endpoints where applicable.
 
 ```
-/                           → Página de inicio / landing
+/                           → Home / landing page
 ├── /auth
-│   ├── /login              → Formulario de autenticación
-│   ├── /register           → Registro de nuevo usuario
-│   └── /forgot-password    → Recuperación de contraseña
+│   ├── /login              → Authentication form
+│   ├── /register           → New user registration
+│   └── /forgot-password    → Password recovery
 │
-├── /dashboard              → Panel principal (autenticado)
-│   ├── /overview           → Resumen y métricas clave
-│   └── /notifications      → Centro de notificaciones
+├── /dashboard              → Main panel (authenticated)
+│   ├── /overview           → Summary and key metrics
+│   └── /notifications      → Notification center
 │
-├── /[recurso-a]            → Lista de [Recurso A]
-│   ├── /new                → Formulario de creación
+├── /[resource-a]           → [Resource A] list
+│   ├── /new                → Creation form
 │   └── /:id
-│       ├── /               → Detalle del recurso
-│       └── /edit           → Formulario de edición
+│       ├── /               → Resource detail
+│       └── /edit           → Edit form
 │
-├── /[recurso-b]            → Lista de [Recurso B]
-│   └── /:id                → Detalle
+├── /[resource-b]           → [Resource B] list
+│   └── /:id                → Detail
 │
-├── /admin                  → Panel de administración (rol: ADMIN)
-│   ├── /users              → Gestión de usuarios
-│   └── /settings           → Configuración del sistema
+├── /admin                  → Administration panel (role: ADMIN)
+│   ├── /users              → User management
+│   └── /settings           → System configuration
 │
-└── /profile                → Perfil del usuario autenticado
+└── /profile                → Authenticated user's profile
 ```
 
 ---
 
-## Mapa de pantallas
+## Screen map
 
-| Pantalla | Ruta | Componente | Rol mínimo | Servicio backend |
-|----------|------|------------|------------|------------------|
-| Inicio | `/` | `HomePage` | Público | — |
-| Login | `/auth/login` | `LoginPage` | Público | auth-service |
-| Registro | `/auth/register` | `RegisterPage` | Público | auth-service |
-| Dashboard | `/dashboard` | `DashboardPage` | USER | [servicio] |
-| Lista [Recurso A] | `/[recurso-a]` | `[RecursoA]ListPage` | USER | [servicio] |
-| Detalle [Recurso A] | `/[recurso-a]/:id` | `[RecursoA]DetailPage` | USER | [servicio] |
-| Crear [Recurso A] | `/[recurso-a]/new` | `[RecursoA]FormPage` | USER | [servicio] |
-| Panel Admin | `/admin` | `AdminDashboard` | ADMIN | auth-service |
+| Screen | Route | Component | Minimum role | Backend service |
+|--------|-------|-----------|--------------|----------------|
+| Home | `/` | `HomePage` | Public | — |
+| Login | `/auth/login` | `LoginPage` | Public | auth-service |
+| Register | `/auth/register` | `RegisterPage` | Public | auth-service |
+| Dashboard | `/dashboard` | `DashboardPage` | USER | [service] |
+| [Resource A] list | `/[resource-a]` | `[ResourceA]ListPage` | USER | [service] |
+| [Resource A] detail | `/[resource-a]/:id` | `[ResourceA]DetailPage` | USER | [service] |
+| Create [Resource A] | `/[resource-a]/new` | `[ResourceA]FormPage` | USER | [service] |
+| Admin panel | `/admin` | `AdminDashboard` | ADMIN | auth-service |
 
 ---
 
-## Flujos de usuario principales
+## Main user flows
 
-### Flujo 1 — [Nombre del flujo principal]
+### Flow 1 — [Name of main flow]
 
 ```
-[Pantalla inicio]
+[Start screen]
     │
-    ▼ [Acción del usuario]
-[Pantalla 2]
+    ▼ [User action]
+[Screen 2]
     │
-    ├── [Caso exitoso] ──► [Pantalla resultado OK]
+    ├── [Successful case] ──► [OK result screen]
     │
-    └── [Caso error] ────► [Pantalla error / feedback]
+    └── [Error case] ────► [Error screen / feedback]
 ```
 
-**HUs relacionadas:** HU-[servicio]-001, HU-[servicio]-002
+**Related HUs:** HU-[service]-001, HU-[service]-002
 
-### Flujo 2 — Autenticación
+### Flow 2 — Authentication
 
 ```
 Landing (/)
     │
-    ▼ Click "Iniciar sesión"
+    ▼ Click "Sign in"
 Login (/auth/login)
     │
-    ├── Credenciales válidas ──► Dashboard (/dashboard)
+    ├── Valid credentials ──► Dashboard (/dashboard)
     │
-    └── Credenciales inválidas ► Login con mensaje de error (máx. 5 intentos)
+    └── Invalid credentials ► Login with error message (max. 5 attempts)
 ```
 
-**HUs relacionadas:** HU-AUTH-001, HU-AUTH-002
+**Related HUs:** HU-AUTH-001, HU-AUTH-002
 
 ---
 
-## Reglas de navegación
+## Navigation rules
 
-| Regla | Descripción |
-|-------|-------------|
-| Autenticación | Rutas bajo `/dashboard`, `/[recurso]`, `/admin` redirigen a `/auth/login` si no hay sesión |
-| Autorización | Rutas bajo `/admin` redirigen a `/dashboard` si el usuario no tiene rol ADMIN |
-| 404 | Rutas no definidas muestran la pantalla de 404 con link al dashboard |
-| Confirmación | Acciones destructivas (borrar, cancelar) muestran diálogo de confirmación antes de ejecutar |
+| Rule | Description |
+|------|-------------|
+| Authentication | Routes under `/dashboard`, `/[resource]`, `/admin` redirect to `/auth/login` if no session |
+| Authorization | Routes under `/admin` redirect to `/dashboard` if the user does not have ADMIN role |
+| 404 | Undefined routes show the 404 screen with a link to dashboard |
+| Confirmation | Destructive actions (delete, cancel) show a confirmation dialog before executing |
 
 ---
 
-## Correlaciones
+## Correlations
 
-- Design system (componentes visuales) → `12-ux-ui/design-system.md`
-- Wireframes → `12-ux-ui/wireframes/` (si aplica)
-- Contratos API del frontend → `07-api/contracts/openapi/`
-- Roles y permisos → `00-governance/security-policy.md`
+- Design system (visual components) → `12-ux-ui/design-system.md`
+- Wireframes → `12-ux-ui/wireframes/` (if applicable)
+- Frontend API contracts → `07-api/contracts/openapi/`
+- Roles and permissions → `00-governance/security-policy.md`

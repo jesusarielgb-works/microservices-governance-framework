@@ -1,132 +1,132 @@
-# Registro de Riesgos
+# Risk Register
 
-> Los riesgos no mitigados se convierten en problemas. Este registro permite al equipo
-> anticiparse, no solo reaccionar.
-> Revisa y actualiza en cada retrospectiva o cuando haya un cambio importante en el proyecto.
+> Unmitigated risks become problems. This register allows the team to
+> anticipate, not just react.
+> Review and update at each retrospective or when there is a significant project change.
 
 ---
 
-## Matriz de probabilidad × impacto
+## Probability × impact matrix
 
 ```
-IMPACTO
+IMPACT
   │
-  │ ALTO  │  [Mitigar]   │  [Evitar]     │
-  │       │  Probabilidad│  Probabilidad │
-  │       │  Baja        │  Alta         │
+  │ HIGH  │  [Mitigate]    │  [Avoid]       │
+  │       │  Low           │  High          │
+  │       │  Probability   │  Probability   │
   │───────────────────────────────────────
-  │ MEDIO │  [Aceptar]   │  [Mitigar]    │
-  │       │  con monitoreo│              │
+  │ MEDIUM│  [Accept]      │  [Mitigate]    │
+  │       │  with monitoring│              │
   │───────────────────────────────────────
-  │ BAJO  │  [Aceptar]   │  [Aceptar]    │
-  │       │              │               │
+  │ LOW   │  [Accept]      │  [Accept]      │
+  │       │                │               │
   └───────────────────────────────────────
-             BAJA          ALTA
-                     PROBABILIDAD
+              LOW              HIGH
+                      PROBABILITY
 ```
 
-**Estrategias de respuesta:**
-- **Evitar:** Cambiar el plan para que el riesgo no pueda materializarse
-- **Mitigar:** Reducir la probabilidad o el impacto
-- **Transferir:** Pasar el riesgo a otro (seguro, proveedor, contrato)
-- **Aceptar:** Reconocer el riesgo y tener un plan de contingencia
+**Response strategies:**
+- **Avoid:** Change the plan so the risk cannot materialize
+- **Mitigate:** Reduce the probability or impact
+- **Transfer:** Pass the risk to another party (insurance, provider, contract)
+- **Accept:** Acknowledge the risk and have a contingency plan
 
 ---
 
-## Registro de riesgos activos
+## Active risk register
 
-### R-001 — [Nombre del riesgo]
+### R-001 — [Risk name]
 
-| Campo | Valor |
+| Field | Value |
 |-------|-------|
 | **ID** | R-001 |
-| **Categoría** | [Técnico / De negocio / De equipo / Externo] |
-| **Descripción** | [Qué podría salir mal] |
-| **Probabilidad** | [Alta / Media / Baja] |
-| **Impacto** | [Alto / Medio / Bajo] |
-| **Nivel de riesgo** | [Crítico / Alto / Medio / Bajo] |
-| **Estrategia** | [Mitigar / Evitar / Transferir / Aceptar] |
-| **Plan de mitigación** | [Qué hacemos para reducir probabilidad o impacto] |
-| **Plan de contingencia** | [Qué hacemos si el riesgo se materializa] |
-| **Disparador** | [Señal de alerta de que el riesgo está por ocurrir] |
-| **Dueño** | [Nombre del responsable de monitorear este riesgo] |
-| **Fecha de revisión** | [fecha] |
-| **Estado** | [Activo / Mitigado / Ocurrido / Cerrado] |
+| **Category** | [Technical / Business / Team / External] |
+| **Description** | [What could go wrong] |
+| **Probability** | [High / Medium / Low] |
+| **Impact** | [High / Medium / Low] |
+| **Risk level** | [Critical / High / Medium / Low] |
+| **Strategy** | [Mitigate / Avoid / Transfer / Accept] |
+| **Mitigation plan** | [What we do to reduce probability or impact] |
+| **Contingency plan** | [What we do if the risk materializes] |
+| **Trigger** | [Warning signal that the risk is about to occur] |
+| **Owner** | [Name of the person responsible for monitoring this risk] |
+| **Review date** | [date] |
+| **Status** | [Active / Mitigated / Occurred / Closed] |
 
 ---
 
-### R-002 — [Nombre del riesgo]
+### R-002 — [Risk name]
 
-| Campo | Valor |
+| Field | Value |
 |-------|-------|
 | **ID** | R-002 |
-| **Categoría** | [Técnico] |
-| **Descripción** | [Ej: La dependencia X puede no estar disponible para la fecha de integración] |
-| **Probabilidad** | [Media] |
-| **Impacto** | [Alto] |
-| **Nivel de riesgo** | [Alto] |
-| **Estrategia** | [Mitigar] |
-| **Plan de mitigación** | [Iniciar conversación con proveedor 6 semanas antes; diseñar mock/stub por si acaso] |
-| **Plan de contingencia** | [Desarrollar con mock, lanzar sin la integración, agregarla en la siguiente iteración] |
-| **Disparador** | [No hay respuesta del proveedor en 2 semanas] |
-| **Dueño** | [Nombre] |
-| **Fecha de revisión** | [fecha] |
-| **Estado** | [Activo] |
+| **Category** | [Technical] |
+| **Description** | [E.g.: Dependency X may not be available by the integration date] |
+| **Probability** | [Medium] |
+| **Impact** | [High] |
+| **Risk level** | [High] |
+| **Strategy** | [Mitigate] |
+| **Mitigation plan** | [Start conversation with provider 6 weeks ahead; design mock/stub just in case] |
+| **Contingency plan** | [Develop with mock, launch without the integration, add it in the next iteration] |
+| **Trigger** | [No response from provider in 2 weeks] |
+| **Owner** | [Name] |
+| **Review date** | [date] |
+| **Status** | [Active] |
 
 ---
 
-## Riesgos técnicos comunes en microservicios
+## Common technical risks in microservices
 
-Estos riesgos aplican a casi todos los proyectos de microservicios. Evalúa cuáles aplican:
+These risks apply to almost all microservices projects. Evaluate which ones apply:
 
-| Riesgo | Probabilidad típica | Mitigación estándar |
-|--------|--------------------|--------------------|
-| Cascada de fallos (un servicio caído tumba todo) | Media | Circuit Breaker, timeout, fallback |
-| Inconsistencia de datos entre servicios | Alta | Saga, Outbox, eventos idempotentes |
-| Latencia de red en llamadas síncronas | Alta | gRPC, cache, async donde sea posible |
-| Mensajes perdidos en el broker | Media | At-least-once + consumidores idempotentes |
-| Schema evolution rompe consumidores | Alta | Versionar eventos, cambios compatibles first |
-| Acumulación de deuda técnica | Alta | DoD con cobertura mínima, reviews regulares |
-| Over-engineering prematuro | Media | Start simple, YAGNI, medir antes de optimizar |
-| Exposición de datos sensibles en logs | Media | Logging policy, PII masking, SAST |
-| Drift de configuración entre ambientes | Alta | Infrastructure as Code, variables de ambiente |
-
----
-
-## Riesgos cerrados / Lecciones aprendidas
-
-| ID | Riesgo | Resultado | Lección |
-|----|--------|-----------|---------|
-| R-00X | [nombre] | [Ocurrió / No ocurrió] | [Qué aprendimos] |
+| Risk | Typical probability | Standard mitigation |
+|------|--------------------|--------------------|
+| Failure cascade (one service down brings everything down) | Medium | Circuit Breaker, timeout, fallback |
+| Data inconsistency between services | High | Saga, Outbox, idempotent events |
+| Network latency in synchronous calls | High | gRPC, cache, async where possible |
+| Lost messages in the broker | Medium | At-least-once + idempotent consumers |
+| Schema evolution breaks consumers | High | Version events, compatible changes first |
+| Technical debt accumulation | High | DoD with minimum coverage, regular reviews |
+| Premature over-engineering | Medium | Start simple, YAGNI, measure before optimizing |
+| Sensitive data exposure in logs | Medium | Logging policy, PII masking, SAST |
+| Configuration drift between environments | High | Infrastructure as Code, environment variables |
 
 ---
 
-## Plantilla para agregar un nuevo riesgo
+## Closed risks / Lessons learned
+
+| ID | Risk | Outcome | Lesson |
+|----|------|---------|--------|
+| R-00X | [name] | [Occurred / Did not occur] | [What we learned] |
+
+---
+
+## Template for adding a new risk
 
 ```markdown
-### R-00X — [Nombre]
+### R-00X — [Name]
 
-| Campo | Valor |
+| Field | Value |
 |-------|-------|
 | **ID** | R-00X |
-| **Categoría** | |
-| **Descripción** | |
-| **Probabilidad** | |
-| **Impacto** | |
-| **Nivel de riesgo** | |
-| **Estrategia** | |
-| **Plan de mitigación** | |
-| **Plan de contingencia** | |
-| **Disparador** | |
-| **Dueño** | |
-| **Fecha de revisión** | |
-| **Estado** | Activo |
+| **Category** | |
+| **Description** | |
+| **Probability** | |
+| **Impact** | |
+| **Risk level** | |
+| **Strategy** | |
+| **Mitigation plan** | |
+| **Contingency plan** | |
+| **Trigger** | |
+| **Owner** | |
+| **Review date** | |
+| **Status** | Active |
 ```
 
 ---
 
-## Correlaciones
+## Correlations
 
-- Dependencias externas → `15-project-control/dependencies.md`
-- Preguntas abiertas relacionadas → `15-project-control/open-questions.md`
-- Decisiones arquitectónicas que mitigaron riesgos → `05-architecture/decisions/`
+- External dependencies → `15-project-control/dependencies.md`
+- Related open questions → `15-project-control/open-questions.md`
+- Architectural decisions that mitigated risks → `05-architecture/decisions/`

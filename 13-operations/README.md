@@ -1,94 +1,94 @@
-# 13 — Operaciones
+# 13 — Operations
 
-> **¿Qué es esto?** Cómo se opera el sistema en producción: cómo se detectan problemas,
-> cómo se responde a incidentes y cómo se garantizan los compromisos de disponibilidad.
+> **What is this?** How the system is operated in production: how problems are detected,
+> how incidents are responded to, and how availability commitments are guaranteed.
 
-## Por qué existe esta sección
+## Why this section exists
 
-Un sistema que "funciona" en staging pero es imposible de operar en producción no sirve.
-Las preguntas clave de operaciones son:
-- ¿Sabemos cuándo algo falla ANTES de que los usuarios llamen?
-- ¿Sabemos exactamente qué hacer cuando algo falla a las 3am?
-- ¿Tenemos compromisos formales de disponibilidad?
-
----
-
-## Conceptos clave: SLA, SLO, SLI
-
-**SLI (Service Level Indicator):** métrica que mides — ej: porcentaje de solicitudes exitosas.
-
-**SLO (Service Level Objective):** el objetivo para ese SLI — ej: "99.9% de solicitudes exitosas en 30 días".
-
-**SLA (Service Level Agreement):** el contrato con el cliente sobre esos objetivos, con consecuencias.
-
-**Error Budget:** cuánto puedes "fallar" dentro del SLO. Si el SLO es 99.9%, tienes 43.8 minutos/mes de downtime disponible.
+A system that "works" in staging but is impossible to operate in production is useless.
+The key operations questions are:
+- Do we know when something fails BEFORE users call?
+- Do we know exactly what to do when something fails at 3am?
+- Do we have formal availability commitments?
 
 ---
 
-## Qué hay aquí y cómo llenarlo
+## Key concepts: SLA, SLO, SLI
+
+**SLI (Service Level Indicator):** the metric you measure — e.g.: percentage of successful requests.
+
+**SLO (Service Level Objective):** the target for that SLI — e.g.: "99.9% of successful requests in 30 days".
+
+**SLA (Service Level Agreement):** the contract with the customer about those targets, with consequences.
+
+**Error Budget:** how much you can "fail" within the SLO. If the SLO is 99.9%, you have 43.8 minutes/month of available downtime.
+
+---
+
+## What is here and how to fill it in
 
 ### `observability.md` ⭐
-Cómo el sistema hace visible su estado interno.
-**Los 3 pilares de observabilidad:**
-- **Logs:** qué registra cada servicio, en qué formato (JSON estructurado recomendado), dónde van
-- **Métricas:** qué mide cada servicio (latencia, error rate, throughput), con qué herramienta (Prometheus)
-- **Trazas:** cómo se rastrea una solicitud que pasa por múltiples servicios (OpenTelemetry, Jaeger)
+How the system makes its internal state visible.
+**The 3 pillars of observability:**
+- **Logs:** what each service records, in what format (structured JSON recommended), where they go
+- **Metrics:** what each service measures (latency, error rate, throughput), with what tool (Prometheus)
+- **Traces:** how a request that passes through multiple services is tracked (OpenTelemetry, Jaeger)
 
-**Llena:**
+**Fill in:**
 ```markdown
 ## Logs
-- Formato: JSON estructurado con campos: timestamp, service, level, traceId, message, [datos contextuales]
-- Herramienta: [ELK Stack / Loki + Grafana / CloudWatch]
-- Retención: [30 días en caliente, 1 año en frío]
+- Format: structured JSON with fields: timestamp, service, level, traceId, message, [contextual data]
+- Tool: [ELK Stack / Loki + Grafana / CloudWatch]
+- Retention: [30 days hot, 1 year cold]
 
-## Métricas
-- Herramienta: Prometheus + Grafana
-- Dashboard principal: [URL]
-- Métricas obligatorias por servicio:
-  - http_request_duration_seconds (histograma)
-  - http_requests_total (contador por status code)
-  - [métricas de negocio específicas]
+## Metrics
+- Tool: Prometheus + Grafana
+- Main dashboard: [URL]
+- Required metrics per service:
+  - http_request_duration_seconds (histogram)
+  - http_requests_total (counter by status code)
+  - [specific business metrics]
 
-## Trazas distribuidas
-- Herramienta: OpenTelemetry + Jaeger
-- Cómo propagar el traceId entre servicios: header X-Trace-Id
+## Distributed traces
+- Tool: OpenTelemetry + Jaeger
+- How to propagate traceId between services: X-Trace-Id header
 ```
 
 ### `incident-management.md` ⭐
-Proceso de respuesta a incidentes.
-**Llena:** cómo se clasifica la severidad (P0/P1/P2/P3), quién responde, canal de comunicación,
-cuándo escalar, proceso de post-mortem.
+Incident response process.
+**Fill in:** how severity is classified (P0/P1/P2/P3), who responds, communication channel,
+when to escalate, post-mortem process.
 
-**Severidades:**
+**Severities:**
 ```markdown
-| Nivel | Descripción | SLA de respuesta | SLA de resolución |
-|-------|-------------|-----------------|-------------------|
-| P0 | Sistema caído completamente | 5 min | 1 hora |
-| P1 | Funcionalidad crítica degradada | 15 min | 4 horas |
-| P2 | Funcionalidad no crítica afectada | 1 hora | 24 horas |
-| P3 | Problema menor, workaround disponible | 4 horas | 1 semana |
+| Level | Description | Response SLA | Resolution SLA |
+|-------|-------------|-------------|----------------|
+| P0 | System completely down | 5 min | 1 hour |
+| P1 | Critical functionality degraded | 15 min | 4 hours |
+| P2 | Non-critical functionality affected | 1 hour | 24 hours |
+| P3 | Minor issue, workaround available | 4 hours | 1 week |
 ```
 
 ### `backup-and-recovery.md`
-Estrategia de respaldo y recuperación de datos.
-**Llena:** frecuencia de backups, dónde se almacenan, cómo se prueban, tiempo objetivo de recuperación (RTO/RPO).
+Data backup and recovery strategy.
+**Fill in:** backup frequency, where they are stored, how they are tested, target recovery time (RTO/RPO).
 
 ---
 
-## Correlaciones con otras secciones
+## Correlations with other sections
 
-| Esta sección se alimenta de... | Y alimenta a... |
-|-------------------------------|-----------------|
-| `09-microservices/[servicio]/runbook.md` | Runbooks específicos consolidados aquí |
-| `05-architecture/overview.md` | Qué monitorear en cada servicio |
-| `10-devops/environments.md` | Configuración de alertas por ambiente |
-| Incidentes documentados aquí | `15-project-control/technical-backlog.md` → mejoras post-incidente |
+| This section is fed by... | And feeds into... |
+|---------------------------|-------------------|
+| `09-microservices/[service]/runbook.md` | Specific runbooks consolidated here |
+| `05-architecture/overview.md` | What to monitor in each service |
+| `10-devops/environments.md` | Alert configuration per environment |
+| Incidents documented here | `15-project-control/technical-backlog.md` → post-incident improvements |
 
 ---
 
-## Preguntas que esta sección debe responder
+## Questions this section must answer
 
-- ¿Cómo sabemos que el sistema falla antes de que los usuarios lo reporten?
-- ¿Qué hacemos exactamente cuando falla el servicio X a las 3am?
-- ¿Cuánto downtime podemos tener mensualmente?
-- ¿Cómo recuperamos los datos si la BD falla?
+- How do we know the system is failing before users report it?
+- What exactly do we do when service X fails at 3am?
+- How much downtime can we have per month?
+- How do we recover data if the DB fails?

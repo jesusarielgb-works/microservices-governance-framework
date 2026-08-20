@@ -1,113 +1,113 @@
-# 05 — Arquitectura
+# 05 — Architecture
 
-> **¿Qué es esto?** Las decisiones de diseño del sistema: cómo está organizado, por qué,
-> qué alternativas se evaluaron, y cómo se despliega. Las ADRs son el tesoro de esta sección.
+> **What is this?** The system's design decisions: how it is organized, why,
+> what alternatives were evaluated, and how it is deployed. ADRs are the treasure of this section.
 
-## Por qué existe esta sección
+## Why this section exists
 
-La arquitectura de un sistema es el conjunto de decisiones que son difíciles de cambiar después.
-Documentarlas tiene tres beneficios:
-1. **Nuevos integrantes** entienden el sistema sin preguntar todo desde cero
-2. **El equipo** no repite discusiones ya resueltas
-3. **Años después**, todos recuerdan por qué se tomó cada decisión
+A system's architecture is the set of decisions that are hard to change later.
+Documenting them has three benefits:
+1. **New team members** understand the system without having to ask everything from scratch
+2. **The team** does not repeat already-resolved discussions
+3. **Years later**, everyone remembers why each decision was made
 
 ---
 
-## Qué hay aquí y cómo llenarlo
+## What is here and how to fill it in
 
-### `overview.md` ⭐ (Empezar aquí)
-Vista de alto nivel del sistema completo.
-**Llena:** diagrama C4 Nivel 1 (System) y Nivel 2 (Container), lista de microservicios con
-responsabilidad de cada uno, cómo se comunican (sync/async), tecnologías por capa.
+### `overview.md` ⭐ (Start here)
+High-level view of the complete system.
+**Fill in:** C4 Level 1 (System) and Level 2 (Container) diagram, list of microservices with
+each one's responsibility, how they communicate (sync/async), technologies per layer.
 
-**Formato recomendado:**
+**Recommended format:**
 ```markdown
-## Diagrama de arquitectura
-[Diagrama ASCII, Mermaid, o referencia a imagen en assets/]
+## Architecture diagram
+[ASCII diagram, Mermaid, or reference to image in assets/]
 
-## Microservicios
-| Servicio | Responsabilidad | Tecnología | BD |
-|---------|-----------------|------------|-----|
-| [nombre] | [qué hace] | [stack] | [motor] |
+## Microservices
+| Service | Responsibility | Technology | DB |
+|---------|--------------|------------|-----|
+| [name] | [what it does] | [stack] | [engine] |
 
-## Patrones de comunicación
-- Sync: [qué usa REST entre qué servicios]
-- Async: [qué usa eventos/mensajes entre qué servicios]
-- Gateway: [cómo llegan las peticiones del exterior]
+## Communication patterns
+- Sync: [what uses REST between which services]
+- Async: [what uses events/messages between which services]
+- Gateway: [how external requests arrive]
 ```
 
 ### `deployment.md` ⭐
-Cómo se despliega el sistema en cada ambiente.
-**Llena:** diagrama de infraestructura, qué va en Docker/K8s, configuración de red, requisitos de hardware.
+How the system is deployed in each environment.
+**Fill in:** infrastructure diagram, what goes in Docker/K8s, network configuration, hardware requirements.
 
 ### `cross-cutting.md`
-Concerns que aplican a todos los microservicios.
-**Llena:** logging estándar, tracing distribuido, configuración centralizada, feature flags,
-manejo de errores, retry policies.
+Concerns that apply to all microservices.
+**Fill in:** standard logging, distributed tracing, centralized configuration, feature flags,
+error handling, retry policies.
 
 ### `pattern-guide.md`
-Catálogo de patrones de diseño usados en el proyecto.
-**Llena:** por cada patrón: nombre, cuándo usarlo, cuándo NO usarlo, ejemplo concreto del proyecto.
+Catalog of design patterns used in the project.
+**Fill in:** for each pattern: name, when to use it, when NOT to use it, concrete example from the project.
 
 ### `security-threat-model.md`
-Análisis de amenazas de seguridad del sistema.
-**Llena:** usando metodología STRIDE: Spoofing, Tampering, Repudiation, Information Disclosure,
-Denial of Service, Elevation of Privilege. Para cada amenaza: mitigación implementada.
+Security threat analysis of the system.
+**Fill in:** using the STRIDE methodology: Spoofing, Tampering, Repudiation, Information Disclosure,
+Denial of Service, Elevation of Privilege. For each threat: implemented mitigation.
 
 ### `decisions/` ⭐⭐ — Architecture Decision Records (ADRs)
 
-#### ¿Qué es un ADR?
-Un registro de UNA decisión arquitectónica importante: qué se decidió, por qué, qué alternativas
-se evaluaron y cuáles son las consecuencias. Son **documentos cortos** (1-2 páginas).
+#### What is an ADR?
+A record of ONE important architectural decision: what was decided, why, what alternatives
+were evaluated, and what the consequences are. They are **short documents** (1-2 pages).
 
-**Cuándo crear un ADR:**
-- Al elegir un message broker (RabbitMQ vs Kafka vs Redis Streams)
-- Al decidir la estrategia de base de datos (una por servicio vs compartida)
-- Al elegir patrón de comunicación (REST vs gRPC vs eventos)
-- Al elegir librería de autenticación
-- Cualquier decisión que si cambia, requiere refactoring significativo
+**When to create an ADR:**
+- When choosing a message broker (RabbitMQ vs Kafka vs Redis Streams)
+- When deciding the database strategy (one per service vs shared)
+- When choosing a communication pattern (REST vs gRPC vs events)
+- When choosing an authentication library
+- Any decision that, if changed, requires significant refactoring
 
-**Cuándo NO crear un ADR:**
-- Decisiones operativas del día a día
-- Cosas que se pueden cambiar fácilmente sin impacto sistémico
+**When NOT to create an ADR:**
+- Day-to-day operational decisions
+- Things that can be changed easily without systemic impact
 
-**Usa `decisions/_template-adr.md`**
+**Use `decisions/_template-adr.md`**
 
-**Ejemplo de ADRs típicos:**
+**Typical ADR examples:**
 ```
-ADR-001-message-broker.md       → Por qué RabbitMQ y no Kafka
-ADR-002-auth-strategy.md        → Por qué JWT y no sessions
-ADR-003-database-per-service.md → Por qué BD separada por servicio
-ADR-004-api-gateway.md          → Por qué Kong y no NGINX custom
+ADR-001-documentation-language.md  → Why English for all documentation
+ADR-002-auth-strategy.md           → Why JWT and not sessions
+ADR-003-database-per-service.md    → Why separate DB per service
+ADR-004-api-gateway.md             → Why Kong and not custom NGINX
 ```
 
 ---
 
-## Correlaciones con otras secciones
+## Correlations with other sections
 
-| Esta sección se alimenta de... | Y alimenta a... |
-|-------------------------------|-----------------|
-| `02-domain/domain-map.md` → bounded contexts | `09-microservices/` → un servicio por contexto |
-| `04-requirements/non-functional.md` → RNFs | Decisiones sobre tecnología y escala |
-| ADRs elegidos aquí | `09-microservices/` implementan los patrones decididos |
+| This section is fed by... | And feeds... |
+|--------------------------|-------------|
+| `02-domain/domain-map.md` → bounded contexts | `09-microservices/` → one service per context |
+| `04-requirements/non-functional.md` → NFRs | Decisions about technology and scale |
+| ADRs chosen here | `09-microservices/` implements the decided patterns |
 | `deployment.md` | `10-devops/environments.md` |
 
 ---
 
-## Los 5 errores de arquitectura más comunes
+## The 5 most common architecture mistakes
 
-1. **Microservicios demasiado pequeños** — Si un "servicio" no puede existir de forma independiente, no es un microservicio.
-2. **Base de datos compartida** — Destruye la independencia de los servicios. Cada servicio, su propia BD.
-3. **Comunicación solo sincrónica** — Para operaciones no urgentes, los eventos asíncronos escalan mejor.
-4. **Sin API Gateway** — Exponer microservicios directamente al frontend genera acoplamiento.
-5. **Sin decisiones documentadas** — En 6 meses nadie recuerda por qué se eligió X.
+1. **Microservices too small** — If a "service" cannot exist independently, it is not a microservice.
+2. **Shared database** — Destroys service independence. Each service, its own DB.
+3. **Only synchronous communication** — For non-urgent operations, async events scale better.
+4. **No API Gateway** — Exposing microservices directly to the frontend creates coupling.
+5. **No documented decisions** — In 6 months nobody remembers why X was chosen.
 
 ---
 
-## Preguntas que esta sección debe responder
+## Questions this section must answer
 
-- ¿Cómo está organizado el sistema en grandes bloques?
-- ¿Por qué se eligió cada tecnología clave?
-- ¿Qué alternativas se evaluaron y por qué se descartaron?
-- ¿Cómo se despliega el sistema?
-- ¿Qué patrones aplica el equipo y cómo?
+- How is the system organized into large blocks?
+- Why was each key technology chosen?
+- What alternatives were evaluated and why were they discarded?
+- How is the system deployed?
+- What patterns does the team apply and how?

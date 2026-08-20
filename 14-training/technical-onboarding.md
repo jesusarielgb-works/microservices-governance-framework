@@ -1,179 +1,179 @@
-# Onboarding Técnico
+# Technical Onboarding
 
-> Bienvenido al equipo. Este documento es tu guía de los primeros días.
-> Objetivo: puedes hacer tu primer commit en 3 días.
-> Si algo en este documento no está claro o está desactualizado, corrígelo tú mismo — ese es tu primer aporte.
-
----
-
-## Día 1 — Setup y contexto
-
-### Mañana: Accesos y ambiente
-
-- [ ] Recibes acceso al repositorio (confirma con el Tech Lead)
-- [ ] Recibes acceso a Slack / Teams (canal del equipo: `#[nombre-canal]`)
-- [ ] Recibes acceso a Jira / Linear / GitHub Projects
-- [ ] Configura tu entorno local siguiendo `10-devops/local-setup.md`
-- [ ] Verifica que `curl http://localhost:8080/health` responde `{"status": "ok"}`
-
-### Tarde: Leer documentación core
-
-Lee en este orden — se construye sobre sí mismo:
-
-1. `00-sdd-guide.md` — Cómo trabaja el equipo (30 min)
-2. `01-context/overview.md` — Qué construimos (20 min)
-3. `02-domain/domain-map.md` — El dominio del negocio (30 min)
-4. `05-architecture/overview.md` — Cómo está construido (30 min)
-5. `00-governance/git-conventions.md` — Cómo manejamos el código (20 min)
-
-### Reuniones del Día 1
-
-- [ ] Meet & greet con el equipo
-- [ ] 1:1 con el Tech Lead (30 min) — contexto del proyecto y tus responsabilidades
-- [ ] Demo del producto (si hay una grabación, mírala antes)
+> Welcome to the team. This document is your guide for the first days.
+> Goal: you can make your first commit in 3 days.
+> If anything in this document is unclear or outdated, fix it yourself — that is your first contribution.
 
 ---
 
-## Día 2 — Entender el dominio
+## Day 1 — Setup and context
 
-### Leer documentación de dominio y requisitos
+### Morning: Access and environment
 
-- [ ] `02-domain/entities-and-rules.md` — Las entidades y reglas de negocio
-- [ ] `02-domain/domain-events.md` — Los eventos del sistema
-- [ ] `04-requirements/user-stories.md` — Las HUs del sprint actual
-- [ ] `01-context/glossary.md` — Los términos del proyecto
+- [ ] Get access to the repository (confirm with the Tech Lead)
+- [ ] Get access to Slack / Teams (team channel: `#[channel-name]`)
+- [ ] Get access to Jira / Linear / GitHub Projects
+- [ ] Configure your local environment following `10-devops/local-setup.md`
+- [ ] Verify that `curl http://localhost:8080/health` responds `{"status": "ok"}`
 
-### Explorar el código
+### Afternoon: Read core documentation
 
-- [ ] Clona el repositorio del servicio con el que trabajarás
-- [ ] Lee el `09-microservices/services/[tu-servicio]/README.md`
-- [ ] Sigue la estructura de carpetas — debe coincidir con `05-architecture/hexagonal-architecture.md`
-- [ ] Ejecuta los tests: `npm run test:unit` — todos deben estar en verde
-- [ ] Ejecuta el servicio en local y prueba los endpoints principales
+Read in this order — each builds on the previous:
 
-### Reunión del Día 2
+1. `00-sdd-guide.md` — How the team works (30 min)
+2. `01-context/overview.md` — What we are building (20 min)
+3. `02-domain/domain-map.md` — The business domain (30 min)
+4. `05-architecture/overview.md` — How it is built (30 min)
+5. `00-governance/git-conventions.md` — How we manage code (20 min)
 
-- [ ] Sesión de domain walkthrough con el Tech Lead o un senior (1 hora)
-  - Pide que te expliquen el flujo de negocio principal
-  - Toma notas de términos que no conozcas — agrégalos al glosario
+### Day 1 meetings
 
----
-
-## Día 3 — Primera contribución
-
-### Tu primera tarea
-
-El Tech Lead te asignará una tarea pequeña etiquetada `good-first-issue`:
-- Debe ser una corrección de bug pequeña o una mejora de documentación
-- El objetivo es aprender el flujo de trabajo, no la complejidad de la tarea
-
-### Flujo de trabajo TDD para tu primera tarea
-
-1. Lee el ticket y los criterios de aceptación
-2. Escribe el test que verifica el criterio (`🔴 RED`)
-3. Implementa el código mínimo para que el test pase (`🟢 GREEN`)
-4. Refactoriza si es necesario (`♻️ REFACTOR`)
-5. Crea el PR siguiendo las convenciones de `00-governance/git-conventions.md`
-
-### Checklist antes de abrir el PR
-
-- [ ] `npm run test:unit` pasa (verde)
-- [ ] `npm run lint` pasa (0 errores)
-- [ ] El título del commit sigue `tipo(scope): descripción`
-- [ ] La branch se llama `feat/HU-XXX-descripcion` o `fix/BUG-XXX-descripcion`
+- [ ] Meet & greet with the team
+- [ ] 1:1 with the Tech Lead (30 min) — project context and your responsibilities
+- [ ] Product demo (if there is a recording, watch it beforehand)
 
 ---
 
-## Semana 1 — Profundizar
+## Day 2 — Understand the domain
 
-| Día | Actividad |
-|-----|-----------|
-| 4 | Revisión de código (participa en el code review del equipo — observa primero) |
-| 5 | Participa en el Daily Standup con algo concreto que reportar |
-| 5 | Lee `05-architecture/pattern-guide.md` — los patrones que usamos |
-| 5 | Lee `11-quality/tdd-guide.md` y `11-quality/testing-strategy.md` completos |
+### Read domain and requirements documentation
+
+- [ ] `02-domain/entities-and-rules.md` — Entities and business rules
+- [ ] `02-domain/domain-events.md` — System events
+- [ ] `04-requirements/user-stories.md` — HUs for the current sprint
+- [ ] `01-context/glossary.md` — Project terms
+
+### Explore the code
+
+- [ ] Clone the repository for the service you will work on
+- [ ] Read `09-microservices/services/[your-service]/README.md`
+- [ ] Follow the folder structure — it should match `05-architecture/hexagonal-architecture.md`
+- [ ] Run the tests: `npm run test:unit` — all must be green
+- [ ] Run the service locally and test the main endpoints
+
+### Day 2 meeting
+
+- [ ] Domain walkthrough session with the Tech Lead or a senior developer (1 hour)
+  - Ask them to explain the main business flow
+  - Take notes on terms you do not know — add them to the glossary
 
 ---
 
-## Semana 2 — Independencia guiada
+## Day 3 — First contribution
 
-- [ ] Completa tu primera HU de forma independiente
-- [ ] Participa activamente en un code review
-- [ ] Lee `07-api/README.md` y entiende un contrato OpenAPI de un servicio que usas
-- [ ] Participa en la Retrospectiva del sprint
+### Your first task
+
+The Tech Lead will assign you a small task labeled `good-first-issue`:
+- It should be a small bug fix or documentation improvement
+- The goal is to learn the workflow, not the complexity of the task
+
+### TDD workflow for your first task
+
+1. Read the ticket and the acceptance criteria
+2. Write the test that verifies the criterion (`🔴 RED`)
+3. Implement the minimum code to make the test pass (`🟢 GREEN`)
+4. Refactor if necessary (`♻️ REFACTOR`)
+5. Create the PR following the conventions in `00-governance/git-conventions.md`
+
+### Checklist before opening the PR
+
+- [ ] `npm run test:unit` passes (green)
+- [ ] `npm run lint` passes (0 errors)
+- [ ] The commit title follows `type(scope): description`
+- [ ] The branch is named `feat/HU-XXX-description` or `fix/BUG-XXX-description`
 
 ---
 
-## Arquitectura: Los 5 conceptos que debes entender primero
+## Week 1 — Go deeper
 
-Antes de escribir código, entiende estos 5 conceptos de la arquitectura del proyecto:
+| Day | Activity |
+|-----|----------|
+| 4 | Code review (participate in the team's code review — observe first) |
+| 5 | Participate in the Daily Standup with something concrete to report |
+| 5 | Read `05-architecture/pattern-guide.md` — the patterns we use |
+| 5 | Read `11-quality/tdd-guide.md` and `11-quality/testing-strategy.md` in full |
 
-### 1. Los Bounded Contexts
-Cada servicio corresponde a un Bounded Context del dominio.
-Ver: `02-domain/domain-map.md`
+---
 
-### 2. La Arquitectura Hexagonal
-El dominio es el centro. Nada del framework entra al dominio.
-Ver: `05-architecture/hexagonal-architecture.md`
+## Week 2 — Guided independence
 
-### 3. Los Puertos y Adaptadores
-Las interfaces viven en el dominio. Las implementaciones en infraestructura.
-Ver: `05-architecture/hexagonal-architecture.md`
+- [ ] Complete your first HU independently
+- [ ] Actively participate in a code review
+- [ ] Read `07-api/README.md` and understand an OpenAPI contract for a service you use
+- [ ] Participate in the sprint Retrospective
 
-### 4. El flujo de un request
+---
+
+## Architecture: The 5 concepts you must understand first
+
+Before writing code, understand these 5 concepts from the project's architecture:
+
+### 1. Bounded Contexts
+Each service corresponds to a Bounded Context of the domain.
+See: `02-domain/domain-map.md`
+
+### 2. Hexagonal Architecture
+The domain is the center. Nothing from the framework enters the domain.
+See: `05-architecture/hexagonal-architecture.md`
+
+### 3. Ports and Adapters
+Interfaces live in the domain. Implementations in infrastructure.
+See: `05-architecture/hexagonal-architecture.md`
+
+### 4. The flow of a request
 ```
 HTTP Request
   → [Controller] (adapter in)
   → [UseCase] (application)
-  → [Aggregate] (domain — aquí vive la lógica)
+  → [Aggregate] (domain — business logic lives here)
   → [Repository] (port → adapter out)
-  → Base de datos
+  → Database
 ```
 
-### 5. Los eventos de dominio
-Los servicios se comunican por eventos, no por llamadas directas (cuando es posible).
-Ver: `02-domain/domain-events.md`
+### 5. Domain events
+Services communicate via events, not direct calls (when possible).
+See: `02-domain/domain-events.md`
 
 ---
 
-## Preguntas frecuentes (FAQ)
+## Frequently asked questions (FAQ)
 
-**¿Por qué no uso `console.log` en los tests?**
-Porque ensucia la salida. Usa `logger.debug()` del logger configurado.
+**Why don't I use `console.log` in tests?**
+Because it pollutes the output. Use `logger.debug()` from the configured logger.
 
-**¿Puedo hacer un commit directamente a `main`?**
-No. Todo va por PR con al menos 1 aprobación.
+**Can I commit directly to `main`?**
+No. Everything goes through a PR with at least 1 approval.
 
-**¿Puedo cambiar el esquema de base de datos directamente?**
-No. Todo cambio va como migración versionada. Ver `06-data/models.md`.
+**Can I change the database schema directly?**
+No. Every change goes as a versioned migration. See `06-data/models.md`.
 
-**¿Cómo sé si mi cambio en la API rompe a los consumidores?**
-Corre los contract tests: `npm run test:contract`. Si pasan, el contrato se mantiene.
+**How do I know if my API change breaks consumers?**
+Run the contract tests: `npm run test:contract`. If they pass, the contract is maintained.
 
-**¿Dónde pido ayuda si estoy bloqueado?**
-1. Busca en esta documentación primero
-2. Pregunta en `#[canal-del-equipo]`
-3. No esperes más de 1 hora antes de pedir ayuda — el tiempo del equipo es valioso
+**Where do I ask for help if I am stuck?**
+1. Search this documentation first
+2. Ask in `#[team-channel]`
+3. Do not wait more than 1 hour before asking for help — the team's time is valuable
 
-**¿Qué hago si encuentro documentación incorrecta o desactualizada?**
-Corrígela y abre un PR. La documentación es código.
-
----
-
-## Recursos adicionales
-
-| Recurso | URL / Ubicación | Para qué |
-|---------|----------------|---------|
-| Guía de Git | `00-governance/git-conventions.md` | Convenciones de commits y branches |
-| ADRs del proyecto | `05-architecture/decisions/` | Entender las decisiones tomadas y por qué |
-| Runbook del servicio | `09-microservices/services/[tu-servicio]/runbook.md` | Operar y troubleshootear |
-| [Documentación externa] | [URL] | [para qué] |
+**What do I do if I find incorrect or outdated documentation?**
+Fix it and open a PR. Documentation is code.
 
 ---
 
-## Correlaciones
+## Additional resources
 
-- Setup técnico → `10-devops/local-setup.md`
-- Proceso TDD → `11-quality/tdd-guide.md`
-- Convenciones de código → `00-governance/git-conventions.md`
-- Tu servicio → `09-microservices/services/[nombre]/`
+| Resource | URL / Location | Purpose |
+|----------|---------------|---------|
+| Git guide | `00-governance/git-conventions.md` | Commit and branch conventions |
+| Project ADRs | `05-architecture/decisions/` | Understand decisions made and why |
+| Service runbook | `09-microservices/services/[your-service]/runbook.md` | Operate and troubleshoot |
+| [External documentation] | [URL] | [purpose] |
+
+---
+
+## Correlations
+
+- Technical setup → `10-devops/local-setup.md`
+- TDD process → `11-quality/tdd-guide.md`
+- Code conventions → `00-governance/git-conventions.md`
+- Your service → `09-microservices/services/[name]/`

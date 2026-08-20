@@ -1,79 +1,82 @@
-# ADR-001 — Idioma de la documentación y el código
+# ADR-001 — Documentation Language
 
-| Campo | Valor |
+| Field | Value |
 |-------|-------|
 | **ID** | ADR-001 |
-| **Fecha** | [YYYY-MM-DD] |
-| **Estado** | Aceptado |
-| **Autores** | [Nombre del Tech Lead] |
-| **Revisores** | [Nombre del equipo] |
+| **Date** | 2024-01-10 |
+| **Status** | Accepted |
+| **Authors** | María García — Tech Lead |
+| **Reviewers** | Carlos Méndez, Sofía Torres, Andrés Ruiz — Development team |
 
 ---
 
-## Contexto
+## Context
 
-El equipo está formado por desarrolladores hispano-hablantes, y el cliente/stakeholder también
-opera en español. Sin embargo, las convenciones de la industria del software (Stack Overflow,
-documentación de librerías, artículos técnicos) usan inglés. 
+The software industry standard — Stack Overflow, library documentation, technical articles,
+frameworks, and open-source tooling — operates in English. Mixing languages across artifacts
+(Spanish docs, English code, Spanish API descriptions) creates a cognitive translation
+boundary that slows onboarding, increases errors in naming, and makes it harder to search
+for help online.
 
-Es necesario establecer una regla clara y única desde el inicio para evitar inconsistencias
-que dificultan el mantenimiento: código con variables en español y comentarios en inglés,
-o contratos API con campos en inglés y documentos en español.
-
----
-
-## Alternativas evaluadas
-
-### Alternativa A — Todo en inglés
-- **Pros:** Estándar de la industria, fácil de contratar desarrolladores externos, librerías y frameworks en inglés, documentación técnica de referencia en inglés
-- **Contras:** Barrera cognitiva para stakeholders no técnicos, términos de negocio pueden perder precisión en traducción
-
-### Alternativa B — Todo en español
-- **Pros:** Comunicación natural con el cliente, los nombres del dominio de negocio se preservan exactos
-- **Contras:** Mezcla incómoda con keywords de lenguajes (if, for, return, etc.), inconsistente con el ecosistema de librerías
-
-### Alternativa C — Dividido por capa (ELEGIDA)
-- **Pros:** Cada artefacto usa el idioma más natural para su audiencia
-- **Contras:** Requiere disciplina y reglas explícitas; más difícil de explicar a nuevos miembros
+A single, clear rule established from day one prevents inconsistencies: mismatched variable
+names, Spanish comments in English code, and conflicting terminology between documentation
+and implementation.
 
 ---
 
-## Decisión
+## Evaluated alternatives
 
-**Alternativa C:** Dividir por audiencia y propósito.
+### Alternative A — Everything in English (CHOSEN)
+- **Pros:** Industry standard; easy to hire external developers; libraries and frameworks are in English; technical reference documentation is in English; eliminates the translation boundary between docs and code; GitHub, Stack Overflow, and AI tools all work best with English content
+- **Cons:** May require slightly more effort from team members who are not native English speakers
 
-| Artefacto | Idioma | Razón |
-|-----------|--------|-------|
-| Variables, funciones, clases en código | Inglés | Consistencia con librerías y frameworks |
-| Nombres de tablas y columnas en BD | Inglés | Coherencia con el código que las mapea |
-| Commits (Conventional Commits) | Inglés | Estándar establecido, legible en GitHub |
-| Nombres de ramas de Git | Inglés | Consistente con los commits |
-| Documentación Markdown | Español | Audiencia: desarrolladores y stakeholders hispanohablantes |
-| Contratos OpenAPI (descriptions) | Español | Audiencia: desarrolladores del equipo |
-| Mensajes de error al usuario final | Español | Audiencia: usuarios del producto |
-| Logs internos del sistema | Inglés | Facilita búsqueda en documentación de librerías y alertas |
-| ADRs y documentación técnica | Español | Audiencia: equipo hispano |
+### Alternative B — Everything in Spanish
+- **Pros:** Natural communication with Spanish-speaking clients; business domain names preserved exactly
+- **Cons:** Uncomfortable mix with language keywords (if, for, return, etc.); inconsistent with the library ecosystem; external contributors cannot participate
+
+### Alternative C — Split by layer (discarded)
+- **Pros:** Each artifact uses the most natural language for its audience
+- **Cons:** Requires strict discipline and explicit rules; harder to explain to new team members; creates a permanent translation boundary between docs (Spanish) and code (English); domain terms accumulate two canonical names
 
 ---
 
-## Consecuencias
+## Decision
 
-**Positivas:**
-- Los términos de negocio quedan en español en la documentación (donde importa la precisión semántica)
-- El código es consistente con el ecosistema de librerías y el estándar de la industria
-- Los nuevos miembros del equipo tienen una regla clara desde el día 1
+**Alternative A:** Use English for all documentation and code.
 
-**Negativas:**
-- Existe una frontera de traducción entre el dominio en documentación (español) y el código (inglés) que debe gestionarse con un glosario
-- Algunos nombres del dominio pueden ser ambiguos al traducirse (ej: `Appointment` vs `Cita` vs `Turno`)
-
-**Mitigación:**
-- Mantener un glosario de términos del dominio con la traducción canónica: `01-context/glossary.md`
-- Cuando un término tenga traducción discutible, se documenta en el glosario antes de usarlo en el código
+| Artifact | Language | Reason |
+|----------|----------|--------|
+| Variables, functions, classes in code | English | Consistency with libraries and frameworks |
+| Table and column names in DB | English | Coherence with the code that maps them |
+| Commits (Conventional Commits) | English | Established standard, readable on GitHub |
+| Git branch names | English | Consistent with commits |
+| Markdown documentation | English | Eliminates the translation boundary; searchable |
+| OpenAPI contracts (descriptions) | English | Readable by any future contributor |
+| End-user error messages | English (or localized) | Localization layer handles language at runtime |
+| Internal system logs | English | Facilitates search in library documentation and alerts |
+| ADRs and technical documentation | English | Single source of truth, no translation boundary |
 
 ---
 
-## Referencias
+## Consequences
 
-- Convenciones de documentación del equipo → `00-governance/documentation-rules.md`
-- Glosario de términos del dominio → `01-context/glossary.md`
+**Positive:**
+- A single language across all artifacts eliminates the cognitive translation boundary
+- New team members have one clear rule from day 1
+- External contributors and AI tools work without friction
+- Domain terms have one canonical form (the English one in the code)
+
+**Negative:**
+- Team members who are less confident in English need to invest more initially
+- Some business terms may require careful translation decisions
+
+**Mitigation:**
+- Maintain a domain glossary with the canonical English translation for each business term: `01-context/glossary.md`
+- When a term has a debatable translation, document it in the glossary before using it in code
+
+---
+
+## References
+
+- Team documentation conventions → `00-governance/documentation-rules.md`
+- Domain term glossary → `01-context/glossary.md`

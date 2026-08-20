@@ -1,110 +1,110 @@
-# Problem Framing — Definición del Problema
+# Problem Framing — Problem Definition
 
-> **Por qué este documento existe:** Antes de diseñar soluciones, el equipo debe estar
-> alineado en el problema que resuelve. Este documento captura ese alineamiento.
-> Un problema bien definido ya lleva el 50% de la solución.
-
----
-
-## 1. El problema en una oración
-
-> Completa esta plantilla:
-
-**[Segmento de usuarios]** que **[contexto de uso]** tiene dificultades con **[dolor/problema]**
-porque **[causa raíz]**, lo que resulta en **[impacto cuantificable]**.
-
-**Ejemplo:**
-> Los **operadores de inventario de medianas empresas** que **gestionan catálogos de más de 500 productos**
-> tienen dificultades con **el control de stock en múltiples bodegas** porque **los sistemas actuales
-> no permiten sincronización en tiempo real**, lo que resulta en **15% de pedidos con error de stock
-> y 3 horas de trabajo manual de corrección por día**.
+> **Why this document exists:** Before designing solutions, the team must be
+> aligned on the problem it solves. This document captures that alignment.
+> A well-defined problem is already halfway to a solution.
 
 ---
 
-## 2. Usuarios afectados
+## 1. The problem in one sentence
 
-| Segmento | Descripción | Tamaño estimado | Prioridad |
-|---------|-------------|----------------|-----------|
-| [Segmento A] | [Quiénes son, qué hacen] | [N usuarios] | Alta |
-| [Segmento B] | [Quiénes son] | [N usuarios] | Media |
+> Complete this template:
+
+**[User segment]** who **[usage context]** struggle with **[pain/problem]**
+because **[root cause]**, resulting in **[quantifiable impact]**.
+
+**Example:**
+> **Mid-sized company inventory operators** who **manage catalogs of more than 500 products**
+> struggle with **stock control across multiple warehouses** because **current systems
+> do not support real-time synchronization**, resulting in **15% of orders with stock errors
+> and 3 hours of manual correction work per day**.
+
+---
+
+## 2. Affected users
+
+| Segment | Description | Estimated size | Priority |
+|---------|-------------|---------------|---------|
+| [Segment A] | [Who they are, what they do] | [N users] | High |
+| [Segment B] | [Who they are] | [N users] | Medium |
 
 ### Jobs-to-be-done (JTBD)
 
-> ¿Qué trabajo trata de hacer el usuario cuando "contrata" nuestro producto?
+> What job is the user trying to do when they "hire" our product?
 
-**Cuando** [situación / contexto],
-**quiero** [motivación / lo que buscan lograr],
-**para** [resultado esperado / beneficio].
-
----
-
-## 3. Evidencia del problema
-
-> El problema debe ser real. Documenta la evidencia que tienes.
-
-| Tipo de evidencia | Fuente | Fecha | Hallazgo clave |
-|-------------------|--------|-------|----------------|
-| Entrevistas de usuario | [N] entrevistas con [perfil] | [fecha] | [qué dijeron] |
-| Datos de soporte | Tickets de soporte | [período] | [% de tickets sobre este tema] |
-| Benchmarking | [Competidores / mercado] | [fecha] | [cómo lo resuelven otros] |
-| Observación directa | [Shadowing / field research] | [fecha] | [qué observaron] |
+**When** [situation / context],
+**I want** [motivation / what they are trying to achieve],
+**so that** [expected outcome / benefit].
 
 ---
 
-## 4. Solución actual del usuario (y sus problemas)
+## 3. Evidence of the problem
 
-> ¿Cómo resuelve el usuario el problema hoy?
+> The problem must be real. Document the evidence you have.
 
-| Solución actual | Limitaciones | Costo/Fricción |
-|----------------|-------------|----------------|
-| [Excel / proceso manual] | [No escala, errores, lento] | [X horas/día] |
-| [Sistema legado] | [No tiene API, sin integración] | [Y errores/semana] |
-
----
-
-## 5. Hipótesis de solución
-
-> Este es el primer borrador de la dirección de solución. No es un compromiso.
-
-**Creemos que** [describir la solución de alto nivel]
-**para** [el segmento de usuarios],
-**logrará** [el beneficio esperado].
-**Sabremos que tuvimos éxito cuando** [métrica específica].
+| Evidence type | Source | Date | Key finding |
+|--------------|--------|------|------------|
+| User interviews | [N] interviews with [profile] | [date] | [what they said] |
+| Support data | Support tickets | [period] | [% of tickets on this topic] |
+| Benchmarking | [Competitors / market] | [date] | [how others solve it] |
+| Direct observation | [Shadowing / field research] | [date] | [what was observed] |
 
 ---
 
-## 6. Métricas de éxito (North Star)
+## 4. Current user solution (and its problems)
 
-| Métrica | Baseline actual | Objetivo a 6 meses | Cómo medirla |
-|---------|----------------|-------------------|--------------|
-| [Métrica de negocio 1] | [valor actual] | [valor objetivo] | [instrumento] |
-| [Métrica de adopción] | [valor actual] | [valor objetivo] | [instrumento] |
+> How does the user solve the problem today?
 
-**North Star Metric:** [La única métrica que mejor captura el valor entregado]
-
----
-
-## 7. Riesgos de la hipótesis
-
-| Riesgo | Probabilidad | Impacto | Experimento para validar |
-|--------|-------------|---------|--------------------------|
-| [Los usuarios no adoptarán el cambio] | Alta | Alto | [Piloto con N usuarios] |
-| [El problema no es tan frecuente como creemos] | Media | Alto | [Análisis de logs de soporte] |
+| Current solution | Limitations | Cost/Friction |
+|-----------------|------------|--------------|
+| [Excel / manual process] | [Does not scale, errors, slow] | [X hours/day] |
+| [Legacy system] | [No API, no integration] | [Y errors/week] |
 
 ---
 
-## 8. Fuera de alcance (no resolvemos)
+## 5. Solution hypothesis
 
-> Define explícitamente qué problemas relacionados NO resuelves en esta versión.
-> Esto evita scope creep.
+> This is the first draft of the solution direction. It is not a commitment.
 
-- [Problema relacionado pero fuera de alcance: por qué]
-- [Funcionalidad que los usuarios piden pero no vamos a hacer ahora: razón]
+**We believe that** [describe the high-level solution]
+**for** [the user segment],
+**will achieve** [the expected benefit].
+**We will know we succeeded when** [specific metric].
 
 ---
 
-## Correlaciones
+## 6. Success metrics (North Star)
 
-- Visión del producto → `03-product/vision.md`
-- HUs que implementan esta solución → `04-requirements/user-stories.md`
-- KPIs detallados → `13-operations/README.md`
+| Metric | Current baseline | 6-month target | How to measure it |
+|--------|----------------|---------------|-------------------|
+| [Business metric 1] | [current value] | [target value] | [instrument] |
+| [Adoption metric] | [current value] | [target value] | [instrument] |
+
+**North Star Metric:** [The single metric that best captures the value delivered]
+
+---
+
+## 7. Hypothesis risks
+
+| Risk | Probability | Impact | Experiment to validate |
+|------|------------|--------|----------------------|
+| [Users will not adopt the change] | High | High | [Pilot with N users] |
+| [The problem is not as frequent as we think] | Medium | High | [Support log analysis] |
+
+---
+
+## 8. Out of scope (we do not solve)
+
+> Explicitly define which related problems you are NOT solving in this version.
+> This prevents scope creep.
+
+- [Related problem that is out of scope: why]
+- [Feature users ask for but we are not doing now: reason]
+
+---
+
+## Correlations
+
+- Product vision → `03-product/vision.md`
+- HUs that implement this solution → `04-requirements/user-stories.md`
+- Detailed KPIs → `13-operations/README.md`

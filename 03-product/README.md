@@ -1,113 +1,113 @@
-# 03 — Definición de Producto
+# 03 — Product Definition
 
-> **¿Qué es esto?** La respuesta a "¿qué vamos a construir?". No es "cómo" — eso viene en
-> arquitectura. Aquí se define el problema validado, la visión del producto y el plan de construcción.
+> **What is this?** The answer to "what are we going to build?". It is not "how" — that comes in
+> architecture. Here the validated problem, product vision, and build plan are defined.
 
-## Por qué existe esta sección
+## Why this section exists
 
-Sin una definición clara de producto:
-- El equipo construye features que nadie pidió
-- El alcance crece sin control (scope creep)
-- No hay forma de saber si el proyecto fue exitoso
+Without a clear product definition:
+- The team builds features nobody asked for
+- Scope grows out of control (scope creep)
+- There is no way to know whether the project was successful
 
-Esta sección es el contrato entre el equipo y los stakeholders sobre **qué se va a construir y por qué**.
+This section is the contract between the team and stakeholders about **what will be built and why**.
 
 ---
 
-## Qué hay aquí y cómo llenarlo
+## What is here and how to fill it in
 
-### `problem-framing.md` ⭐ (Empezar aquí)
-Articula el problema antes de proponer soluciones.
-**Llena:** quién tiene el problema, qué dolor exactamente, evidencia del problema, cómo lo resuelven hoy.
+### `problem-framing.md` ⭐ (Start here)
+Articulates the problem before proposing solutions.
+**Fill in:** who has the problem, exactly what pain, evidence of the problem, how they solve it today.
 
-**Formato:**
+**Format:**
 ```markdown
-## El problema
-**¿Quién lo tiene?** [Perfil del usuario afectado]
-**¿Qué problema tienen?** [Descripción del dolor, específica]
-**¿Cuándo ocurre?** [Situación que desencadena el problema]
-**¿Cuál es el impacto?** [Consecuencia concreta: tiempo, dinero, frustración]
-**¿Cómo lo resuelven hoy?** [Workaround actual y por qué es insuficiente]
+## The problem
+**Who has it?** [Profile of the affected user]
+**What problem do they have?** [Description of the pain, specific]
+**When does it occur?** [Situation that triggers the problem]
+**What is the impact?** [Concrete consequence: time, money, frustration]
+**How do they solve it today?** [Current workaround and why it is insufficient]
 
-## Por qué vale la pena resolverlo
-[Justificación del valor de construir este sistema]
+## Why it is worth solving
+[Justification for the value of building this system]
 ```
 
 ### `discovery-brief.md`
-Hallazgos de la investigación con usuarios.
-**Llena:** entrevistas realizadas, insights encontrados, supuestos validados e invalidados.
+Findings from user research.
+**Fill in:** interviews conducted, insights found, assumptions validated and invalidated.
 
 ### `vision.md` ⭐
-La estrella del norte del producto en 1-2 oraciones.
-**Llena:** formato "Para [usuario], que [necesidad], [nombre del sistema] es [tipo de producto]
-que [beneficio clave]. A diferencia de [alternativa], nuestro producto [diferenciador]."
+The product's north star in 1-2 sentences.
+**Fill in:** format "For [user], who [need], [system name] is a [product type]
+that [key benefit]. Unlike [alternative], our product [differentiator]."
 
 ### `roadmap.md`
-Plan de entregas en el tiempo.
-**Llena:** hitos por trimestre/sprint, qué features entran en cada fase.
+Delivery plan over time.
+**Fill in:** milestones per quarter/sprint, which features go into each phase.
 
-**Formato:**
+**Format:**
 ```markdown
-## Fase 1 — MVP (Sprint 1-3)
-- [Feature crítica 1]
-- [Feature crítica 2]
+## Phase 1 — MVP (Sprint 1-3)
+- [Critical feature 1]
+- [Critical feature 2]
 
-## Fase 2 — Iteración (Sprint 4-6)
-- [Mejoras basadas en feedback]
+## Phase 2 — Iteration (Sprint 4-6)
+- [Improvements based on feedback]
 ```
 
 ### `product-backlog.md` ⭐
-Lista priorizada de todo lo que debe construirse.
-**Llena:** usando el template `_template-backlog.md`. Ordena por valor al usuario.
+Prioritized list of everything that must be built.
+**Fill in:** using the `_template-backlog.md` template. Order by user value.
 
 ### `_template-prd.md`
-Product Requirements Document completo.
-**Usa cuando:** necesitas formalizar los requisitos para un stakeholder externo o entrega académica.
+Complete Product Requirements Document.
+**Use when:** you need to formalize requirements for an external stakeholder or academic delivery.
 
 ### `_template-discovery-brief.md`
-Template para documentar investigación con usuarios.
+Template for documenting user research.
 
 ### `_template-problem-framing.md`
-Template estructurado para enmarcar el problema.
+Structured template for framing the problem.
 
 ### `_template-backlog.md`
-Template para las historias de usuario del backlog inicial.
+Template for initial backlog user stories.
 
 ---
 
-## Formato de Historia de Usuario
+## User Story format
 
 ```markdown
-## HU-[SERVICIO]-[NNN]: [Título]
-**Como** [rol del usuario]
-**Quiero** [acción que quiere realizar]
-**Para** [beneficio que obtiene]
+## HU-[SERVICE]-[NNN]: [Title]
+**As** [user role]
+**I want** [action they want to perform]
+**So that** [benefit they receive]
 
-### Criterios de aceptación
-- [ ] AC1: Dado [contexto], cuando [acción], entonces [resultado esperado]
+### Acceptance criteria
+- [ ] AC1: Given [context], when [action], then [expected result]
 - [ ] AC2: ...
 
-### Notas técnicas
-[Restricciones o consideraciones de implementación]
+### Technical notes
+[Constraints or implementation considerations]
 
-**Estimación:** [SP]  **Prioridad:** [Alta/Media/Baja]
+**Estimation:** [SP]  **Priority:** [High/Medium/Low]
 ```
 
 ---
 
-## Correlaciones con otras secciones
+## Correlations with other sections
 
-| Esta sección alimenta... | Por qué |
-|--------------------------|---------|
-| `04-requirements/` | Las HUs del backlog se formalizan como requisitos |
-| `02-domain/` | El problem framing revela entidades del dominio |
-| `15-project-control/technical-backlog.md` | Deuda técnica identificada durante la definición |
+| This section feeds... | Why |
+|-----------------------|-----|
+| `04-requirements/` | Backlog HUs are formalized as requirements |
+| `02-domain/` | Problem framing reveals domain entities |
+| `15-project-control/technical-backlog.md` | Technical debt identified during definition |
 
 ---
 
-## Preguntas que esta sección debe responder
+## Questions this section must answer
 
-- ¿Qué problema exactamente resolvemos?
-- ¿Cómo luce el éxito del producto?
-- ¿Qué construimos primero y por qué?
-- ¿Qué NO construimos en este ciclo?
+- What problem exactly are we solving?
+- What does product success look like?
+- What do we build first and why?
+- What do we NOT build in this cycle?

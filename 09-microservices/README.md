@@ -1,119 +1,119 @@
-# 09 — Microservicios
+# 09 — Microservices
 
-> **¿Qué es esto?** La documentación individual de cada microservicio del sistema.
-> Esta es la sección más viva del repositorio — se actualiza con cada cambio significativo.
+> **What is this?** The individual documentation for each microservice in the system.
+> This is the most active section of the repository — it is updated with every significant change.
 
-## Estructura de cada microservicio
+## Structure of each microservice
 
-Cada servicio tiene su propia carpeta en `services/` con esta estructura:
+Each service has its own folder in `services/` with this structure:
 
 ```
 services/
-└── 01-nombre-del-servicio/
-    ├── README.md              ← Descripción, responsabilidad, cómo correrlo
-    ├── data-model.md          ← Modelo de datos propio del servicio
-    ├── events.md              ← Eventos que publica y consume
-    ├── decisions.md           ← Decisiones de diseño específicas del servicio
-    ├── runbook.md             ← Cómo operar el servicio en producción
-    └── components/            ← Si el servicio tiene sub-componentes
-        └── [componente]/
+└── 01-service-name/
+    ├── README.md              ← Description, responsibility, how to run it
+    ├── data-model.md          ← The service's own data model
+    ├── events.md              ← Events it publishes and consumes
+    ├── decisions.md           ← Design decisions specific to the service
+    ├── runbook.md             ← How to operate the service in production
+    └── components/            ← If the service has sub-components
+        └── [component]/
             ├── README.md
             └── contract.md
 ```
 
-**Usa `_template/service/` como punto de partida para cada nuevo servicio.**
+**Use `_template/service/` as a starting point for each new service.**
 
 ---
 
-## Documentos transversales (aplican a TODOS los servicios)
+## Cross-cutting documents (apply to ALL services)
 
-### `service-catalog.md` ⭐ (Empezar aquí)
-Registro de todos los microservicios del sistema.
-**Llena:** cuando defines los microservicios. Actualiza cuando agregas/eliminas/renombras.
+### `service-catalog.md` ⭐ (Start here)
+Registry of all microservices in the system.
+**Fill in:** when you define microservices. Update when you add/remove/rename.
 
-**Formato:**
+**Format:**
 ```markdown
-| # | Servicio | Responsabilidad | Puerto local | Repo | Estado |
-|---|---------|-----------------|-------------|------|--------|
-| 01 | iam | Autenticación y autorización | 8001 | [repo] | ✅ En producción |
-| 02 | reference-data | Datos maestros del sistema | 8002 | [repo] | 🚧 En desarrollo |
+| # | Service | Responsibility | Local port | Repo | Status |
+|---|---------|----------------|------------|------|--------|
+| 01 | iam | Authentication and authorization | 8001 | [repo] | ✅ In production |
+| 02 | reference-data | Master data for the system | 8002 | [repo] | 🚧 In development |
 ```
 
 ### `service-boundary-rules.md` ⭐
-Las reglas que definen dónde termina cada servicio.
-**Llena:** criterios para decidir si algo pertenece a servicio A o B. Estas reglas previenen
-que los servicios se solapen o que responsabilidades queden en el limbo.
+The rules that define where each service ends.
+**Fill in:** criteria for deciding if something belongs to service A or B. These rules prevent
+services from overlapping or leaving responsibilities in limbo.
 
-**Incluye:**
-- ¿Cómo decidimos los límites? (por dominio, por equipo, por ciclo de vida de datos)
-- ¿Qué hacer cuando algo "podría ir en cualquiera de los dos"?
-- Regla de la "base de datos": si dos cosas comparten BD, son el mismo servicio o hay un error
+**Include:**
+- How do we decide boundaries? (by domain, by team, by data lifecycle)
+- What to do when something "could go in either one"?
+- The "database" rule: if two things share a DB, they are the same service or there is a design error
 
 ### `communication-patterns.md` ⭐
-Cómo se comunican los servicios entre sí.
-**Llena:** qué usa REST (síncrono), qué usa eventos (asíncrono), por qué, ejemplos concretos.
+How services communicate with each other.
+**Fill in:** what uses REST (synchronous), what uses events (asynchronous), why, concrete examples.
 
-**Patrones a documentar:**
-- Request/Response (REST/gRPC): cuándo usarlo, cuándo no
-- Eventos/Mensajes (RabbitMQ/Kafka): cuándo usarlo, cómo se garantiza la entrega
-- API Gateway: qué pasa ahí, qué no pasa
-- Service Discovery: cómo se encuentran los servicios
+**Patterns to document:**
+- Request/Response (REST/gRPC): when to use it, when not to
+- Events/Messages (RabbitMQ/Kafka): when to use it, how delivery is guaranteed
+- API Gateway: what goes through it, what does not
+- Service Discovery: how services find each other
 
 ### `event-catalog.md` ⭐
-Catálogo de todos los eventos del sistema.
-**Llena:** nombre, payload, quién publica, quién consume, en qué topic/exchange.
+Catalog of all system events.
+**Fill in:** name, payload, who publishes, who consumes, on which topic/exchange.
 
-**Formato:**
+**Format:**
 ```markdown
-| Evento | Payload (campos clave) | Publicado por | Consumido por | Topic/Exchange |
-|--------|----------------------|--------------|---------------|----------------|
-| UsuarioCreado | userId, email, rol | iam | actors, audit | users.events |
+| Event | Payload (key fields) | Published by | Consumed by | Topic/Exchange |
+|-------|---------------------|--------------|-------------|----------------|
+| UserCreated | userId, email, role | iam | actors, audit | users.events |
 ```
 
 ### `data-ownership-matrix.md` ⭐
-Quién es el dueño autoritativo de cada dato.
-**Llena:** para cada entidad de negocio, cuál servicio tiene la "versión oficial".
+Who is the authoritative owner of each piece of data.
+**Fill in:** for each business entity, which service has the "official version".
 
-**Formato:**
+**Format:**
 ```markdown
-| Entidad | Servicio dueño | Otros que tienen copia | Cómo se sincroniza |
-|---------|---------------|----------------------|-------------------|
-| Usuario | iam | actors (datos básicos) | evento UsuarioCreado |
+| Entity | Owner service | Others that have a copy | How it is synchronized |
+|--------|--------------|------------------------|----------------------|
+| User | iam | actors (basic data) | UserCreated event |
 ```
 
 ### `dependency-map.md`
-Mapa de dependencias entre servicios.
-**Llena:** grafo (puede ser ASCII) que muestra qué servicio depende de cuál.
-Alerta roja: si el grafo tiene ciclos → hay un problema de diseño.
+Dependency map between services.
+**Fill in:** graph (can be ASCII) showing which service depends on which.
+Red alert: if the graph has cycles → there is a design problem.
 
 ### `storage-and-documents.md`
-Cómo el sistema maneja almacenamiento de archivos.
-**Llena:** qué servicio maneja archivos, dónde se almacenan (S3, MinIO, local), política de nombres.
+How the system handles file storage.
+**Fill in:** which service handles files, where they are stored (S3, MinIO, local), naming policy.
 
 ### `service-readiness-checklist.md`
-Checklist que todo servicio debe cumplir antes de ir a producción.
+Checklist that every service must meet before going to production.
 
 ---
 
-## Correlaciones con otras secciones
+## Correlations with other sections
 
-| Esta sección se alimenta de... | Y alimenta a... |
-|-------------------------------|-----------------|
-| `02-domain/domain-map.md` → bounded contexts | Uno por contexto |
-| `05-architecture/overview.md` → servicios definidos | README de cada servicio |
-| `07-api/contracts/openapi/` → contrato del servicio | `services/[servicio]/` lo implementa |
-| `06-data/models.md` → modelo de datos | `services/[servicio]/data-model.md` |
-| `services/[servicio]/runbook.md` | `13-operations/` los consolida |
+| This section is fed by... | And feeds into... |
+|---------------------------|-------------------|
+| `02-domain/domain-map.md` → bounded contexts | One per context |
+| `05-architecture/overview.md` → defined services | README of each service |
+| `07-api/contracts/openapi/` → service contract | `services/[service]/` implements it |
+| `06-data/models.md` → data model | `services/[service]/data-model.md` |
+| `services/[service]/runbook.md` | `13-operations/` consolidates them |
 
 ---
 
-## Numeración de servicios
+## Service numbering
 
-Numera los servicios para indicar dependencias implícitas:
-los servicios con número más bajo tienden a ser más fundamentales.
+Number services to indicate implicit dependencies:
+services with lower numbers tend to be more fundamental.
 
-Convención sugerida:
-- `01` = IAM / Seguridad (todos dependen de este)
-- `02` = Datos de referencia / maestros
-- `03-0N` = Servicios de dominio
-- `0N+1` = Servicios de soporte (documentos, notificaciones, audit)
+Suggested convention:
+- `01` = IAM / Security (all depend on this)
+- `02` = Reference / master data
+- `03-0N` = Domain services
+- `0N+1` = Support services (documents, notifications, audit)

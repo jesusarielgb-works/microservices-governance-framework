@@ -1,110 +1,110 @@
 # 10 — DevOps
 
-> **¿Qué es esto?** Cómo el código pasa de la computadora del desarrollador a producción,
-> y cómo se mantiene en cada ambiente. CI/CD, ambientes y configuración local.
+> **What is this?** How code goes from the developer's computer to production,
+> and how it is maintained in each environment. CI/CD, environments, and local configuration.
 
-## Por qué existe esta sección
+## Why this section exists
 
-Sin DevOps documentado:
-- Cada developer tiene su propio proceso de deploy (y falla diferente)
-- "Funciona en mi máquina" es la respuesta más costosa en software
-- Los releases son eventos de alto riesgo en lugar de rutina
+Without documented DevOps:
+- Each developer has their own deploy process (and fails differently)
+- "It works on my machine" is the most expensive answer in software
+- Releases are high-risk events instead of routine
 
 ---
 
-## Qué hay aquí y cómo llenarlo
+## What is here and how to fill it in
 
-### `local-setup.md` ⭐ (Lo más urgente)
-Cómo levantar TODO el sistema en una computadora nueva desde cero.
-**Llena:** paso a paso, sin omitir nada, asumiendo que quien lee nunca ha tocado el proyecto.
-Incluye: prerequisitos de software, variables de entorno, comandos exactos, cómo verificar que funciona.
+### `local-setup.md` ⭐ (Most urgent)
+How to start THE ENTIRE SYSTEM on a new computer from scratch.
+**Fill in:** step by step, omitting nothing, assuming the reader has never touched the project.
+Include: software prerequisites, environment variables, exact commands, how to verify it works.
 
-**Formato:**
+**Format:**
 ```markdown
-## Prerequisitos
+## Prerequisites
 - [ ] Docker Desktop >= 24.0
-- [ ] [Lenguaje/Runtime] >= [versión]
-- [ ] [Herramienta] >= [versión]
+- [ ] [Language/Runtime] >= [version]
+- [ ] [Tool] >= [version]
 
-## Pasos
-1. Clonar el repositorio principal: `git clone [url]`
-2. Copiar variables de entorno: `cp .env.example .env`
-3. Levantar infraestructura: `docker-compose up -d`
-4. Esperar a que los servicios estén listos: `./scripts/wait-for-services.sh`
-5. Verificar: `curl http://localhost:8080/health`
+## Steps
+1. Clone the main repository: `git clone [url]`
+2. Copy environment variables: `cp .env.example .env`
+3. Start infrastructure: `docker-compose up -d`
+4. Wait for services to be ready: `./scripts/wait-for-services.sh`
+5. Verify: `curl http://localhost:8080/health`
 
-## Puertos locales
-| Servicio | Puerto |
-|---------|--------|
+## Local ports
+| Service | Port |
+|---------|------|
 | API Gateway | 8080 |
-| [Servicio 1] | 8001 |
+| [Service 1] | 8001 |
 | RabbitMQ UI | 15672 |
-| Adminer (BD) | 8090 |
+| Adminer (DB) | 8090 |
 
-## Problemas comunes
-- **Puerto en uso:** `lsof -i :8080` para ver qué lo usa
-- **BD no conecta:** verificar que Docker esté corriendo
+## Common issues
+- **Port in use:** `lsof -i :8080` to see what is using it
+- **DB not connecting:** verify Docker is running
 ```
 
 ### `environments.md` ⭐
-Descripción de todos los ambientes del proyecto.
-**Llena:** local, desarrollo, staging, producción. Para cada uno: propósito, URL, quién tiene acceso,
-cómo se despliega, qué datos tiene.
+Description of all project environments.
+**Fill in:** local, development, staging, production. For each: purpose, URL, who has access,
+how it is deployed, what data it has.
 
-**Formato:**
+**Format:**
 ```markdown
-| Ambiente | URL | Propósito | Acceso | BD | Deploy |
-|---------|-----|-----------|--------|-----|--------|
-| local | localhost | Desarrollo individual | Todos | Datos de prueba | Manual |
-| dev | dev.api.domain.com | Integración continua | Equipo | Datos de prueba | Automático (push a dev) |
-| staging | staging.api.domain.com | QA / validación | Equipo + PO | Datos anonimizados | Manual (aprobación) |
-| prod | api.domain.com | Producción | Ops team | Datos reales | Manual (aprobación doble) |
+| Environment | URL | Purpose | Access | DB | Deploy |
+|-------------|-----|---------|--------|-----|--------|
+| local | localhost | Individual development | All | Test data | Manual |
+| dev | dev.api.domain.com | Continuous integration | Team | Test data | Automatic (push to dev) |
+| staging | staging.api.domain.com | QA / validation | Team + PO | Anonymized data | Manual (approval) |
+| prod | api.domain.com | Production | Ops team | Real data | Manual (double approval) |
 ```
 
 ### `ci-cd.md` ⭐
-Descripción del pipeline de integración y despliegue continuo.
-**Llena:** qué herramienta (GitHub Actions, GitLab CI, Jenkins), qué pasos ejecuta,
-cuándo se dispara cada pipeline, qué verifica antes de permitir el merge.
+Description of the continuous integration and deployment pipeline.
+**Fill in:** what tool (GitHub Actions, GitLab CI, Jenkins), what steps it executes,
+when each pipeline is triggered, what it verifies before allowing a merge.
 
-**Formato:**
+**Format:**
 ```markdown
-## Pipeline de PR (se ejecuta en cada Pull Request)
-1. Lint y formato de código
-2. Pruebas unitarias
-3. Pruebas de integración
-4. Análisis de cobertura (mínimo [X]%)
-5. Análisis de seguridad (SAST)
+## PR Pipeline (runs on every Pull Request)
+1. Lint and code format
+2. Unit tests
+3. Integration tests
+4. Coverage analysis (minimum [X]%)
+5. Security analysis (SAST)
 
-## Pipeline de merge a `dev`
-1. Todo lo anterior
-2. Build de imagen Docker
-3. Deploy a ambiente dev
-4. Smoke tests en dev
+## Pipeline on merge to `dev`
+1. All of the above
+2. Docker image build
+3. Deploy to dev environment
+4. Smoke tests in dev
 
-## Pipeline de release a producción
-1. Aprobación manual de [rol]
-2. Deploy a staging
-3. Suite de pruebas de aceptación
-4. Aprobación manual de [rol]
-5. Deploy a producción con blue-green / canary
+## Release pipeline to production
+1. Manual approval by [role]
+2. Deploy to staging
+3. Acceptance test suite
+4. Manual approval by [role]
+5. Deploy to production with blue-green / canary
 ```
 
 ---
 
-## Correlaciones con otras secciones
+## Correlations with other sections
 
-| Esta sección se alimenta de... | Y alimenta a... |
-|-------------------------------|-----------------|
-| `05-architecture/deployment.md` → cómo se despliega | Implementación del pipeline |
-| `11-quality/testing-strategy.md` → qué pruebas correr | Pasos del pipeline |
-| `09-microservices/` → cada servicio a desplegar | Qué imágenes construye el pipeline |
-| `13-operations/` → monitoreo post-deploy | Lo que el pipeline verifica |
+| This section is fed by... | And feeds into... |
+|---------------------------|-------------------|
+| `05-architecture/deployment.md` → how it is deployed | Pipeline implementation |
+| `11-quality/testing-strategy.md` → which tests to run | Pipeline steps |
+| `09-microservices/` → each service to deploy | Which images the pipeline builds |
+| `13-operations/` → post-deploy monitoring | What the pipeline verifies |
 
 ---
 
-## Preguntas que esta sección debe responder
+## Questions this section must answer
 
-- ¿Cómo levanto el sistema localmente en 30 minutos?
-- ¿Qué pasa automáticamente cuando hago push?
-- ¿Cómo llega el código a producción?
-- ¿Cuántos ambientes hay y para qué sirve cada uno?
+- How do I start the system locally in 30 minutes?
+- What happens automatically when I push?
+- How does code get to production?
+- How many environments are there and what is each one for?
