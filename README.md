@@ -24,107 +24,51 @@ and how every document relates to the others.
 
 ## Build flow — section dependencies
 
-<svg viewBox="0 0 780 420" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;font-family:monospace;font-size:13px">
-  <!-- background -->
-  <rect width="780" height="420" fill="#0d1117" rx="12"/>
+> `00-governance` wraps the entire project and applies to every section.
 
-  <!-- Phase labels -->
-  <text x="20" y="30" fill="#58a6ff" font-size="11" font-weight="bold">DISCOVERY</text>
-  <text x="20" y="110" fill="#58a6ff" font-size="11" font-weight="bold">DESIGN</text>
-  <text x="20" y="210" fill="#58a6ff" font-size="11" font-weight="bold">DETAIL</text>
-  <text x="20" y="310" fill="#58a6ff" font-size="11" font-weight="bold">IMPL &amp; OPS</text>
+```mermaid
+graph TD
+    subgraph DISCOVERY["🔵 DISCOVERY"]
+        C1["01-context\nvisión · scope · glossary"]
+        C2["02-domain\nDDD · entities · events"]
+        C3["03-product\nPRD · vision · backlog"]
+        C4["04-requirements\nuser stories · NFRs"]
+        C1 --> C2 --> C3 --> C4
+    end
 
-  <!-- Governance band -->
-  <rect x="100" y="10" width="660" height="390" fill="none" stroke="#30363d" stroke-width="1" rx="8" stroke-dasharray="6,3"/>
-  <text x="110" y="395" fill="#484f58" font-size="10">00-governance — applies to the entire project</text>
+    subgraph DESIGN["🟢 DESIGN"]
+        C5["05-architecture\nADRs · hexagonal · C4"]
+        C6["06-data\nmodels · migrations"]
+        C7["07-api\nOpenAPI · contracts"]
+        C5 --> C6
+        C5 --> C7
+    end
 
-  <!-- Row 1: Discovery -->
-  <rect x="110" y="22" width="120" height="50" rx="6" fill="#1c2029" stroke="#388bfd" stroke-width="1.5"/>
-  <text x="170" y="44" fill="#e6edf3" text-anchor="middle" font-weight="bold">01-context</text>
-  <text x="170" y="60" fill="#8b949e" text-anchor="middle" font-size="10">vision · scope · glossary</text>
+    subgraph DETAIL["🟣 DETAIL"]
+        C8["08-uml\ndiagrams"]
+        C9["09-microservices\ncatalog · runbooks"]
+        C12["12-ux-ui\ndesign system"]
+        C9 --> C8
+        C9 --> C12
+    end
 
-  <rect x="270" y="22" width="120" height="50" rx="6" fill="#1c2029" stroke="#388bfd" stroke-width="1.5"/>
-  <text x="330" y="44" fill="#e6edf3" text-anchor="middle" font-weight="bold">02-domain</text>
-  <text x="330" y="60" fill="#8b949e" text-anchor="middle" font-size="10">DDD · entities · events</text>
+    subgraph OPS["🟠 IMPL & OPS"]
+        C10["10-devops\nCI/CD · environments"]
+        C11["11-quality\nTDD · metrics"]
+        C13["13-operations\nobservability · incidents"]
+        C14["14-training\nonboarding"]
+        C15["15-project-control\nrisks · tech backlog"]
+        C10 --> C11
+        C10 --> C13
+        C13 --> C14
+        C13 --> C15
+    end
 
-  <rect x="430" y="22" width="120" height="50" rx="6" fill="#1c2029" stroke="#388bfd" stroke-width="1.5"/>
-  <text x="490" y="44" fill="#e6edf3" text-anchor="middle" font-weight="bold">03-product</text>
-  <text x="490" y="60" fill="#8b949e" text-anchor="middle" font-size="10">PRD · vision · backlog</text>
-
-  <rect x="590" y="22" width="120" height="50" rx="6" fill="#1c2029" stroke="#388bfd" stroke-width="1.5"/>
-  <text x="650" y="44" fill="#e6edf3" text-anchor="middle" font-weight="bold">04-requirements</text>
-  <text x="650" y="60" fill="#8b949e" text-anchor="middle" font-size="10">user stories · NFRs</text>
-
-  <!-- Arrows row 1 -->
-  <line x1="230" y1="47" x2="270" y2="47" stroke="#388bfd" stroke-width="1.5" marker-end="url(#arr)"/>
-  <line x1="390" y1="47" x2="430" y2="47" stroke="#388bfd" stroke-width="1.5" marker-end="url(#arr)"/>
-  <line x1="550" y1="47" x2="590" y2="47" stroke="#388bfd" stroke-width="1.5" marker-end="url(#arr)"/>
-
-  <!-- Vertical arrow to arch -->
-  <line x1="380" y1="72" x2="380" y2="105" stroke="#388bfd" stroke-width="1.5" marker-end="url(#arr)"/>
-
-  <!-- Row 2: Architecture -->
-  <rect x="270" y="110" width="120" height="50" rx="6" fill="#1c2029" stroke="#3fb950" stroke-width="1.5"/>
-  <text x="330" y="132" fill="#e6edf3" text-anchor="middle" font-weight="bold">05-architecture</text>
-  <text x="330" y="148" fill="#8b949e" text-anchor="middle" font-size="10">ADRs · hexagonal · C4</text>
-
-  <!-- From arch to data and api -->
-  <line x1="270" y1="135" x2="190" y2="185" stroke="#3fb950" stroke-width="1.5" marker-end="url(#arr)"/>
-  <line x1="390" y1="135" x2="490" y2="185" stroke="#3fb950" stroke-width="1.5" marker-end="url(#arr)"/>
-
-  <!-- Row 2b: data + api -->
-  <rect x="110" y="190" width="120" height="50" rx="6" fill="#1c2029" stroke="#3fb950" stroke-width="1.5"/>
-  <text x="170" y="212" fill="#e6edf3" text-anchor="middle" font-weight="bold">06-data</text>
-  <text x="170" y="228" fill="#8b949e" text-anchor="middle" font-size="10">models · migrations</text>
-
-  <rect x="430" y="190" width="120" height="50" rx="6" fill="#1c2029" stroke="#3fb950" stroke-width="1.5"/>
-  <text x="490" y="212" fill="#e6edf3" text-anchor="middle" font-weight="bold">07-api</text>
-  <text x="490" y="228" fill="#8b949e" text-anchor="middle" font-size="10">OpenAPI · contracts</text>
-
-  <!-- From data+api to microservices -->
-  <line x1="230" y1="215" x2="310" y2="285" stroke="#3fb950" stroke-width="1.5" marker-end="url(#arr)"/>
-  <line x1="430" y1="215" x2="375" y2="285" stroke="#3fb950" stroke-width="1.5" marker-end="url(#arr)"/>
-
-  <!-- Row 3: microservices -->
-  <rect x="270" y="290" width="140" height="50" rx="6" fill="#1c2029" stroke="#d2a8ff" stroke-width="1.5"/>
-  <text x="340" y="312" fill="#e6edf3" text-anchor="middle" font-weight="bold">09-microservices</text>
-  <text x="340" y="328" fill="#8b949e" text-anchor="middle" font-size="10">catalog · runbooks</text>
-
-  <!-- From microservices to 08, 10, 12 -->
-  <line x1="270" y1="315" x2="210" y2="315" stroke="#d2a8ff" stroke-width="1.5" marker-end="url(#arr)"/>
-  <line x1="340" y1="340" x2="180" y2="365" stroke="#d2a8ff" stroke-width="1.5" marker-end="url(#arr)"/>
-  <line x1="410" y1="315" x2="470" y2="315" stroke="#d2a8ff" stroke-width="1.5" marker-end="url(#arr)"/>
-  <line x1="340" y1="340" x2="490" y2="365" stroke="#d2a8ff" stroke-width="1.5" marker-end="url(#arr)"/>
-
-  <!-- Row 3b: 08-uml, 10-devops, 12-ux-ui -->
-  <rect x="110" y="295" width="95" height="40" rx="6" fill="#1c2029" stroke="#d2a8ff" stroke-width="1"/>
-  <text x="157" y="313" fill="#e6edf3" text-anchor="middle" font-size="11">08-uml</text>
-  <text x="157" y="327" fill="#8b949e" text-anchor="middle" font-size="9">diagrams</text>
-
-  <rect x="470" y="295" width="95" height="40" rx="6" fill="#1c2029" stroke="#d2a8ff" stroke-width="1"/>
-  <text x="517" y="313" fill="#e6edf3" text-anchor="middle" font-size="11">10-devops</text>
-  <text x="517" y="327" fill="#8b949e" text-anchor="middle" font-size="9">CI/CD · envs</text>
-
-  <!-- Row 4: quality, ops, training -->
-  <rect x="110" y="355" width="90" height="40" rx="6" fill="#1c2029" stroke="#ffa657" stroke-width="1"/>
-  <text x="155" y="373" fill="#e6edf3" text-anchor="middle" font-size="11">11-quality</text>
-  <text x="155" y="387" fill="#8b949e" text-anchor="middle" font-size="9">TDD · metrics</text>
-
-  <rect x="430" y="355" width="90" height="40" rx="6" fill="#1c2029" stroke="#ffa657" stroke-width="1"/>
-  <text x="475" y="373" fill="#e6edf3" text-anchor="middle" font-size="11">13-ops</text>
-  <text x="475" y="387" fill="#8b949e" text-anchor="middle" font-size="9">observability</text>
-
-  <rect x="580" y="355" width="100" height="40" rx="6" fill="#1c2029" stroke="#ffa657" stroke-width="1"/>
-  <text x="630" y="373" fill="#e6edf3" text-anchor="middle" font-size="11">14-training</text>
-  <text x="630" y="387" fill="#8b949e" text-anchor="middle" font-size="9">onboarding</text>
-
-  <!-- Arrow marker -->
-  <defs>
-    <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L8,3 z" fill="#484f58"/>
-    </marker>
-  </defs>
-</svg>
+    C4 --> C5
+    C6 --> C9
+    C7 --> C9
+    C9 --> C10
+```
 
 ---
 

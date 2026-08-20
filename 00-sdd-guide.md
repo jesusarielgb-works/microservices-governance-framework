@@ -31,58 +31,26 @@ SDD:           Documentation  →  Code  →  Updated documentation
 
 ## SDD workflow phases
 
-<svg viewBox="0 0 700 500" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;font-family:monospace">
-  <rect width="700" height="500" fill="#0d1117" rx="10"/>
+```mermaid
+flowchart TD
+    P1["**PHASE 1 — DISCOVERY**\n01-context → 02-domain → 03-product\n_Deliverables: overview · domain-map · vision_"]
+    G1(["🔍 Gate: Stakeholder validation"])
+    P2["**PHASE 2 — DEFINITION**\n04-requirements → 05-architecture → 06-data → 07-api\n_Deliverables: user stories · ADRs · data models · OpenAPI_"]
+    G2(["🔍 Gate: Architecture Review Board"])
+    P3["**PHASE 3 — DETAILED DESIGN**\n08-uml → 09-microservices → 12-ux-ui\n_Deliverables: diagrams · runbooks · wireframes_"]
+    G3(["🔍 Gate: Sprint Planning kickoff"])
+    P4["**PHASE 4 — IMPLEMENTATION TDD + OPERATIONS**\nCode guided by design docs · tests first\n10-devops · 13-operations · 14-training\n_Gate: Code review + QA + Go/No-Go_"]
 
-  <!-- Phase 1 -->
-  <rect x="30" y="20" width="640" height="80" rx="8" fill="#1c2029" stroke="#388bfd" stroke-width="1.5"/>
-  <text x="50" y="44" fill="#388bfd" font-weight="bold" font-size="13">PHASE 1 — DISCOVERY</text>
-  <text x="50" y="62" fill="#8b949e" font-size="12">01-context → 02-domain → 03-product</text>
-  <text x="50" y="80" fill="#6e7681" font-size="11">Understand the problem before proposing solutions.</text>
-  <text x="50" y="93" fill="#6e7681" font-size="10">Deliverables: overview, problem-framing, domain-map, vision</text>
+    P1 --> G1 --> P2 --> G2 --> P3 --> G3 --> P4
 
-  <!-- Arrow + gate -->
-  <line x1="350" y1="100" x2="350" y2="125" stroke="#484f58" stroke-width="2" marker-end="url(#a)"/>
-  <rect x="220" y="120" width="260" height="22" rx="4" fill="#161b22" stroke="#30363d" stroke-width="1"/>
-  <text x="350" y="135" fill="#8b949e" text-anchor="middle" font-size="10">← Stakeholder validation</text>
-
-  <!-- Phase 2 -->
-  <rect x="30" y="145" width="640" height="80" rx="8" fill="#1c2029" stroke="#3fb950" stroke-width="1.5"/>
-  <text x="50" y="169" fill="#3fb950" font-weight="bold" font-size="13">PHASE 2 — DEFINITION</text>
-  <text x="50" y="187" fill="#8b949e" font-size="12">04-requirements → 05-architecture → 06-data → 07-api</text>
-  <text x="50" y="205" fill="#6e7681" font-size="11">Define WHAT and HOW before implementing.</text>
-  <text x="50" y="218" fill="#6e7681" font-size="10">Deliverables: user stories with ACs, ADRs, data models, OpenAPI contracts</text>
-
-  <!-- Arrow + gate -->
-  <line x1="350" y1="225" x2="350" y2="250" stroke="#484f58" stroke-width="2" marker-end="url(#a)"/>
-  <rect x="180" y="245" width="340" height="22" rx="4" fill="#161b22" stroke="#30363d" stroke-width="1"/>
-  <text x="350" y="260" fill="#8b949e" text-anchor="middle" font-size="10">← Architecture Review Board</text>
-
-  <!-- Phase 3 -->
-  <rect x="30" y="270" width="640" height="80" rx="8" fill="#1c2029" stroke="#d2a8ff" stroke-width="1.5"/>
-  <text x="50" y="294" fill="#d2a8ff" font-weight="bold" font-size="13">PHASE 3 — DETAILED DESIGN</text>
-  <text x="50" y="312" fill="#8b949e" font-size="12">08-uml → 09-microservices → 12-ux-ui</text>
-  <text x="50" y="330" fill="#6e7681" font-size="11">Design each system component in detail.</text>
-  <text x="50" y="343" fill="#6e7681" font-size="10">Deliverables: diagrams, runbooks, wireframes, design system</text>
-
-  <!-- Arrow + gate -->
-  <line x1="350" y1="350" x2="350" y2="375" stroke="#484f58" stroke-width="2" marker-end="url(#a)"/>
-  <rect x="200" y="370" width="300" height="22" rx="4" fill="#161b22" stroke="#30363d" stroke-width="1"/>
-  <text x="350" y="385" fill="#8b949e" text-anchor="middle" font-size="10">← Sprint kickoff (Sprint Planning)</text>
-
-  <!-- Phase 4 -->
-  <rect x="30" y="395" width="640" height="85" rx="8" fill="#1c2029" stroke="#ffa657" stroke-width="1.5"/>
-  <text x="50" y="419" fill="#ffa657" font-weight="bold" font-size="13">PHASE 4 — IMPLEMENTATION (TDD) + OPERATIONS</text>
-  <text x="50" y="437" fill="#8b949e" font-size="12">Code guided by design documents · tests first · 10-devops · 13-operations · 14-training</text>
-  <text x="50" y="455" fill="#6e7681" font-size="11">Code + tests + updated documentation</text>
-  <text x="50" y="472" fill="#6e7681" font-size="10">Gate: Code review + QA + Go/No-Go before production</text>
-
-  <defs>
-    <marker id="a" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L8,3 z" fill="#484f58"/>
-    </marker>
-  </defs>
-</svg>
+    style P1 fill:#1c3a5e,stroke:#388bfd,color:#e6edf3
+    style P2 fill:#1a3a22,stroke:#3fb950,color:#e6edf3
+    style P3 fill:#2d1f4a,stroke:#d2a8ff,color:#e6edf3
+    style P4 fill:#3a2a10,stroke:#ffa657,color:#e6edf3
+    style G1 fill:#161b22,stroke:#484f58,color:#8b949e
+    style G2 fill:#161b22,stroke:#484f58,color:#8b949e
+    style G3 fill:#161b22,stroke:#484f58,color:#8b949e
+```
 
 ---
 
