@@ -1,7 +1,7 @@
 # Microservices Governance Framework
 
 > Generic documentation template · v1.0 · MIT License
-> Authored by Jesus Ariel Gonzalez Bonilla - freely licensed (MIT) for CORHUILA, SENA and anyone.
+> Authored by Jesus Ariel Gonzalez Bonilla - freely licensed (MIT) for anyone.
 
 This repository is a **documentation scaffold** for any microservices project.
 It contains no project-specific information. Its purpose is to teach how to document
