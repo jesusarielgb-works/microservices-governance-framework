@@ -171,4 +171,4 @@ Choose the guide that matches your project's primary language:
 
 ## License
 
-MIT © 2026 Jesús Ariel González Bonilla — CORHUILA
+MIT © 2026 Jesús Ariel González Bonilla
