@@ -13,21 +13,23 @@ creation date than the first GitHub commit.
 |-------|-------|
 | **Language** | Spanish |
 | **Author** | Jesús Ariel González Bonilla |
-| **Status** | Confirmed to exist — date to be documented in private dossier |
-| **Location** | Separate repository owned by the author (external to this repo) |
-| **Nature** | Earlier form of the same framework, in Spanish, in a distinct repository |
+| **Status** | Confirmed — March 2026 |
+| **Date** | March 2026 |
+| **Location** | Author's local computer folder (not a Git repository) |
+| **Nature** | Earlier form of the same framework, in Spanish, maintained locally before the creation of this repository |
 
 **Notes:**
-The author confirms the existence of a prior version of the MGF drafted in
-Spanish, maintained in a separate repository owned by the author, before the
-first commit to this repository on 2026-08-20. This version establishes that
-the creation date of the work is earlier than the GitHub creation date of this
-repository.
+The author confirms that a prior version of the MGF was drafted in Spanish in
+March 2026 and kept in a local folder on their computer — not in a Git
+repository. This establishes that the creation of the work predates the first
+GitHub commit (2026-08-20) by approximately five months.
 
-The prior version resides in an external repository controlled by the author.
-Its exact date is to be documented in the private dossier
-(`dnda-dossier/evidencia/version-previa-es/`), which will constitute the
-provenance evidence for the real creation date before the DNDA.
+**Significance for DNDA registration:**
+This local version is the real starting point of the work. It demonstrates that
+the framework was conceived and structured before any public repository existed.
+The author can produce this local version as evidence in the private dossier
+(`dnda-dossier/evidencia/version-previa-es/`) to support the declared creation
+date of March 2026 before the DNDA.
 
 ---
 
