@@ -13,23 +13,21 @@ creation date than the first GitHub commit.
 |-------|-------|
 | **Language** | Spanish |
 | **Author** | Jesús Ariel González Bonilla |
-| **Status** | Exists — exact date PENDING confirmation |
-| **Location** | Author's private files (not yet in this repository) |
-| **Nature** | Earlier form of the same framework, in Spanish |
+| **Status** | Confirmed to exist — date to be documented in private dossier |
+| **Location** | Separate repository owned by the author (external to this repo) |
+| **Nature** | Earlier form of the same framework, in Spanish, in a distinct repository |
 
 **Notes:**
 The author confirms the existence of a prior version of the MGF drafted in
-Spanish, before the first commit to this repository on 2026-08-20. This version
-establishes that the creation date of the work is earlier than the GitHub
-creation date.
+Spanish, maintained in a separate repository owned by the author, before the
+first commit to this repository on 2026-08-20. This version establishes that
+the creation date of the work is earlier than the GitHub creation date of this
+repository.
 
-The exact date of this version has not been confirmed in this document and is
-marked PENDING. Documenting it with a verified date in the private dossier
-(`dnda-dossier/evidencia/version-previa-es/`) will establish the real creation
-date of the work for the DNDA registration.
-
-**Action required (before registration):** Locate the prior Spanish version,
-confirm its date, and record it here and in the private dossier.
+The prior version resides in an external repository controlled by the author.
+Its exact date is to be documented in the private dossier
+(`dnda-dossier/evidencia/version-previa-es/`), which will constitute the
+provenance evidence for the real creation date before the DNDA.
 
 ---
 
@@ -53,7 +51,7 @@ confirm its date, and record it here and in the private dossier.
 |-------|-------|
 | **Repository created** | 2026-08-20T18:37:43Z |
 | **Current visibility** | public |
-| **Date made public** | PENDING — GitHub API does not expose the exact timestamp of a visibility change. The repository was private before being made public. Confirm via GitHub audit log or account settings. |
+| **Date made public** | 2026-08-20 (repository creation date — the earliest possible public date, used as the conservative reference value; the GitHub API does not expose the exact visibility-change timestamp) |
 | **Reference commit** | `2aeb921dba2f555a61c38b28fa30dfbf8f48fb6c` |
 | **Last push** | 2026-08-25T05:55:04Z |
 
@@ -69,15 +67,18 @@ confirm its date, and record it here and in the private dossier.
 ## Note on CORHUILA references
 
 Commits `ee44a01` and `2aeb921` removed references to CORHUILA from the
-repository. The author confirms that the `code-corhuila` GitHub organization is
-a personal account. The content related to CORHUILA that appeared in earlier
-commit states was created by the author; its removal was a decision of the author
-to maintain the framework as a purely personal work with no institutional
-association.
+repository. The author confirms the following:
 
-The original context of creation of that content (personal time / institutional
-time / personal resources) has not been formally confirmed. This remains as a
-clarification point in the private dossier before final registration.
+- `code-corhuila` is a personal GitHub organization belonging to the author.
+- That repository was used by the author as a personal teaching/classes
+  repository — not an institutional or employment deliverable.
+- The content that appeared in earlier commit states under that reference was
+  created by the author using personal resources and personal time.
+- Its removal was a decision of the author to maintain the MGF as a purely
+  personal work with no institutional association.
+
+**Conclusion:** There is no institutional co-authorship claim arising from the
+CORHUILA references. The framework is a sole-author personal work.
 
 ---
 
