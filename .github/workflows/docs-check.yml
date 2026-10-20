@@ -1,0 +1,17 @@
+name: docs-check
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  docs:
+    uses: jesusarielgb-works/engineering-casebook/.github/workflows/check-docs.yml@v1.0.0
+    with:
+      casebook-ref: v1.0.0
+      anchors: anclas.json
+      territory-allow: docs/legal/
+      # Links join the checks in v1.1.0, after the registered version is tagged and the
+      # 14 known broken links are fixed (TASKS.md T-04).
+      checks: anchors,territory
+    secrets: inherit

@@ -1,0 +1,20 @@
+{
+  "description": "Rutas de microservices-governance-framework que agentic-sdlc-os consume. SHA-256 de los bytes del blob git (git cat-file blob), no de la copia de trabajo: con core.autocrlf=true, la copia de trabajo y git archive convierten LF a CRLF y el hash cambia.",
+  "commit": "2f88f4166353e9d1e23d36afcc5ddbee630497e6",
+  "also_identical_on": "2aeb921dba2f555a61c38b28fa30dfbf8f48fb6c",
+  "files": {
+    "02-domain/domain-events.md": "02bb764f265f1fa352dee2c66a30709fe5d99031cc90cc1dd483b5febb3a9a73",
+    "02-domain/entities-and-rules.md": "de6a8ffe1c61055b9fcec4f145f2eeaad31b51ad3a3e66500f63e0059bdcc007",
+    "05-architecture/hexagonal-architecture.md": "0bd0ee39c80f93e225ec83190123c2c7785704467bc9d0099269f1f7c82fa349",
+    "05-architecture/pattern-guide.md": "ca71fd9f3333302405caac478b85c83e225da27a32d589f7cb38a249d668d739",
+    "06-data/README.md": "e55ae02a85e9a17b351dcecea4003222c9c130a69edf222c6224068e150747db",
+    "06-data/models.md": "7f45eba90c1432645b4e2353a47c5ce3c9d5b4713b233dc2efd7e0013e5a5d46",
+    "11-quality/tdd-guide.md": "52cd04b4acf52e1f8810884bf7ec4059171ad455bcb393406a6fa631d6627df2",
+    "12-ux-ui/design-system.md": "45d2907429872a6fa04938cb305cf2c240c5065e3d5db03ada63869568e3b955",
+    "12-ux-ui/navigation-map.md": "255cc6fa218ec36c6ac89676e6c0b39ab013bcf906a36587c7cd2404df42ebe3",
+    "13-operations/observability.md": "e2fec2bbb8f67d50c80aa3f608a62566b057e9f708b7d35b9bc6e47f1f64c83e",
+    "_stacks/go.md": "7ff55c8a3db0768e2687010d50a1ba495cad2c01c79f9377b65b1b68b55ead8a",
+    "_stacks/java-spring.md": "aadb4f694f9bdc5cd2dc2f2ed9aa70b98fa7748318aaa72d48d6dbe93e31ab3e",
+    "_stacks/python-fastapi.md": "c01a78e372cec4d4289cc0683723e630797c2fd433316b727ed67ed5ce9d646d"
+  }
+}

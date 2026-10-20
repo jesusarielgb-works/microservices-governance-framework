@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you use this framework, please cite it as below."
+title: "Microservices Governance Framework"
+version: "1.0.0"
+authors:
+  - family-names: "González Bonilla"
+    given-names: "Jesús Ariel"
+license: MIT
+repository-code: "https://github.com/jesusarielgb-works/microservices-governance-framework"
