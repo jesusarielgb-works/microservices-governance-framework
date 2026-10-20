@@ -3,10 +3,9 @@
 | Field | Value |
 |-------|-------|
 | **ID** | ADR-001 |
-| **Date** | 2024-01-10 |
+| **Date** | 2026-08-20 |
 | **Status** | Accepted |
-| **Authors** | María García — Tech Lead |
-| **Reviewers** | Carlos Méndez, Sofía Torres, Andrés Ruiz — Development team |
+| **Author** | Jesús Ariel González Bonilla |
 
 ---
 
